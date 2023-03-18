@@ -20,6 +20,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormError;
@@ -301,32 +302,23 @@ class UserController extends AbstractController
         
          if ($form->isSubmitted() ) {
             $contracts = $form->getData();
-           
-
-            
-            
             $objekt = $user->getObjekt();
             $variableRepos = $doctrine->getRepository(VertragVariable::class);
             $variables = $variableRepos->findAll();
-        
             $replacedContracts = [];
-        
+              
             foreach ($contracts as $contract) {
                 $text = $contract->getText();
-        
                 // Ersetze alle Variablen im Text durch ihre Werte aus $user
                 foreach ($variables as $variable) {
                     $value = $this->getPropertyValue($user, $variable->getVar());
                     $text = str_replace('$'.$variable->getVar(), $value, $text);
                 }
-        
-                $replacedContracts[] = ['text' => $text];
-               
+                $replacedContracts[] = ['text' => $text]; 
             }
-
+            $text = implode("\n\n", array_column($replacedContracts, 'text')); 
+            $contract= $contracts['Vertrag'];  
             
-            $text = implode("\n\n", array_column($replacedContracts, 'text'));
-               
             $form = $this->createFormBuilder(null, [
                 'action' => $this->generateUrl('app_user_contrect_save', ['id' => $user->getId()])
             ])
@@ -339,10 +331,15 @@ class UserController extends AbstractController
                 ]
             ])
             ->add('Save', SubmitType::class)
+            ->add('contract', HiddenType::class, [
+                'data' => $contract->getId(),
+            ])
             ->getForm();
+           
             return $this->render('user/contrect.html.twig', [
                 'form' => $form->createView(),
                 'contracts' => $replacedContracts,
+                'data'  => $contract,
                 'user' => $user,
                 'variablen' => $variables,
                 
@@ -352,7 +349,6 @@ class UserController extends AbstractController
             'form' => $form->createView(),
             
         ]);
-        
     }
     #[Route('/{id}/contrect_save', name: 'app_user_contrect_save', methods: ['GET', 'POST'])]
     public function contrect_save( User $user, Request $request)
@@ -361,7 +357,7 @@ class UserController extends AbstractController
         $password = 'texmex';
         $form = $request->get('form');
         $text = $form['text'];
-
+        $contract = $form['contract'];
         // Erstelle TCPDF-Objekt
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -382,10 +378,15 @@ class UserController extends AbstractController
         // Schreibe HTML-Text auf PDF
         $html = '<html><body>' . $text . '</body></html>';
         $pdf->writeHTML($html, true, false, true, false, '');
+        $path = $this->getParameter('kernel.project_dir').'/public/data/'.$user->getId();
 
+        // Überprüfe, ob der Ordner vorhanden ist
+        if (!is_dir($path)) {
+            // Erstelle den Ordner, falls er nicht vorhanden ist
+            mkdir($path, 0755, true);
+        }
         // Ausgabe PDF
-        $pdf->Output($this->getParameter('kernel.project_dir').'/public/data/testsave.pdf', 'F');
-
+        $pdf->Output($path.'/'.$contract.'_'.date("Y-m-d",time()).'.pdf', 'F');
         return $this->render('user/contrect_save.html.twig', [
             'text' => $text
         ]);

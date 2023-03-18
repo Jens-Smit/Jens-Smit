@@ -1,8 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+<h1>
+<i class="fas fa-h1    ">{{data.titel}}</i></h1><h2>
+
+<i class="fas fa-h2    ">{{data.discription}}</i></h2>
+
+
   {% for contract in contracts %}
     <div class="contract d-none">
+    
     {% set contractText = contract.text %}
       {% for userContractData in user.contractData  %}
         
