@@ -1,0 +1,16 @@
+ {% block javascripts %} 
+
+   <script language = "javascript">  
+      
+   </script>  
+{% endblock %} 
+
+          
+{% block body %} 
+{{ form_start(form, {'attr': {'class': 'edit_form'}, 'action': path('ajax_AreaEditSave', {'id': area.id})}) }}
+{{ form_end(form) }}
+<a class="btn btn-danger w-100"  href="{{ path('area_delete', {'id': area.id})}}"> <i class="fas fa-trash"></i></a>
+
+{% endblock %}
+
+

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Meine Dokumente{% endblock %}
+
+{% block body %}
+   <div class="container">
+        <div class="row mb-3">
+            <div class="col">
+                <h1>Dokumente von {{ user.vorname }} {{ user.nachname }}</h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+            <ul class="list-group">
+                            <li class="list-group-item">
+                                <a href="document" ><i class="fa fa-plus" aria-hidden="true"> </i></a>
+                            </li>
+            </ul>
+                {% if dokumente is empty %}
+                    <p>Sie haben noch keine Dokumente hochgeladen.</p>
+                {% else %}
+                    <ul class="list-group">
+                            <li class="list-group-item">
+                              
+                            </li>
+                        {% for dokument in dokumente %}
+                            <li class="list-group-item">
+                                <a href="{{ asset(dokument.path) }}" target="_blank">{{ dokument.titel }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

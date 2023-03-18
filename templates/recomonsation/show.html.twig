@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recomonsation{% endblock %}
+
+{% block body %}
+    <h1>Recomonsation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ recomonsation.id }}</td>
+            </tr>
+            <tr>
+                <th>Points</th>
+                <td>{{ recomonsation.points }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_recomonsation_index') }}">back to list</a>
+
+    <a href="{{ path('app_recomonsation_edit', {'id': recomonsation.id}) }}">edit</a>
+
+    {{ include('recomonsation/_delete_form.html.twig') }}
+{% endblock %}

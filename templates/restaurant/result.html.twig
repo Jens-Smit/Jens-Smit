@@ -1,0 +1,66 @@
+{% extends 'public_base.html.twig' %}
+
+{% block title %}Hello HomeController!{% endblock %}
+{% block body %}
+<div class="container">
+<h1>Result</h1>
+<div class="row">
+	
+
+	<div class="col-12">
+	<div class="card card-info">
+		{{ form(Avform) }}
+	</div>
+	</div>
+	
+</div>
+</div>
+<!-- Playlist section -->
+	<section class="playlist-section spad">
+		<div class="container">
+			
+           <h1>{{ info }}</h1>
+            
+			</div>
+			<div class="container">
+				<ul class="nav nav-pills nav-fill">
+                    {% for category in categories %}
+                    <li class="control nav-item nav-link" data-filter=".{{category.id}}">{{category.name}}</li>
+                    {% endfor %}
+                    <li class="control nav-item nav-link" data-filter="all">Alle</li>
+				</ul>
+			</div>
+                                                        
+			<div class="clearfix"></div>
+			<div class="row playlist-area" id="myObjekt">
+             {% for objekt in objekts %}
+    
+				<div class=" mix col-lg-3 col-md-4 col-sm-6 {{objekt.categories_id}}">
+					<div class="card playlist-item">
+						<img src="{{asset('images/' ~ objekt.bild)}}" class="img-fluid">
+						<h5>{{objekt.name}} 
+						
+						</h5>
+						<span class="badge badge-info navbar-badge text-light">
+					
+						
+						
+						
+						</span>
+						<h6>category</h6>
+                        <p>{{objekt.categories_id}}</p>
+						
+						
+						<h6>Kontakt</h6>
+						<p>{{objekt.telefon}}<br>{{objekt.adresse}}<br>{{objekt.plz}} {{objekt.ort}}</p>
+                        <a href="{{ path('app_restaurant_availability', {'id': objekt.id}) }}" class="btn btn-info">Reservieren</a>
+					</div>
+				</div>
+			 {% endfor %} 
+             
+			</div>
+		</div>
+	</section>
+	<!-- Playlist section end -->
+
+{% endblock %}

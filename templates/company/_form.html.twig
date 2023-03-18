@@ -1,0 +1,5 @@
+{{ form_start(form) }}
+    {{ form_widget(form.name) }}
+     <div style='display:none;'>{{ form_widget(form.onjekt_admin) }}</div>
+    <button class="btn w-100 btn-info">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

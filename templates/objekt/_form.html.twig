@@ -1,0 +1,12 @@
+<style>
+#objekt div{ display:grid; margin:10px 0px;}
+
+</style>
+
+
+{{ form_start(form) }}
+    
+   {{ form_widget(form) }}
+   <button class="btn w-100 btn-info" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Save') }}</button>
+    
+{{ form_end(form) }}

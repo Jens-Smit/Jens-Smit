@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <title>{% block title %}Welcome{% endblock %}</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+<link rel="stylesheet" href="{{asset('css/all.min.css')}}">
+<link rel="stylesheet" href="{{asset('css/home_style.css')}}">
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+    
+    
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollToPlugin.min.js"></script>
+ 
+        {% endblock %}
+
+  
+  
+</head>
+<body>
+ 
+      <!-- Content -->
+      
+       {% block body %}{% endblock %}
+      
+  
+  <section id="full-screen">
+		<div id='item_1'>
+		<div style='width:100%; height:33%;'><img class='item_text' id='item_text_1'src="{{asset('img/v.png')}}"></div>
+		<div style='width:49%; height:33%;'></div>
+	</div>
+		<div id='item_2'>
+		<div style='width:100%; height:33%;'></div>
+		<div style='width:49%; height:33%;'><img class='item_text' id='item_text_2'src="{{asset('img/g.png')}}"></div>
+	</div>
+	
+	</section>	
+	<div id="menu">
+		<div><a class="dropdown-item" href="{{path('app_login')}}">Login</a></div>
+	</div>
+    <section id='first_section'>
+		<div class='ipad' id='ipad'>
+			<div class='ipad_head'>
+				<div class='ipad_head_Itams'>
+					10:30
+				</div>
+				<div class='ipad_head_Itams'>
+					<i class="fa fa-signal"></i>
+					80%
+					<i class="fa fa-battery-three-quarters"></i>
+				</div>
+			</div>
+			<div class='ipad_conten'>
+			</div>
+			<div class='ipad_footer'>
+				<i class="fa fa-square"></i>
+			</div>
+		</div>
+		<div id="ipad_headline"> <h1>
+		<span class="highlight">so</span> <br>
+		<span class="highlight">individuell</span><br>
+		<span class="highlight">wie dein</span><br>
+		<span class="highlight"> Bussiness</span>
+		</h1></div>
+
+	</section>
+	
+   <section id='secend_section'>
+	<div id="icons_headline"> 
+		
+	<h2 >
+	Deine Bed&uuml;rfnisse im Blick
+	</h2>
+  
+	</div>
+	
+	
+	<div id="icons_left"> 
+		<h2>
+		<i class="fa fa-bed" aria-hidden="true"></i>
+		<i class="fa fa-coffee" aria-hidden="true"></i>		
+		<i class="fa fa-users" aria-hidden="true"></i>
+		<i class="fa fa-comments" aria-hidden="true"></i>
+		<i class="fa fa-calendar" aria-hidden="true"></i>
+		</h2>
+	</div>
+	<div id="icons_headline_2"> 
+		<h2>Die L&ouml;sung die Mitw&auml;chst</h2>
+	</div>
+	
+	</section>
+</body>
+</html>
+
+

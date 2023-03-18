@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block body %}
+    <h1>User bearbeiten</h1>
+    <div class="group w-100 d-flex flex-wrap justify-content-between ">
+    <div class="btn-group w-50" role="group" aria-label="Basic checkbox toggle button group">
+        <a href="{{ path('app_user_document_list', {'id': user.id}) }}" class="btn btn-primary"> Dokumente</a>
+        <a href="" class="btn btn-primary"> Aktion</a>
+        <a href="" class="btn btn-primary"> Dienstplan</a>
+    </div>
+    <div class="card text-right">
+     
+      <div class="card-body">
+        
+        <a class ='btn btn-sm btn-primary shadow-sm'href="{{ path('app_contract_data_new') }}">
+        <i class="fa fa-plus" aria-hidden="true"></i></a>
+               
+     <table class="table w-100">
+   
+        <thead>
+            <tr>  
+                <th>Bezeichnung</th>
+                <th>Start</th>
+                <th>Ende</th>
+                <th>Actions</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+          {% for contract in user.contractData %}
+            <tr>
+                <td>{{ contract.bezeichnung }}</td>
+                <td>{{ contract.startDate|date('Y-m-d') }}</td>
+                 {% if contract.endDate is null %}
+                  <td> Aktiv</td>
+                {% else %}
+                   <td> {{ contract.endDate|date('Y-m-d') }}</td>
+                {% endif %}
+                
+                
+                <td>
+                    <a href="{{ path('app_contract_data_show', {'id': contract.id}) }}">show</a>
+                    <a href="{{ path('app_user_contrect', {'id': user.id}) }}">edit</a>
+                </td>
+            </tr>
+        
+           
+        {% endfor %}
+        </tbody>
+        </table>
+    
+      </div>
+    </div>
+    
+   </div>
+    {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
+    <br>
+    <a class='d-none w-100 d-sm-inline-block btn btn-sm btn-primary shadow-sm'href="{{ path('app_user_index') }}">zurück</a>
+<br><br>
+    {{ include('user/_delete_form.html.twig') }}
+{% endblock %}

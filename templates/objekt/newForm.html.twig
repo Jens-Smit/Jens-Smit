@@ -1,0 +1,54 @@
+ {% block javascripts %} 
+   
+       
+   
+   <script language = "javascript">  
+      $(document).ready(function(){  
+         //  var id =  $(this).attr('id');
+        
+                
+                $(".edit_form").submit(function(e) {
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+                    var form = $(this);
+                  
+                    $.ajax({
+                        type: "POST",
+                        url: "{{path('ajax_ItemNewSave')}}",
+                        data: form.serialize(), // serializes the form's elements.
+                        success: function(data)
+                        {
+
+                          $( "#dialog" ).dialog( "close" ); 
+                          location.reload();
+                         
+                        },
+                        error : function(xhr, textStatus, errorThrown) {  
+                          
+                          alert('Ajax request failed new form.');
+                          
+                        }
+                    });
+             
+                });
+             
+             
+            
+      });  
+        
+   </script>  
+{% endblock %} 
+
+          
+{% block body %} 
+
+
+{{ form_start(form, {'attr': {'class': 'edit_form'} }) }}
+   
+ 
+    
+
+{{ form_end(form) }}
+
+{% endblock %}
+
+

@@ -1,0 +1,389 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ReservationsController!{% endblock %}
+
+
+
+
+
+  
+
+{% block stylesheets %} 
+<style>
+      #reservierungen { 
+    border-collapse: collapse;    
+    width: 100px;
+    right:0px;
+    position:absolute;} 
+     .room{
+      width:100%;
+      height:100%;
+     } 
+    
+     .ui-widget{
+     
+      background-color:var(--secondary-color);
+      
+     }
+     #dialog{
+       position: absolute;
+      border:3px solid var(--secondary-color);
+      border-bottom-right-radius: 10px;
+      border-bottom-left-radius: 10px;
+     }
+     #dialog form{
+      margin:10px;
+     }
+
+    .ui-dialog-titlebar Button{
+      width:20px;
+      height:20px;
+    }
+    
+    .ui-dialog-titlebar {
+    display: flex;
+    background-color: var(--info);
+    justify-content: space-between;
+    } 
+    .tabel{
+      position: relative;
+      background:none;
+    }
+    .ui-widget{
+          display: flex;
+          flex-direction: column;
+    }
+    .btn-close{
+      min-width:10px !important;
+    }
+    
+   </style>
+{% endblock %} 
+
+{% block body %} 
+
+
+ <script src="{{asset('js/jquery-3.6.3.min.js')}}"></script>    
+  <script src="{{asset('js/jquery-ui.min.js')}}"></script> 
+   <script src="{{asset('js/jquery.ui.touch-punch.js')}}"></script>  
+ 
+  <script language = "javascript">  
+    $(document).ready(function(){  
+       var spinner =  '<div id="spinner"> </div>';
+       $(".page").hide();
+       $(".page").first().show();
+       $(".area_btn").click(function(event) {
+            // Verhindern, dass der Link ausgeführt wird
+            event.preventDefault();
+
+            // Alle Div-Elemente ausblenden
+            $(".page").hide();
+            var showelement = "#"+$(this).attr("href");
+           
+            // Div mit der ID, die dem "href"-Attribut des Links entspricht, einblenden
+            $("#"+$(this).attr("href")).show();
+       });
+       $( "#dialog" ).dialog({
+                  autoOpen: false,
+                  closeText: "",
+                   position:{ my: "center", at: "top", of: window },
+                   autoResize: true,
+                  show: {
+                    autoOpen: true,
+                    effect: "blind",
+                    duration: 1000,
+                   
+                  },
+                  hide: {
+                    autoOpen: false,
+                    effect: "explode",
+                    duration: 1000
+                  },
+                  
+       });
+       $( ".draggable" ).draggable({
+                  start: function() {
+                   var item = "Tab"+$(this).attr('name');
+                   
+                   $('#'+item).css("background-color","rgb(75, 181, 67)");
+                   $("#delat").css("display","block");
+                  },
+                  drag: function() {
+                    $("#var").html($(this).attr("id"));
+                  },
+                  stop: function() {
+                    var item = "Tab"+$(this).attr('name');
+                   $('#'+item).css("background","none");
+                   $("#delat").css("display","none");
+                  }
+       });
+       
+       $( ".Items" ).droppable({
+                
+                  drop: function() {
+                 
+                  var TabId = $(this).attr("id");
+                  var ResId =  $("#var").html();
+                    if(TabId ==  "delat"){
+                   
+                        $.ajax({
+                            type: "POST",
+                            url: "{{path('ajax_ResCheckOut')}}",
+                            data: {
+                              'id': ResId,
+                            },
+                            dataType: "text",
+                            success: function(data) {
+                              $("#"+ResId).remove(); 
+                            },  
+                            error : function(xhr, textStatus, errorThrown) {  
+                              alert('Ajax request failed delate.');
+                            }
+                          });
+                       
+                    
+                    }
+                    else if (ResId == "Res_WalkIn"){
+                         
+                          var html = '<div class="dialog_content mx-auto"><input id="personen"><div class="row">';
+                          for (var i = 1; i <= 10; i++) {
+                            html += '<div class="col-4"><button class="btn mx-auto btn_calc btn-primary btn-lg w-100 h-100 btn-block" type="button">' + i + '</button></div>';
+                            if (i % 3 == 0) {
+                            html += '</div><div class="row">';
+                            }
+                          }
+                          html += '<div class="col-4"><button class="btn mx-auto btn-success btn-lg w-100 h-100 btn-block" id ="save_walkin" type="button"><i class="fa fa-check"></i></button></div><div class="col-4"><button id ="CE" class="btn mx-auto btn-danger w-100 h-100 btn-lg btn-block" type="button"><i class="fa fa-trash"></i></button></div></div></div>';
+                          
+                          $("#dialog").html(html);
+                         $(".dialog_content").css("width", "200px");  
+                          $( "#dialog" ).dialog( "open");
+                          $(".ui-dialog-titlebar").addClass("bg-info"); 
+                          $(".ui-dialog-titlebar-close").addClass("btn-close");
+                          var personen = $("#personen").val();  // Lese den Wert des Eingabefelds aus
+                          // Füge Klick-Handler für .card-Elemente hinzu
+                          $(".btn_calc").click(function() {
+                            if($("#personen").val()>9){
+                              
+                            $("#personen").val(parseInt($("#personen").val())+parseInt($(this).html()));
+                            }else{
+                              
+                              $("#personen").val($(this).html());
+                            }
+                          });
+                          // Frage den Benutzer, ob er die Personenanzahl bestätigen möchte
+                          
+                          $("#save_walkin").click(function() {
+                           var personen =  $("#personen").val(); 
+                            $.ajax({
+                              type: "POST",
+                              url: "{{path('ajax_ResToTable_WalkIn')}}",
+                              data: {
+                                'pax': personen,
+                                'tab_id': TabId,
+                              },
+                              dataType: "text",
+                              success: function(data) {
+                                $("#Res_WalkIn").css({
+                                  "left": "0px",
+                                   "top": "0px"
+                                });
+                                var $originalDiv = $("#"+ResId);
+                                var $copiedDiv = $originalDiv.clone();
+                                var reservierung = jQuery.parseJSON(data);
+                                var res_id = reservierung.res_id; 
+                                $copiedDiv.attr("id", "Res"+res_id);
+                                
+                                $("#"+TabId).html($copiedDiv);
+                                 $( ".draggable" ).draggable({
+                                            start: function() {
+                                            var item = "Tab"+$(this).attr('name');
+                                            
+                                            $('#'+item).css("background-color","rgb(75, 181, 67)");
+                                            $("#delat").css("display","block");
+                                            },
+                                            drag: function() {
+                                              $("#var").html($(this).attr("id"));
+                                            },
+                                            stop: function() {
+                                              var item = "Tab"+$(this).attr('name');
+                                            $('#'+item).css("background","none");
+                                            $("#delat").css("display","none");
+                                            }
+                                });
+                                $("#Res"+res_id).css("left","auto");
+                                $("#Res"+res_id).css("top","auto"); 
+                               
+                               
+                                $( "#dialog" ).dialog( "close" ); 
+                              },  
+                              error : function(xhr, textStatus, errorThrown) {  
+                                alert('Ajax request failed .');
+                              }
+                            });
+                          });
+                          $("#CE").click(function() {
+                              
+                            $("#personen").val('');
+                            
+                          });
+
+                    }
+                    else{
+                          var bestaetigung = window.confirm('CheckIn ?');
+                          if(bestaetigung) {
+                            $.ajax({
+                              type: "POST",
+                              url: "{{path('ajax_ResToTable')}}",
+                              data: {
+                                'res_id': ResId,
+                                'tab_id': TabId,
+                              },
+                              dataType: "text",
+                              success: function(data) {
+                                var reservierung = jQuery.parseJSON(data);
+                                $("#"+TabId).append($("#"+ResId) );
+                                $("#"+ResId).css("left","auto");
+                                $("#"+ResId).css("top","auto"); 
+                              },  
+                              error : function(xhr, textStatus, errorThrown) {  
+                                alert('Ajax request failed .');
+                              }
+                            });
+                          }
+                          else {
+                              $("#"+ResId).draggable({ revert: true });
+                          }
+                    }
+                     
+                  }
+       });
+       $("#new_resavation").click(function() {
+          $( "#dialog" ).dialog( "open" ); 
+           $("#dialog").html(spinner);
+                    $.ajax({
+                      type: "POST",
+                      url: "{{path('ajax_ResNew')}}",
+                      
+                      dataType: "text",
+                      success: function(data) {
+                        $("#dialog").html(data);
+                      },  
+                      error : function(xhr, textStatus, errorThrown) {  
+                          alert('Ajax request failed ++++.');
+                      }
+                    });
+                    
+                    $(".ui-dialog-titlebar").addClass("bg-info"); 
+                    $(".ui-dialog-titlebar-close").addClass("btn-close");
+       });
+       $( ".draggable" ).click(function() {
+                 $( "#dialog" ).dialog( "open" ); 
+                 $("#dialog").html(spinner);
+                 
+                 
+                  var id = $(this).attr("id");
+                    $.ajax({
+                      type: "POST",
+                      url: "{{path('ajax_ResEdit')}}",
+                      data: {
+                        'id': id,
+                      },
+                      dataType: "text",
+                      success: function(data) {
+                        $("#dialog").html(data);
+                      },  
+                      error : function(xhr, textStatus, errorThrown) {  
+                          alert('Ajax request failed ++++.');
+                      }
+                    });
+                     
+                    $( "#dialog" ).dialog( "open" ); 
+                    $(".ui-dialog-titlebar").addClass("bg-info"); 
+                    $(".ui-dialog-titlebar-close").addClass("btn-close");
+       });
+                            
+      });  
+        
+  </script>  
+  <style>
+    .pt-5 {
+        padding-top: 0rem!important;
+    }
+  </style>
+<div class="bg-danger Items" style= "width: 30%;margin: auto; display:none; border-radius: 0px 0px 25px 25px; position: absolute; left: 35%;    height: 25px; text-align: center;"id="delat"> <i class="fas fa-trash-alt"></i></div>
+<div id="dialog"   style="position:relative;    z-index: 100;" title="">
+<div id="dialog_content"></div>
+
+ </div>
+
+<div style="display:none;"id="var"></div>
+  <div id = "reservierungen" class ='Items'>
+    <a href='#' id='new_resavation' class="btn btn-info">Booking</a>
+   
+    <h8>Reservation</h8>
+    {% for Reservation in Reservations %} 
+      {% if Reservation.status is null %}
+        <div class='card bg-success draggable border-primary mb-3' id='Res{{ Reservation.id }}' name= '{{ Reservation.item_id }}'style=' margin: initial; max-width: 5rem;z-index:3; margin:auto ; font-size:10px;'> 
+          <div class='row'> 
+            <div class='col'><b>{{ Reservation.user }}</b></div>
+          </div>
+          <div class='row'> 
+            <div class='col'>{{ Reservation.kommen|date("H:i") }}</div><div class='col' style="padding-left: 0px;">{{ Reservation.pax }} Pax</div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %} 
+  </div >   
+<div style='display: flex;    flex-direction: row-reverse;    justify-content: space-between;'>
+    <div class='card bg-success draggable border-primary mb-3' id='Res_WalkIn' name= 'Res_WalkIn' style=' max-width: 5rem;z-index:3;  font-size:10px;'> 
+    <div class='row'> 
+            <div class='col'><b>Walkin</b></div>
+          </div>
+          <div class='row'> 
+            <div class='col'></div>
+          </div>
+    </div>
+      <div>
+    {% for Area in Areas %}
+        <a class='btn btn-info area_btn' href="area_{{Area.id}}">{{Area.name}}</a>
+    {% endfor %}
+    </div>
+</div>
+         
+    {% for Area in Areas %}
+        <div class="page" id="area_{{Area.id}}" 
+            {% if Area.size is not empty %} 
+                style="background-size: cover; background-image: url('{{asset('images/' ~ Area.map)}}'); height: {{ Area.size['height'] }}; width: {{ Area.size['width'] }};"
+            {% else %} 
+                style="background-size: cover; background-image: url('{{asset('images/' ~ Area.map)}}'); height: 200px; width: 200px;"
+            {% endif %}>
+            {% for rentItem in Area.RentItems %}
+                <div id="Tab{{ rentItem.id }}" class="tabel Items" 
+                    {% if rentItem.position is not empty %} 
+                        style="z-index:1; width: 100px;    border: 1px solid black;top: {{ rentItem.position['top'] }}; left: {{ rentItem.position['left'] }};height: {{ rentItem.size['height'] }}; width: {{ rentItem.size['width'] }};"
+                    {% else %} 
+                        style="z-index:1;top: 0px; left: 0px; border: 1px solid black;"
+                    {% endif %}>
+                    
+                    {% for Reservation in Reservations %} 
+                          {% if (Reservation.status is not null) and (Reservation.aktiv is null) %}
+                            {% if Reservation.item_id == rentItem.id %}
+                                <div class='card draggable bg-success border-primary mb-3' id='Res{{ Reservation.id }}' name= '{{ Reservation.item_id }}'style='max-width: 5rem; margin:auto ; font-size:10px;z-index:3;'> 
+                                <div class='row'> 
+                              <div class='col'><b>{{ Reservation.user }}</b></div>
+                              </div>
+                            <div class='row'> 
+                              <div class='col'>{{ Reservation.kommen|date("H:i") }}</div><div class='col' style="padding-left: 0px;">{{ Reservation.pax }} Pax</div>
+                            </div>
+                          </div>
+                            {% endif %}
+                          {% endif %}
+                      {% endfor %} 
+                </div>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+

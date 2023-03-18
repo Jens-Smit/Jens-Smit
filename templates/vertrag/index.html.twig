@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello VertragController!{% endblock %}
+
+{% block body %}
+ <div class="container mt-4">
+        <h1 class="mb-4">Verträge</h1>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Titel</th>
+                    <th>Objekt</th>
+                    <th>Beschreibung</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vertrag in vertraege %}
+                    <tr>
+                        <td>{{ vertrag.titel }}</td>
+                        <td>{{ vertrag.objekt.name }}</td>
+                        <td>{{ vertrag.discription }}</td>
+                        <td><a href="{{ path('app_vertrag_show', {'id': vertrag.id}) }}">show</a>
+                    <a href="{{ path('app_vertrag_edit', {'id': vertrag.id}) }}">edit</a>
+                    </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">Keine Verträge gefunden.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Neuen Vertrag erstellen{% endblock %}
+
+{% block body %}
+    <h1>Neuen Vertrag erstellen</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.titel) }}
+    {{ form_row(form.discription) }}
+    {{ form_row(form.objekt) }}
+    {{ form_row(form.text) }}
+    <div class="form-group">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#varModal">
+      Variablen einfügen
+    </button>
+        <button type="submit" class="btn btn-primary">Vertrag erstellen</button>
+    </div>
+    {{ form_end(form) }}
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="varModal" tabindex="-1" role="dialog" aria-labelledby="varModalLabel" aria-hidden="true">
+     <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="varModalLabel">Variablen einfügen</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Klicken Sie auf eine Variable, um sie in den Vertragstext einzufügen:</p>
+            
+            {% for variable in variablen %}
+                <a href="#" class="variable-link" data-insert-var="{{ variable.name }}">{{variable.var}}</a>
+            {% endfor %}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+        </div>
+        </div>
+        </div>
+    </div>
+
+
+    
+{% endblock %}
+

@@ -10,6 +10,7 @@
         "doctrine/doctrine-bundle": "^2.7",
         "doctrine/doctrine-migrations-bundle": "^3.2",
         "doctrine/orm": "^2.13",
+        "dompdf/dompdf": "^2.0",
         "easycorp/easyadmin-bundle": "^4.6",
         "friendsofsymfony/ckeditor-bundle": "^2.4",
         "sensio/framework-extra-bundle": "^6.2",
@@ -33,6 +34,7 @@
         "symfony/twig-bundle": "6.1.*",
         "symfony/validator": "6.1.*",
         "symfony/yaml": "6.1.*",
+        "tecnickcom/tcpdf": "^6.6",
         "twbs/bootstrap-icons": "^1.9",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"

@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Recomonsation{% endblock %}
+
+{% block body %}
+    <h1>Create new Recomonsation</h1>
+
+    {{ include('recomonsation/_form.html.twig') }}
+
+    <a class="btn w-100 btn-info" href="{{ path('app_recomonsation_index') }}">back to list</a>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <h1>{{ vertrag.titel }}</h1>
+                <h5>{{ vertrag.discription }}</h5>
+                <p>{{ vertrag.text|raw  }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

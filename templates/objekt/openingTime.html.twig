@@ -1,0 +1,116 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Objekt{% endblock %}
+
+{% block body %}
+
+
+    <div class="container">
+<h1>Opening Times</h1>
+        {{ form_start(form) }}
+            
+                {{ form_widget(form.day) }}
+                {{ form_widget(form.start) }}
+                {{ form_widget(form.end) }}
+                {{ form_widget(form.effective_date) }}
+                <div style='display:none;'> {{ form_widget(form.objekt) }}</div>
+                <button class="w-100 d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Save') }}</button>
+           
+        {{ form_end(form) }}
+    </div>
+    <div class="container">
+        
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>day</th>
+                    <th>von</th>
+                    <th>bis</th> 
+                </tr>
+            </thead>
+            <tbody>
+                {% for openingTime in openingTimes %}
+                <tr>
+                
+                    {% if openingTime.day == 0 %}
+                        <td>Sonntag</td>
+                    {% endif %}
+                    {% if openingTime.day == 1 %}
+                        <td>Montag</td>
+                    {% endif %}
+                    {% if openingTime.day == 2 %}
+                        <td>Dienstag</td>
+                    {% endif %}
+                    {% if openingTime.day == 3 %}
+                        <td>Mitwoch</td>
+                    {% endif %}
+                    {% if openingTime.day == 4 %}
+                        <td>Donnerstag</td>
+                    {% endif %}
+                    {% if openingTime.day == 5 %}
+                        <td>Freitag</td>
+                    {% endif %}
+                    {% if openingTime.day == 6 %}
+                        <td>Samstag</td>
+                    {% endif %}
+                
+                    <td>{{ openingTime.start |date('H:i')  }}</td>
+                    <td>{{ openingTime.end |date('H:i') }}</td>
+                
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+ <div class="container">
+ <h1> Special Opening Times</h1>
+<div class="container">
+{{ form_start(Sform) }}
+    
+        {{ form_widget(Sform.day) }}
+        {{ form_widget(Sform.start) }}
+        {{ form_widget(Sform.end) }}
+        {{ form_widget(Sform.close) }}
+        <button class="w-100 d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Save') }}</button>
+   
+   
+
+{{ form_end(form) }}
+</div>
+   <table class="table">
+        <thead>
+            <tr>
+               
+                <th>day</th>
+                <th>von</th>
+                <th>bis</th>
+                <th>Geschlossen</th>
+                <th>Aktion</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+{% for SpecialOpeningTime in SpecialOpeningTimes %}
+            <tr>
+                 <td>{{ SpecialOpeningTime.day |date('d.m.Y')}}</td>
+                {% if SpecialOpeningTime.close ==1 %}
+                <td>-</td>
+                <td>-</td>
+                <td>close</td>
+                {% else %}
+                <td>{{ SpecialOpeningTime.start |date('H:i')  }}</td>
+                <td>{{ SpecialOpeningTime.end |date('H:i') }}</td>
+                <td>open</td>
+                {% endif %}
+                <td> 
+                 <a href="{{ path('app_objekt_opening_delat', {'id': SpecialOpeningTime.id}) }}">löschen</a>
+                </td>
+                
+            </tr>
+{% endfor %}
+        </tbody>
+    </table>
+ </div>
+
+
+{% endblock %}

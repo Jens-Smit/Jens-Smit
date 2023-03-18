@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ItemCategories index{% endblock %}
+
+{% block body %}
+    <h1>ItemCategories index</h1>
+
+    <table class="table" style="color: var(--text-color);">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Booktime</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item_category in item_categories %}
+            <tr>
+                <td>{{ item_category.id }}</td>
+                <td>{{ item_category.name }}</td>
+                <td>{{ item_category.booktime }}</td>
+                <td>
+                    <a href="{{ path('app_item_categories_show', {'id': item_category.id}) }}">show</a>
+                    <a href="{{ path('app_item_categories_edit', {'id': item_category.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_item_categories_new') }}">Create new</a>
+{% endblock %}

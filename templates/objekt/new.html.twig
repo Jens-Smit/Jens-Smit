@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Objekt{% endblock %}
+
+{% block body %}
+    <h1>Create new Objekt</h1>
+
+    {{ include('objekt/_form.html.twig') }}
+
+    <a class="btn w-100 btn-info" href="{{ path('app_objekt_index') }}">back to list</a>
+{% endblock %}

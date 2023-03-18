@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RentItems{% endblock %}
+
+{% block body %}
+    <h1>RentItems</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ rent_item.id }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ rent_item.name }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_rent_items_index') }}">back to list</a>
+
+    <a href="{{ path('app_rent_items_edit', {'id': rent_item.id}) }}">edit</a>
+
+    {{ include('rent_items/_delete_form.html.twig') }}
+{% endblock %}

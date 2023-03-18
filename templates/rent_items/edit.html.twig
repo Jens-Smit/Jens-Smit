@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit RentItems{% endblock %}
+
+{% block body %}
+    <h1>Edit RentItems</h1>
+
+    {{ include('rent_items/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a class="btn btn-info w-100" href="{{ path('app_rent_items_index') }}">back to list</a>
+
+    {{ include('rent_items/_delete_form.html.twig') }}
+{% endblock %}

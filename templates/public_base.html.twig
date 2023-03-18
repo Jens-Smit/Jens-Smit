@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Welcome{% endblock %}</title>
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+  <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
+  <link rel="stylesheet" href="{{asset('css/all.min.css')}}">
+<script src="{{asset('jquery-3.5.1.slim.min.js')}}" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+
+  <!-- Bootstrap CSS
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous" />
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+
+ -->
+ <style>
+#sidebar.sidebar-collapsed {
+  width: 40px;
+}
+
+#sidebar.sidebar-collapsed .nav-item a {
+  
+  width: 40px;
+}
+
+
+
+</style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">My Website</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">About</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Contact</a>
+      </li>
+    </ul>
+  </div>
+  <ul class="navbar-nav ml-auto">
+    <li class="nav-item dropdown">
+    {% if is_granted('IS_AUTHENTICATED_FULLY')  %}
+      <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {{ app.user.vorname }}
+      </a>
+      <div class="dropdown-menu" style="position: absolute;    margin: 0px 0px 0px -100px" aria-labelledby="userDropdown">
+        
+        <a class="dropdown-item" href="{{path('app_logout')}}">Logout</a>
+        <a class="dropdown-item" href="{{path('app_user_index')}}">Settings</a>
+      </div>
+        
+      {% else %}
+      <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-user"></i>
+      </a>
+      <div class="dropdown-menu" style="position: absolute;    margin: 0px 0px 0px -100px" aria-labelledby="userDropdown">
+        
+        <a class="dropdown-item" href="{{path('app_login')}}">Login</a>
+        <a class="dropdown-item" href="{{path('reg')}}">Registrieren</a>
+      </div>
+      <!-- alt -->
+      
+      {% endif %}
+    </li>
+  </ul>
+</nav>
+
+  
+  <!-- Page -->
+  <div class="container-fluid">
+          <!-- Content -->
+      <div class="container">
+         {% block body %}{% endblock %}
+      </div>
+  </div>
+  
+  <!-- Footer -->
+  <footer class="bg-light py-3 mt-5">
+    <div class="container">
+      <p>Copyright &copy; Meine Website 2021</p>
+    </div>
+  </footer>
+  
+ <!-- 
+ <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+ 
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+ -->
+ <script src="{{asset('js/jquery-3.5.1.slim.min.js')}}"></script>
+
+	<script src="{{asset('js/bootstrap.min.js')}}"></script>
+   
+	<script src="{{asset('js/jquery-3.6.1.js')}}"></script>
+<script>
+$(document).ready(function() {
+$('#sidebar').addClass('sidebar-collapsed');
+ $(".link_text").hide();
+ 
+  $('#sidebar_toggle').click(function() {
+  
+    if($('#sidebar').hasClass('sidebar-collapsed')) {
+      $('#sidebar').removeClass('sidebar-collapsed');
+	  $(".link_text").show();
+	  $("#silebar_icon").removeClass('fa-chevron-right').addClass('fa-chevron-left');
+    } else {
+      $('#sidebar').addClass('sidebar-collapsed');
+	  $(".link_text").hide();
+	  $("#silebar_icon").removeClass('fa-chevron-left').addClass('fa fa-chevron-right');
+    }
+  });
+});
+
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Objekt index{% endblock %}
+
+{% block body %}
+
+ 
+    <h1>Objekt index </h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Adresse</th>
+                <th>Ort</th>
+                <th>Plz</th>
+                
+               
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for objekt in objekts %}
+            <tr>
+                <td>{{ objekt.id }}</td>
+                <td> <a href="{{ path('app_objekt_show', {'id': objekt.id}) }}">{{ objekt.name }}</a></td>
+                <td>{{ objekt.adresse }}</td>
+                <td>{{ objekt.ort }}</td>
+                <td>{{ objekt.plz }}</td>
+                
+                
+                <td>
+                    <a href="{{ path('app_objekt_show', {'id': objekt.id}) }}">show</a>
+                    <a href="{{ path('app_objekt_edit', {'id': objekt.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="15">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" href="{{ path('app_objekt_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Objekt{% endblock %}
+
+{% block body %}
+    <div class="container">
+    <div class="row  gx-2">
+        
+    
+        
+        <div class="col p-3 col-sm-6 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <blockquote class="blockquote">
+                        <h1>{{ objekt.name }}</h1>
+                        <img  src="{{asset('images/' ~ objekt.bild)}}" class=" img-fluid" >
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+        <div class="col p-3 col-sm-6 col-12">
+            <div class="card">
+                <div class="card-body">
+                    <blockquote class="blockquote">
+                    <a class="btn w-100 btn-info" href="{{ path('app_objekt_opening', {'id': objekt.id}) }}">Opening Times</a>
+                     <a class="btn w-100 btn-info" href="{{ path('rent_items', {'id': objekt.id}) }}">Areas &amp Itams</a>
+                    
+                    </blockquote>
+                </div>
+            </div> 
+        </div>
+     <div class="col p-3 col-sm-6 col-12 w-100">
+            <div class="card">
+                <div class="card-body">
+                    <blockquote class="blockquote">
+        
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th>Id</th>
+                                    <td>{{ objekt.id }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td>{{ objekt.name }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Adresse</th>
+                                    <td>{{ objekt.adresse }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ort</th>
+                                    <td>{{ objekt.ort }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Plz</th>
+                                    <td>{{ objekt.plz }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Main_mail</th>
+                                    <td>{{ objekt.mainMail }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Website</th>
+                                    <td>{{ objekt.website }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Telefon</th>
+                                    <td>{{ objekt.telefon }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fax</th>
+                                    <td>{{ objekt.fax }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Bestellung_mail</th>
+                                    <td>{{ objekt.bestellungMail }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fibi_mail</th>
+                                    <td>{{ objekt.fibiMail }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Ust_id</th>
+                                    <td>{{ objekt.ustId }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Handelsregister</th>
+                                    <td>{{ objekt.Handelsregister }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Amtsgericht</th>
+                                    <td>{{ objekt.Amtsgericht }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <a class=" w-100 btn btn-primary " href="{{ path('app_objekt_edit', {'id': objekt.id}) }}">edit</a>
+                    </blockquote>
+                </div>
+            </div> 
+        </div>
+    </div>
+    </div>
+    {{ include('objekt/_delete_form.html.twig') }}
+   
+{% endblock %}

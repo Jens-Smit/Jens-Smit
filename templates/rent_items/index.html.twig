@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RentItems index{% endblock %}
+
+{% block body %}
+    <h1>RentItems index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for rent_item in rent_items %}
+            <tr>
+                <td>{{ rent_item.id }}</td>
+                <td>{{ rent_item.name }}</td>
+                <td>
+                    <a href="{{ path('app_rent_items_show', {'id': rent_item.id}) }}">show</a>
+                    <a href="{{ path('app_rent_items_edit', {'id': rent_item.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_rent_items_new') }}">Create new</a>
+{% endblock %}

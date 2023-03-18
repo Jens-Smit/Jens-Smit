@@ -1,0 +1,43 @@
+{% extends 'public_base.html.twig' %}
+
+{% block title %}Recomonsation index{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1>Neu Recomonsation</h1>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+
+    <h1>Recomonsations</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Points</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for recomonsation in recomonsations %}
+            <tr>
+                <td>{{ recomonsation.id }}</td>
+                <td>{{ recomonsation.points }}</td>
+                <td>
+                    <a href="{{ path('app_recomonsation_show', {'id': recomonsation.id}) }}">show</a>
+                    <a href="{{ path('app_recomonsation_edit', {'id': recomonsation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_recomonsation_new') }}">Create new</a>
+</div>
+{% endblock %}

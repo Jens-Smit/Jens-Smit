@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<h1>Dokument Upload von {{ user.vorname }} {{ user.nachname }}</h1>
+    
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button type="submit" class="btn btn-primary w-100">Save</button>
+    {{ form_end(form) }}
+{% endblock %}

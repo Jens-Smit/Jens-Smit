@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controller;
-
+use TCPDF;
 use App\Entity\User;
 use App\Entity\UserContrectData;
 use App\Entity\UserDokumente;
@@ -326,8 +326,9 @@ class UserController extends AbstractController
 
             
             $text = implode("\n\n", array_column($replacedContracts, 'text'));
+               
             $form = $this->createFormBuilder(null, [
-                'action' => $this->generateUrl('contrect_save')
+                'action' => $this->generateUrl('app_user_contrect_save', ['id' => $user->getId()])
             ])
             ->add('text', CKEditorType::class, [
                 'data' => $text,
@@ -354,8 +355,40 @@ class UserController extends AbstractController
         
     }
     #[Route('/{id}/contrect_save', name: 'app_user_contrect_save', methods: ['GET', 'POST'])]
-    public function contrect_save( User $user, Request $request, ManagerRegistry $doctrine)
+    public function contrect_save( User $user, Request $request)
     {
+        
+        $password = 'texmex';
+        $form = $request->get('form');
+        $text = $form['text'];
+
+        // Erstelle TCPDF-Objekt
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        // Setze Dokumentinformationen
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Jens Smit');
+        $pdf->SetTitle('Document');
+        $pdf->SetSubject('Document subject');
+        $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
+
+        // Setze Passwort
+        $pdf->SetProtection(['print', 'copy'], $password);
+
+        // Füge Seite hinzu
+        $pdf->AddPage();
+
+        // Schreibe Text auf PDF
+        // Schreibe HTML-Text auf PDF
+        $html = '<html><body>' . $text . '</body></html>';
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        // Ausgabe PDF
+        $pdf->Output($this->getParameter('kernel.project_dir').'/public/data/testsave.pdf', 'F');
+
+        return $this->render('user/contrect_save.html.twig', [
+            'text' => $text
+        ]);
 
     }
     // Hilfsfunktion zum Lesen der Eigenschaft eines Objekts

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  {% for contract in contracts %}
+    <div class="contract d-none">
+    {% set contractText = contract.text %}
+      {% for userContractData in user.contractData  %}
+        
+        {% for variable in variablen %}
+        
+            {% set varName =  variable.var  %}
+          
+           
+
+    {% if variable.entity == 'User' %}
+            {% set varValue = attribute(user, varName) %}
+    {% elseif variable.entity == 'ContractData' %}
+            {% set varValue = attribute(userContractData, varName) %}
+    {% endif %}
+
+   
+        {% set contractText = contractText|replace({(variable.name): varValue}) %}
+        {% endfor %}
+
+        {{ contractText|raw }}
+      {% endfor %}
+    </div>
+  {% endfor %}
+  {{ form_start(form) }}
+   {{ form_widget(form) }}
+{{ form_end(form) }}
+ <script>
+
+    var contractElements = document.getElementsByClassName("contract");
+   
+    for (var i = 0; i < contractElements.length; i++) {
+      var contractText = contractElements[i].innerHTML;
+       
+      contractText = contractText.replace(/<span style="background-color:yellow">([^<]+)<\/span>/g, '$1');
+    
+      contractElements[i].innerHTML = contractText;
+      var editor = CKEDITOR.instances.form_text;
+                
+       editor.setData(contractText);       
+    }
+  </script>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ContractData index{% endblock %}
+
+{% block body %}
+    <h1>ContractData index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>StartDate</th>
+                <th>SingDate</th>
+                <th>Lohn</th>
+                <th>Stunden</th>
+                <th>EndDate</th>
+                <th>Urlaub</th>
+                <th>Bezeichnung</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for contract_datum in contract_datas %}
+            <tr>
+                <td>{{ contract_datum.id }}</td>
+                <td>{{ contract_datum.startDate ? contract_datum.startDate|date('Y-m-d') : '' }}</td>
+                <td>{{ contract_datum.singDate ? contract_datum.singDate|date('Y-m-d') : '' }}</td>
+                <td>{{ contract_datum.lohn }}</td>
+                <td>{{ contract_datum.stunden }}</td>
+                <td>{{ contract_datum.endDate ? contract_datum.endDate|date('Y-m-d') : '' }}</td>
+                <td>{{ contract_datum.Urlaub }}</td>
+                <td>{{ contract_datum.bezeichnung }}</td>
+                <td>
+                    <a href="{{ path('app_contract_data_show', {'id': contract_datum.id}) }}">show</a>
+                    <a href="{{ path('app_contract_data_edit', {'id': contract_datum.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_contract_data_new') }}">Create new</a>
+{% endblock %}
