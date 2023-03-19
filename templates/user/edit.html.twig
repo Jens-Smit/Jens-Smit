@@ -3,61 +3,90 @@
 {% block title %}Edit User{% endblock %}
 
 {% block body %}
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Vertragsdaten</h5>
+                <button type="button" id="modalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()"></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Hier wird der Inhalt von app_user_contrect geladen -->
+            </div>
+        </div>
+    </div>
+</div>
+
     <h1>User bearbeiten</h1>
-    <div class="group w-100 d-flex flex-wrap justify-content-between ">
-    <div class="btn-group w-50" role="group" aria-label="Basic checkbox toggle button group">
-        <a href="{{ path('app_user_document_list', {'id': user.id}) }}" class="btn btn-primary"> Dokumente</a>
-        <a href="" class="btn btn-primary"> Aktion</a>
-        <a href="" class="btn btn-primary"> Dienstplan</a>
-    </div>
-    <div class="card text-right">
-     
-      <div class="card-body">
-        
-        <a class ='btn btn-sm btn-primary shadow-sm'href="{{ path('app_contract_data_new') }}">
-        <i class="fa fa-plus" aria-hidden="true"></i></a>
-               
-     <table class="table w-100">
-   
-        <thead>
-            <tr>  
-                <th>Bezeichnung</th>
-                <th>Start</th>
-                <th>Ende</th>
-                <th>Actions</th>
-                
-            </tr>
-        </thead>
-        <tbody>
-          {% for contract in user.contractData %}
-            <tr>
-                <td>{{ contract.bezeichnung }}</td>
-                <td>{{ contract.startDate|date('Y-m-d') }}</td>
-                 {% if contract.endDate is null %}
-                  <td> Aktiv</td>
-                {% else %}
-                   <td> {{ contract.endDate|date('Y-m-d') }}</td>
-                {% endif %}
-                
-                
-                <td>
-                    <a href="{{ path('app_contract_data_show', {'id': contract.id}) }}">show</a>
-                    <a href="{{ path('app_user_contrect', {'id': user.id}) }}">print</a>
-                </td>
-            </tr>
-        
-           
-        {% endfor %}
-        </tbody>
-        </table>
+    <div class="group w-100 d-flex flex-wrap justify-content-around ">
+
     
-      </div>
-    </div>
+        <!-- Vertragsdaten-->
+        <div class="card text-right">
+        
+        <div class="card-body">
+            <h5>Vertragsdaten</h5>
+            <a class ='btn btn-sm btn-primary shadow-sm'href="{{ path('app_contract_data_new') }}">
+            <i class="fa fa-plus" aria-hidden="true"></i></a>
+                
+        <table class="table w-100">
     
+            <thead>
+                <tr>  
+                    
+                    <th>Start</th>
+                    <th>Ende</th>
+                    <th>Actions</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+            {% for contract in user.contractData %}
+                <tr>
+                    
+                    <td><a href="{{ path('app_contract_data_show', {'id': contract.id}) }}">{{ contract.startDate|date('Y-m-d') }}</a></td>
+                    {% if contract.endDate is null %}
+                    <td> Aktiv</td>
+                    {% else %}
+                    <td> {{ contract.endDate|date('Y-m-d') }}</td>
+                    {% endif %}
+                    
+                    
+                    <td>
+                    
+                        <a href="#" onclick="openModal({{ user.id }})">print</a>
+                    </td>
+                </tr>
+            
+            
+            {% endfor %}
+            </tbody>
+            </table>
+        
+        </div>
+        </div>
+        <!-- Dokumente-->
+        <div class="card text-right">
+        <div class="card-body">
+        <!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
+        {% include 'user/dokumente.html.twig' with {'id': user.id, 'dokumente': dokumente} %}
+        </div>
+        </div>
+
    </div>
     {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
     <br>
     <a class='d-none w-100 d-sm-inline-block btn btn-sm btn-primary shadow-sm'href="{{ path('app_user_index') }}">zurück</a>
 <br><br>
     {{ include('user/_delete_form.html.twig') }}
+    <script>
+    function printDocument(url) {
+    window.open(url, '_blank', 'width=600,height=400');
+}
+    </script>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/modal.js') }}"></script>
 {% endblock %}

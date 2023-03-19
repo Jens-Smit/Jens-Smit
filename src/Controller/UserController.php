@@ -15,6 +15,7 @@ use App\Form\UserDokumenteType;
 use App\Repository\ContractDataRepository;
 use App\Repository\UserDokumenteRepository;
 use App\Repository\UserRepository;
+use App\Repository\VertragRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -198,16 +199,18 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, UserRepository $userRepository): Response
+    public function edit(Request $request, User $user, UserRepository $userRepository, UserDokumenteRepository $userDokumenteRepository): Response
     {
         $users = $this->container->get('security.token_storage')->getToken()->getUser();
         if ( $users->getCompany()->getId() == $user->getCompany()->getId() AND in_array("ROLE_HR", $users->getRoles())){
             //dump($user);
             $form = $this->createForm(UserType::class, $user);
             $form->handleRequest($request);
+            $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
             return $this->render('user/edit.html.twig', [
                 'user' => $user,
                 'form' => $form->createView(),
+                'dokumente' =>  $dokumente,
             ]);  
         }
         else{ 
@@ -232,15 +235,16 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
            $titel =  $form->get('titel')->getData();
-           $date = time();
+           $date = date("Y-m-d",time());
 
             $document->setUser($user);
             $document->setUplodeTime(new \DateTime());
            
             $file = $form->get('path')->getData();
-            $filename = $titel."_".$date;
-            $path = 'images/user/dokumente/'.$user;
-            $file->move($path, $filename);
+            $filename = $titel."_".$date.".pdf";
+            $path = 'data/'.$user->getId();
+            $move_path= 'data/'.$user->getId();
+            $file->move($move_path, $filename);
             $document->setPath($path . '/' . $filename);
             
             $entityManager = $doctrine->getManager();
@@ -255,18 +259,18 @@ class UserController extends AbstractController
             'user' => $user,
         ]);
     }
-    #[Route('/{id}/document_show', name: 'app_user_document_list')]
+    #[Route('/{id}/document_show', name: 'app_user_document_list', methods: ['GET', 'POST'])]
  
     public function dokumenteAnzeigen(User $user,UserDokumenteRepository $userDokumenteRepository )
-{
-    $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
-    return $this->render('user/dokumente.html.twig', [
-        'dokumente' => $dokumente,
-        'user' => $user,
-    ]);
-}
+    {
+        $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
+        return $this->render('user/dokumente.html.twig', [
+            'dokumente' => $dokumente,
+            'user' => $user,
+        ]);
+    }
     #[Route('/{id}/edit-role', name: 'edit_role', methods: ['GET', 'POST'])]
-    public function editRole(User $user, Request $request,ManagerRegistry $doctrine, UserPasswordHasherInterface $passwordEncoder)
+    public function editRole(User $user, Request $request,ManagerRegistry $doctrine)
     {
         // nur an die ROLE_USER Role Freigegeben
         $this->denyAccessUnlessGranted('ROLE_USER', $user);
@@ -295,7 +299,9 @@ class UserController extends AbstractController
     {
          // nur an die ROLE_USER Role Freigegeben
          $this->denyAccessUnlessGranted('ROLE_USER', $user);
-         $form = $this->createFormBuilder()
+         $form = $this->createFormBuilder(null, [
+            'action' => $this->generateUrl('app_user_contrect', ['id' => $user->getId()])
+        ])
          ->add('Vertrag', EntityType::class,[
              'class' => Vertrag::class])
          ->add('show', SubmitType::class)
@@ -354,13 +360,16 @@ class UserController extends AbstractController
         ]);
     }
     #[Route('/{id}/contrect_save', name: 'app_user_contrect_save', methods: ['GET', 'POST'])]
-    public function contrect_save( User $user, Request $request)
+    public function contrect_save( User $user, Request $request, ManagerRegistry $doctrine, VertragRepository $vertragRepository)
     {
         
         $password = 'texmex';
         $form = $request->get('form');
         $text = $form['text'];
         $contract = $form['contract'];
+        $vertrag = $vertragRepository->find($contract);
+
+        
         // Erstelle TCPDF-Objekt
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         // Setze Dokumentinformationen
@@ -388,14 +397,24 @@ class UserController extends AbstractController
             mkdir($path, 0755, true);
         }
         // Ausgabe PDF
-        $pdf->Output($path.'/'.$contract.'_'.date("Y-m-d",time()).'.pdf', 'F');
+        $pdf->Output($path.'/'.$vertrag->getTitel().'_'.date("Y-m-d",time()).'.pdf', 'F');
         // setze den Status der Vertragsdaten auf 1 -> 1 = Aktiv , 0 = Entwurf
+        $document = new UserDokumente();
+      
+        $document->setDiscription($vertrag->getDiscription());
+        $document->setTitel($vertrag->getTitel());
+        $document->setUser($user);
+        $document->setUplodeTime(new \DateTime());
+        $path = 'data/'.$user->getId();
+        $document->setPath($path.'/'.$vertrag->getTitel().'_'.date("Y-m-d",time()).'.pdf');
+        $entityManager = $doctrine->getManager();
+        $entityManager->persist($document);
+        $entityManager->flush();
+      
         
-      
-      
-        return $this->render('user/contrect_save.html.twig', [
-            'text' => $text
-        ]);
+
+        // Leite auf andere Route weiter
+        return $this->redirectToRoute('app_user_edit', ['id' => $user->getId()]);
 
     }
     // Hilfsfunktion zum Lesen der Eigenschaft eines Objekts
