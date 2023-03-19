@@ -43,6 +43,11 @@ class ContractData
     #[ORM\Column(length: 255)]
     private ?string $bezeichnung = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $status = null;
+    
+    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -159,5 +164,17 @@ class ContractData
     public function __toString()
     {
         return $this->bezeichnung;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?int $status): self
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }

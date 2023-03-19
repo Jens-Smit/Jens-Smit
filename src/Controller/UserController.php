@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Controller;
+
+
 use TCPDF;
 use App\Entity\User;
 use App\Entity\UserContrectData;
@@ -10,6 +12,7 @@ use App\Entity\VertragVariable;
 use App\Form\EditRoleType;
 use App\Form\UserType;
 use App\Form\UserDokumenteType;
+use App\Repository\ContractDataRepository;
 use App\Repository\UserDokumenteRepository;
 use App\Repository\UserRepository;
 use Symfony\Component\HttpFoundation\Response;
@@ -360,7 +363,6 @@ class UserController extends AbstractController
         $contract = $form['contract'];
         // Erstelle TCPDF-Objekt
         $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
-
         // Setze Dokumentinformationen
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('Jens Smit');
@@ -387,6 +389,10 @@ class UserController extends AbstractController
         }
         // Ausgabe PDF
         $pdf->Output($path.'/'.$contract.'_'.date("Y-m-d",time()).'.pdf', 'F');
+        // setze den Status der Vertragsdaten auf 1 -> 1 = Aktiv , 0 = Entwurf
+        
+      
+      
         return $this->render('user/contrect_save.html.twig', [
             'text' => $text
         ]);
