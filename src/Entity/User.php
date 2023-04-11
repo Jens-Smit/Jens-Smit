@@ -79,12 +79,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ContractData::class, orphanRemoval: true)]
     private Collection $contractData;
 
+   
+
   
     public function __construct()
     {
         $this->companies = new ArrayCollection();
         $this->userDokumentes = new ArrayCollection();
         $this->contractData = new ArrayCollection();
+    
     }
 
     public function getId(): ?int
@@ -428,4 +431,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+   
+
+   
 }

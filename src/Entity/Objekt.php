@@ -84,6 +84,7 @@ class Objekt
     #[ORM\OneToMany(mappedBy: 'objekt', targetEntity: Vertrag::class, orphanRemoval: true)]
     private Collection $vertrags;
 
+  
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -92,6 +93,7 @@ class Objekt
         $this->specialOpeningTimes = new ArrayCollection();
         $this->areas = new ArrayCollection();
         $this->vertrags = new ArrayCollection();
+       
     }
 
     public function getId(): ?int
@@ -486,4 +488,7 @@ class Objekt
 
         return $this;
     }
+
+
+   
 }

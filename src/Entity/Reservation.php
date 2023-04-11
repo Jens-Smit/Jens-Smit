@@ -3,24 +3,27 @@
 namespace App\Entity;
 
 use App\Repository\ReservationRepository;
+use ApiPlatform\Metadata\ApiResource;
 use Doctrine\DBAL\Types\Types;
-
-
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
+
 class Reservation
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    
     private ?string $user = null;
 
     /**
@@ -29,31 +32,40 @@ class Reservation
 
     #[Assert\DateTime()]
     #[ORM\Column (type: 'datetime')]
+  
     private  $kommen = null;
     #[Assert\DateTime()]
     #[ORM\Column(type: 'datetime')]
+    #[Groups(['Reservation:list', 'conference:item'])]
     private  $gehen = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
+   
     private ?RentItems $item = null;
 
     #[ORM\Column(length: 255)]
+   
     private ?string $pax = null;
 
     #[ORM\Column(length: 255)]
+   
     private ?string $fon = null;
 
     #[ORM\Column(length: 255)]
+ 
     private ?string $mail = null;
     
     #[ORM\Column(nullable: true)]
+
     private ?int $points = null;
 
     #[ORM\Column(length: 32, nullable: true)]
+  
     private ?string $status = null;
 
     #[ORM\Column(length: 32, nullable: true)]
+  
     private ?string $aktiv = null;
 
 
