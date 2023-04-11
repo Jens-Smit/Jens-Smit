@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dienste index{% endblock %}
+
+{% block body %}
+    <h1>Dienste index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Kommen</th>
+                <th>Gehen</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dienste in dienstes %}
+            <tr>
+                <td>{{ dienste.id }}</td>
+                <td>{{ dienste.kommen ? dienste.kommen|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ dienste.gehen ? dienste.gehen|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_dienste_show', {'id': dienste.id}) }}">show</a>
+                    <a href="{{ path('app_dienste_edit', {'id': dienste.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_dienste_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dienstplan{% endblock %}
+
+{% block body %}
+    <h1>Dienstplan</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ dienstplan.id }}</td>
+            </tr>
+            <tr>
+                <th>Bezeichnung</th>
+                <td>{{ dienstplan.bezeichnung }}</td>
+            </tr>
+            <tr>
+                <th>Start</th>
+                <td>{{ dienstplan.start ? dienstplan.start|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Ende</th>
+                <td>{{ dienstplan.ende ? dienstplan.ende|date('Y-m-d') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table>
+    <thead>
+        <tr>
+            <th></th> <!--Leere erste Zelle in der Kopfzeile -->
+            {% for dienst in dienstplan.dienste %}
+                <th>{{ dienst.kommen | date("Y-m-d") }}</th> <!-- Datum als Kopfzeile -->
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user }}</td> <!-- Benutzername in der ersten Spalte -->
+                {% for dienst in dienstplan.dienste %}
+                    {% if dienst.user == user %}
+                        <td>{{ dienst.kommen | date("H:i") }} - {{ dienst.gehen | date("H:i") }}</td> <!-- Uhrzeiten als Zellenwerte -->
+                    {% else %}
+                        <td></td> <!-- Leere Zelle für Tage, an denen der Benutzer keinen Dienst hat -->
+                    {% endif %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+    <a href="{{ path('app_dienstplan_index') }}">back to list</a>
+
+    <a href="{{ path('app_dienstplan_edit', {'id': dienstplan.id}) }}">edit</a>
+
+    {{ include('dienstplan/_delete_form.html.twig') }}
+{% endblock %}

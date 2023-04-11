@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Fehlzeiten{% endblock %}
+
+{% block body %}
+    <h1>Create new Fehlzeiten</h1>
+
+    {{ include('fehlzeiten/_form.html.twig') }}
+
+    <a href="{{ path('app_fehlzeiten_index') }}">back to list</a>
+{% endblock %}

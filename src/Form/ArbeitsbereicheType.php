@@ -2,21 +2,17 @@
 
 namespace App\Form;
 
+use App\Entity\Arbeitsbereiche;
 use App\Entity\Company;
 use App\Entity\Objekt;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
-
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
-class ObjektType extends AbstractType
-
+class ArbeitsbereicheType extends AbstractType
 {   private $doctrine;
     private $tokenStorage;
     public function __construct(TokenStorageInterface $tokenStorage,ManagerRegistry $doctrine)
@@ -24,49 +20,33 @@ class ObjektType extends AbstractType
         $this->tokenStorage = $tokenStorage;
         $this->doctrine = $doctrine;
     }
-
-    public function buildForm( FormBuilderInterface $builder, array $options): void
-    {
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {   
         $user = $this->tokenStorage->getToken()->getUser();
         //companys des benutzers ermitteln -admin einer Company
         $companies = $this->doctrine->getRepository(Company::class)->findBy(['onjekt_admin' => $user]);
-
+         
         foreach ($companies as $company) {
-            $choices[$company->getName()] = $company;
+            $objekts = $this->doctrine->getRepository(Objekt::class)->findBy(['company' => $company->getId()]);
+            foreach ($objekts as $objekt) {
+            $choices[$objekt->getName()] = $objekt;
+            }
         }
-        
-    
         $builder
-            ->add('name')
-            ->add('adresse')
-            ->add('ort')
-            ->add('bild', FileType::class,array(
-                'data_class' => null
-            ))
-            ->add('plz')
-            ->add('main_mail')
-            ->add('website')
-            ->add('telefon')
-            ->add('fax')
-            ->add('bestellung_mail')
-            ->add('fibi_mail')
-            ->add('ust_id')
-            ->add('Handelsregister')
-            ->add('Amtsgericht')
-            ->add('company', ChoiceType::class, [
+            ->add('Bezeichnung')
+            ->add('objekt', ChoiceType::class, [
                 'choices' => $choices,
                 'expanded' => true,
                 'multiple' => false,
-                'label' => 'company',
-            ])
-        ;
+                'label' => 'Objekt',
+            ]);
+        
     }
-    
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Objekt::class,
+            'data_class' => Arbeitsbereiche::class,
         ]);
     }
 }

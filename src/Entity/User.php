@@ -79,6 +79,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ContractData::class, orphanRemoval: true)]
     private Collection $contractData;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Dienste::class)]
+    private Collection $dienste;
+
    
 
   
@@ -87,6 +90,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->companies = new ArrayCollection();
         $this->userDokumentes = new ArrayCollection();
         $this->contractData = new ArrayCollection();
+        $this->dienste = new ArrayCollection();
     
     }
 
@@ -426,6 +430,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($contractData->getUser() === $this) {
                 $contractData->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dienste>
+     */
+    public function getDienste(): Collection
+    {
+        return $this->dienste;
+    }
+
+    public function addDienste(Dienste $dienste): self
+    {
+        if (!$this->dienste->contains($dienste)) {
+            $this->dienste->add($dienste);
+            $dienste->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDienste(Dienste $dienste): self
+    {
+        if ($this->dienste->removeElement($dienste)) {
+            // set the owning side to null (unless already changed)
+            if ($dienste->getUser() === $this) {
+                $dienste->setUser(null);
             }
         }
 

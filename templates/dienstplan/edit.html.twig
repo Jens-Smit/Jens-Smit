@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Dienstplan{% endblock %}
+
+{% block body %}
+    <h1>Edit Dienstplan</h1>
+
+    {{ include('dienstplan/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_dienstplan_index') }}">back to list</a>
+
+    {{ include('dienstplan/_delete_form.html.twig') }}
+{% endblock %}

@@ -84,6 +84,12 @@ class Objekt
     #[ORM\OneToMany(mappedBy: 'objekt', targetEntity: Vertrag::class, orphanRemoval: true)]
     private Collection $vertrags;
 
+    #[ORM\OneToMany(mappedBy: 'Objket', targetEntity: Dienstplan::class, orphanRemoval: true)]
+    private Collection $dienstplans;
+
+    #[ORM\OneToMany(mappedBy: 'objekt', targetEntity: Arbeitsbereiche::class)]
+    private Collection $arbeitsbereiche;
+
   
     public function __construct()
     {
@@ -93,6 +99,8 @@ class Objekt
         $this->specialOpeningTimes = new ArrayCollection();
         $this->areas = new ArrayCollection();
         $this->vertrags = new ArrayCollection();
+        $this->dienstplans = new ArrayCollection();
+        $this->arbeitsbereiche = new ArrayCollection();
        
     }
 
@@ -483,6 +491,66 @@ class Objekt
             // set the owning side to null (unless already changed)
             if ($vertrag->getObjekt() === $this) {
                 $vertrag->setObjekt(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dienstplan>
+     */
+    public function getDienstplans(): Collection
+    {
+        return $this->dienstplans;
+    }
+
+    public function addDienstplan(Dienstplan $dienstplan): self
+    {
+        if (!$this->dienstplans->contains($dienstplan)) {
+            $this->dienstplans->add($dienstplan);
+            $dienstplan->setObjket($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDienstplan(Dienstplan $dienstplan): self
+    {
+        if ($this->dienstplans->removeElement($dienstplan)) {
+            // set the owning side to null (unless already changed)
+            if ($dienstplan->getObjket() === $this) {
+                $dienstplan->setObjket(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Arbeitsbereiche>
+     */
+    public function getArbeitsbereiche(): Collection
+    {
+        return $this->arbeitsbereiche;
+    }
+
+    public function addArbeitsbereiche(Arbeitsbereiche $arbeitsbereiche): self
+    {
+        if (!$this->arbeitsbereiche->contains($arbeitsbereiche)) {
+            $this->arbeitsbereiche->add($arbeitsbereiche);
+            $arbeitsbereiche->setObjekt($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArbeitsbereiche(Arbeitsbereiche $arbeitsbereiche): self
+    {
+        if ($this->arbeitsbereiche->removeElement($arbeitsbereiche)) {
+            // set the owning side to null (unless already changed)
+            if ($arbeitsbereiche->getObjekt() === $this) {
+                $arbeitsbereiche->setObjekt(null);
             }
         }
 

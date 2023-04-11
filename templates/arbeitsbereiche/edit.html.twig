@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Arbeitsbereiche{% endblock %}
+
+{% block body %}
+    <h1>Edit Arbeitsbereiche</h1>
+
+    {{ include('arbeitsbereiche/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_arbeitsbereiche_index') }}">back to list</a>
+
+    {{ include('arbeitsbereiche/_delete_form.html.twig') }}
+{% endblock %}

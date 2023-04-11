@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Dienstplan{% endblock %}
+
+{% block body %}
+    <h1>Create new Dienstplan</h1>
+
+    {{ include('dienstplan/_form.html.twig') }}
+
+    <a href="{{ path('app_dienstplan_index') }}">back to list</a>
+{% endblock %}

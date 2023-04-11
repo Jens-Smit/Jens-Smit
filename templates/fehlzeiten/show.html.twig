@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fehlzeiten{% endblock %}
+
+{% block body %}
+    <h1>Fehlzeiten</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ fehlzeiten.id }}</td>
+            </tr>
+            <tr>
+                <th>Bezeichnung</th>
+                <td>{{ fehlzeiten.bezeichnung }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_fehlzeiten_index') }}">back to list</a>
+
+    <a href="{{ path('app_fehlzeiten_edit', {'id': fehlzeiten.id}) }}">edit</a>
+
+    {{ include('fehlzeiten/_delete_form.html.twig') }}
+{% endblock %}
