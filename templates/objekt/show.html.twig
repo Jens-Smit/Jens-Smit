@@ -3,6 +3,20 @@
 {% block title %}Objekt{% endblock %}
 
 {% block body %}
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" id="modalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()"></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Hier wird der Inhalt von app_user_contrect geladen -->
+            </div>
+        </div>
+    </div>
+</div>
     <div class="container">
     <div class="row  gx-2">
         
@@ -23,13 +37,13 @@
                 <div class="card-body">
                     <blockquote class="blockquote">
                     <a class="btn w-100 btn-info" href="{{ path('app_objekt_opening', {'id': objekt.id}) }}">Opening Times</a>
-                     <a class="btn w-100 btn-info" href="{{ path('rent_items', {'id': objekt.id}) }}">Areas &amp Itams</a>
-                    
+                    <a class="btn w-100 btn-info" href="{{ path('rent_items', {'id': objekt.id}) }}">Areas &amp Itams</a>
+                    <a class ='btn w-100 btn-info' href="#" onclick="openModal_objekt_dienstplan({{ objekt.id }})">Dienstplan</a>
                     </blockquote>
                 </div>
             </div> 
         </div>
-     <div class="col p-3 col-sm-6 col-12 w-100">
+        <div class="col p-3 col-sm-6 col-12 w-100">
             <div class="card">
                 <div class="card-body">
                     <blockquote class="blockquote">
@@ -99,8 +113,15 @@
                 </div>
             </div> 
         </div>
-    </div>
+        </div>
     </div>
     {{ include('objekt/_delete_form.html.twig') }}
    
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/modal.js') }}"></script>
+    
+    
+
 {% endblock %}

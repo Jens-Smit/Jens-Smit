@@ -82,6 +82,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Dienste::class)]
     private Collection $dienste;
 
+    #[ORM\ManyToMany(targetEntity: Dienstplan::class, mappedBy: 'user')]
+    private Collection $dienstplans;
+
    
 
   
@@ -91,6 +94,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->userDokumentes = new ArrayCollection();
         $this->contractData = new ArrayCollection();
         $this->dienste = new ArrayCollection();
+        $this->dienstplans = new ArrayCollection();
     
     }
 
@@ -461,6 +465,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             if ($dienste->getUser() === $this) {
                 $dienste->setUser(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dienstplan>
+     */
+    public function getDienstplans(): Collection
+    {
+        return $this->dienstplans;
+    }
+
+    public function addDienstplan(Dienstplan $dienstplan): self
+    {
+        if (!$this->dienstplans->contains($dienstplan)) {
+            $this->dienstplans->add($dienstplan);
+            $dienstplan->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDienstplan(Dienstplan $dienstplan): self
+    {
+        if ($this->dienstplans->removeElement($dienstplan)) {
+            $dienstplan->removeUser($this);
         }
 
         return $this;

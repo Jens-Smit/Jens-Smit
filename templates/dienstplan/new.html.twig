@@ -1,11 +1,54 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}New Dienstplan{% endblock %}
 
 {% block body %}
+<h1>Dienstplan index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Bezeichnung</th>
+                <th>Start</th>
+                <th>Ende</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for dienstplan in dienstplans %}
+            <tr>
+                <td>{{ dienstplan.id }}</td>
+                <td>{{ dienstplan.bezeichnung }}</td>
+                <td>{{ dienstplan.start ? dienstplan.start|date('Y-m-d') : '' }}</td>
+                <td>{{ dienstplan.ende ? dienstplan.ende|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_dienstplan_show', {'id': dienstplan.id}) }}">show</a>
+                    <a href="{{ path('app_dienstplan_edit', {'id': dienstplan.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+ <a class="toggle-edit btn-info btn" href="#">new</a>
+<div class="edit">
     <h1>Create new Dienstplan</h1>
 
     {{ include('dienstplan/_form.html.twig') }}
 
-    <a href="{{ path('app_dienstplan_index') }}">back to list</a>
+   
+</div>
+{% endblock %}
+{% block javascripts %}
+   
+    <script>
+        $(document).ready(function() {
+            $('.edit').toggle();
+            $('.toggle-edit').click(function(e) {
+                e.preventDefault();
+                $('.edit').toggle();
+            });
+        });
+    </script>
 {% endblock %}

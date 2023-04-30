@@ -4,7 +4,8 @@
 
 {% block body %}
     <h1>Edit Dienstplan</h1>
-
+<a class=" dienst_item btn btn-info m-1" href="{{ path('app_edit_Dienste_PV', {'id': dienstplan.id}) }}">
+Vorschläge bearbeiten</a>
     {{ include('dienstplan/_form.html.twig', {'button_label': 'Update'}) }}
 
     <a href="{{ path('app_dienstplan_index') }}">back to list</a>

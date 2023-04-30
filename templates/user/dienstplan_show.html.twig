@@ -1,0 +1,9 @@
+
+{% block body %}
+   <div class="container">
+   {% for dienstplan in dienstplans %}
+    
+    {{ dienstplan.bezeichnung }}
+{% endfor %}
+    </div>
+{% endblock %}

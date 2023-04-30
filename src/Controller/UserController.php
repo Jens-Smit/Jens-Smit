@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-
+use App\Entity\Dienstplan;
+use App\Entity\Objekt;
 use TCPDF;
 use App\Entity\User;
 use App\Entity\UserContrectData;
@@ -225,6 +226,58 @@ class UserController extends AbstractController
             $userRepository->save($user, true);
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
+    }
+    #[Route('/{id}/dienstplan', name: 'app_user_dienstplan', methods: ['GET', 'POST'])]
+    public function dienstplan(Request $request,User $user, ManagerRegistry $doctrine): Response
+    {    
+        $entityManager = $doctrine->getManager();
+        $objekts = $entityManager->getRepository(Objekt::class)->findBy(['company' => $user->getCompany()->getId()]);
+        $choices_dienstplan = [];
+        foreach ($objekts as $objekt) {
+            $objektId = $objekt->getId();
+            $dienstplans = $doctrine->getRepository(Dienstplan::class)->findBy(["Objket"=>$objektId]);
+            foreach ($dienstplans as $dienstplan) {
+                $choices_dienstplan[$dienstplan->getBezeichnung()] = $dienstplan;
+            }
+          
+        }
+      // dump($choices_dienstplan);
+    
+        
+        $form = $this->createFormBuilder()
+        
+        ->add('dienstplan', ChoiceType::class, [
+            'choices' => $choices_dienstplan,
+            'expanded' => true,
+            'multiple' => false,
+            'label' => 'Dienstplan',
+        ])
+        ->add('submit', SubmitType::class)
+        ->getForm();
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->getData();
+            $dienstplan = $data['dienstplan'];
+            $user->addDienstplan($dienstplan);
+            $entityManager = $doctrine->getManager();
+            $entityManager->flush();
+          
+        return $this->redirectToRoute('app_user_show', ['id' => $user->getId]);
+        }
+        return $this->render('user/dienstplan.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
+    }
+    #[Route('/{id}/dienstplan_show', name: 'app_user_dienstplan_show', methods: ['GET', 'POST'])]
+    public function dienstplan_show(User $user, ManagerRegistry $doctrine): Response
+    {    
+         $dienstplan = $user->getDienstplans();
+        
+        return $this->render('user/dienstplan_show.html.twig', [
+            
+            'dienstplans' => $dienstplan,
+        ]);
     }
     #[Route('/{id}/document', name: 'app_user_document', methods: ['GET', 'POST'])]
     public function document(Request $request, User $user, ManagerRegistry $doctrine): Response

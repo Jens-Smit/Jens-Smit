@@ -153,27 +153,27 @@
 {% block javascripts %}
     {{ parent() }}
     
-   <script src="{{ asset('js/modal.js') }}"></script>
+   <!-- <script src="{{ asset('js/modal.js') }}"></script>-->
  <script>
     
              
 
     
-   $('form[name="dienste"]').submit(handleFormSubmit);
+  //  $('form[name="dienste"]').submit(handleFormSubmit);
     $( document ).ready(function() {
     
             var tableWrapper = $('#table-wrapper');
 			var tableContainer = $('#table-div-container');
 			var tableWidth = tableWrapper.width();
 			var visibleWidth = tableContainer.width();
-			var pos = scrollTable();
-            
+			//var pos = scrollTable();
+            var pos = 0 ;
             console.log(pos);
 			var btn_area = $('#btn_area').width();
 
             pos -= visibleWidth-btn_area-10;
 			tableWrapper.css('left', pos);
-            $('.dienst_delate').click(function() {  saveScrollPosition();             });
+         //   $('.dienst_delate').click(function() {  saveScrollPosition();             });
 			$('#prev-button').click(function() {
 				if (pos < 0) {
 					pos += visibleWidth-btn_area-10;

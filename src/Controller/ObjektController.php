@@ -3,17 +3,21 @@
 namespace App\Controller;
 
 use App\Entity\Area;
+use App\Entity\Dienstplan;
 use App\Entity\Objekt;
 use App\Entity\OpeningTime;
 use App\Entity\RentItems;
 use App\Entity\SpecialOpeningTime;
 use App\Form\AreaType;
+use App\Form\DienstplanType;
 use App\Form\ObjektType;
 use App\Form\OpeningTimeType;
 use App\Form\RentItemsType;
 use App\Form\SpecialOpeningTimeType;
 use App\Repository\AreaRepository;
 use App\Repository\CompanyRepository;
+use App\Repository\DiensteRepository;
+use App\Repository\DienstplanRepository;
 use App\Repository\ItemCategoriesRepository;
 use App\Repository\ObjektRepository;
 use App\Repository\OpeningTimeRepository;
@@ -341,6 +345,28 @@ class ObjektController extends AbstractController
                 'objekt' => $objektRepository->find(0)
             ]); 
         }
+    }
+    #[Route('/{id}/dienstplan', name: 'app_objekt_dienstplan', methods: ['GET', 'POST'])]
+    public function dienstplan(Objekt $Objekt,DienstplanRepository $dienstplanRepository, Request $request  ): Response
+    {
+        $dienstplan = new Dienstplan();
+        $dienstplan->setObjket($Objekt);
+        $form = $this->createForm(DienstplanType::class, $dienstplan);
+        $form->handleRequest($request);
+        $dienstplans = $Objekt->getDienstplans();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $dienstplanRepository->save($dienstplan, true);
+
+            return $this->redirectToRoute('app_dienstplan_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('dienstplan/new.html.twig', [
+            'dienstplans' => $dienstplans,
+            'dienstplan' => $dienstplan,
+            'form' => $form,
+        ]);
+
+       
     }
     #[Route('/{id}/edit', name: 'app_objekt_edit', methods: ['GET', 'POST'])]
     public function edit(Objekt $Objekt,CompanyRepository $companyRepository, Request $request  ,ObjektRepository $objektRepository): Response

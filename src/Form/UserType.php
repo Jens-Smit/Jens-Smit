@@ -3,8 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Company;
+use App\Entity\Dienstplan;
 use App\Entity\Objekt;
 use App\Entity\User;
+use App\Repository\DienstplanRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -45,6 +47,8 @@ class UserType extends AbstractType
         foreach ($objekts as $objekt) {
             $choices_objekt[$objekt->getName()] = $objekt;
         }
+       
+
         $builder
             ->add('email')
             ->add('vorname')
@@ -71,7 +75,9 @@ class UserType extends AbstractType
                 'multiple' => false,
                 'label' => 'Company',
             ])
+           
         ;
+        
     }
 
     public function configureOptions(OptionsResolver $resolver): void

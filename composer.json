@@ -16,6 +16,7 @@
         "easycorp/easyadmin-bundle": "^4.6",
         "firebase/php-jwt": "^6.4",
         "friendsofsymfony/ckeditor-bundle": "^2.4",
+        "guzzlehttp/guzzle": "^7.5",
         "lexik/jwt-authentication-bundle": "^2.18",
         "nelmio/cors-bundle": "^2.3",
         "phpdocumentor/reflection-docblock": "^5.3",

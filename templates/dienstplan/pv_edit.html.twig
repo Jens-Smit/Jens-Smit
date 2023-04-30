@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Dienstplan bearbeiten</h1>
+    {{ form_start(form) }}
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Kommen</th>
+                <th>Gehen</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for id, dienst in form.vars.value %}
+                <tr>
+                    <td>{{ form_widget(dienst.kommen, {'attr': {'class': 'form-control'}}) }}</td>
+                    <td>{{ form_widget(dienst.gehen, {'attr': {'class': 'form-control'}}) }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {{ form_row(form.save) }}
+    {{ form_end(form) }}
+{% endblock %}
+

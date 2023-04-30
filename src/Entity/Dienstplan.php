@@ -34,9 +34,17 @@ class Dienstplan
     #[ORM\OneToMany(mappedBy: 'Dienstplan', targetEntity: Dienste::class)]
     private Collection $dienste;
 
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'dienstplans')]
+    private Collection $user;
+    
+    public function __toString()
+    {
+        return $this->bezeichnung;
+    }
     public function __construct()
     {
         $this->dienste = new ArrayCollection();
+        $this->user = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -118,6 +126,30 @@ class Dienstplan
                 $dienste->setDienstplan(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUser(): Collection
+    {
+        return $this->user;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->user->contains($user)) {
+            $this->user->add($user);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        $this->user->removeElement($user);
 
         return $this;
     }

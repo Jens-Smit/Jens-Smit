@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Dienstplan{% endblock %}
+{% block stylesheets %}
+  {{ parent() }}
+    <style>
+    
+    </style>
+{% endblock %}
+{% block body %}
+    <h1>Edit Dienstvorschläge</h1>
+
+    {{ include('dienstplan/_form.html.twig') }}
+
+    <a href="{{ path('app_dienstplan_index') }}">back to list</a>
+
+   
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }} 
+    <script src="{{ asset('js/modal.js') }}"></script>
+    <script>
+        $( document ).ready(function() {
+        groupFieldsets();
+        $('.card-body').toggle();
+        
+            $('.card-header').click(function(){
+               
+                $(this).parent().find('.card-body').toggle();
+            })
+        })
+    </script>
+{% endblock %}

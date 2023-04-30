@@ -1,0 +1,39 @@
+
+{% block body %}
+<h2>Dienste</h2>
+<div class="geplant">
+    {% for dienst in plan_dienste %}
+        <div class="card text-left">
+          <div class="card-body">
+            {{ dienst.kommen|date("H:i")}}-{{ dienst.gehen|date("H:i") }} <a  id="{{dienst.id}}" class="btn btn-info dienst_delate" href="{{ path('app_dienste_delete', {'id': dienst.id}) }}" ><i class="fa fa-trash" aria-hidden="true"></i></a>
+          </div>
+        </div>
+        
+    {% endfor %}
+</div>
+<h2>Vorschläge</h2>
+ <div class="dienste" >
+ 
+   {% for data in datas %}
+        <div class=" dienst_item btn btn-info m-1" onclick="send_data(event)" data-kommen="{{ data.kommen}}" data-gehen="{{ data.gehen}}">
+         
+            {{ data.kommen}}-{{ data.gehen }} 
+         
+        </div>
+        
+    {% endfor %}
+ <a class=" dienst_item btn btn-info m-1" href="{{ path('app_edit_Dienste_PV', {'id': dienste.Dienstplan.id}) }}">+ </a>
+ </div> 
+ <h2>Manuel</h2>
+{{ form_start(form) }}
+    {{ form_errors(form) }}
+
+    {{ form_row(form.kommen) }}
+    {{ form_row(form.gehen) }}
+    {{ form_widget(form.user) }}
+    {{ form_widget(form.dienstplan) }}
+    {{ form_widget(form.save) }}
+{{ form_end(form) }}
+   
+
+{% endblock %}

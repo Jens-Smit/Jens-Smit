@@ -8,7 +8,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Vertragsdaten</h5>
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
                 <button type="button" id="modalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()"></button>
             </div>
             <div class="modal-body" id="modal-body">
@@ -73,7 +73,16 @@
         {% include 'user/dokumente.html.twig' with {'id': user.id, 'dokumente': dokumente} %}
         </div>
         </div>
-
+        <!-- Dienstplan-->
+        <div class="card text-right">
+        <div class="card-body">
+        <h5>Dienstplan</h5>
+        <!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
+          <a class ='btn btn-sm btn-primary shadow-sm' href="#" onclick="openModal1({{ user.id }})"><i class="fa fa-plus" aria-hidden="true"></i></a>
+         {% include 'user/dienstplan_show.html.twig' with {'id': user.id, 'dienstplans':user.dienstplans} %}
+      
+        </div>
+        </div>
    </div>
     {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
     <br>
