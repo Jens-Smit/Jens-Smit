@@ -13,6 +13,7 @@ use App\Entity\VertragVariable;
 use App\Form\EditRoleType;
 use App\Form\UserType;
 use App\Form\UserDokumenteType;
+use App\Repository\CompanyRepository;
 use App\Repository\ContractDataRepository;
 use App\Repository\UserDokumenteRepository;
 use App\Repository\UserRepository;
@@ -40,17 +41,36 @@ use Symfony\Config\Framework\MailerConfig;
 #[Route('/user')]
 class UserController extends AbstractController
 {
+   
+    
+        
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository, AuthenticationUtils $authenticationUtils): Response
+    public function index(UserRepository $userRepository, CompanyRepository $companyRepository): Response
     {
         //aktuelle benutzer
         // Aktuellen Benutzer abrufen
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         if (in_array("ROLE_HR", $user->getRoles())){
-            $Company_id= $user->getCompany()->getId();
-        
+            $users =[];
+            $userId = $user->getId();
+            if ($user->getCompany() !== null) {
+                $Company_id = $user->getCompany()->getId();
+                $users = $userRepository->findBy(['company' => $Company_id ]);
+            }
+          
+
+            
+            
+            $admins = $companyRepository->findBy(['onjekt_admin' =>  $userId ]) ;
+            foreach ($admins as $admin) {
+             $adminUser   = $admin->getOnjektAdmin();
+             $users[] = $adminUser ;
+            
+            }
+            $users = array_unique($users);
+            
               return $this->render('user/index.html.twig', [
-                  'users' => $userRepository->findBy(['company' => $Company_id ]),
+                  'users' => $users,
                   
               ]);       
         }
@@ -61,14 +81,31 @@ class UserController extends AbstractController
            
          }
     }
+
+
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, UserRepository $userRepository): Response
-    {
+    public function new(Request $request, UserPasswordHasherInterface $passEncoder,UserRepository $userRepository): Response
+    { 
+        function generateRandomString($length) {
+            $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()';
+            $randomString = '';
+        
+            for ($i = 0; $i < $length; $i++) {
+                $randomString .= $characters[rand(0, strlen($characters) - 1)];
+            }
+        
+            return $randomString;
+          }
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $eingabe = generateRandomString(8);
+            $user->setPassword(
+                $passEncoder->hashPassword($user, $eingabe)
+            );
+
             $userRepository->save($user, true);
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);

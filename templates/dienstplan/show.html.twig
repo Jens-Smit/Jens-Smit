@@ -1,3 +1,7 @@
+
+
+
+
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
   {{ parent() }}
@@ -6,6 +10,8 @@
         #table-div-container {
 			width: 600px;
 			overflow: hidden;
+            margin:auto;
+            border-radius:15px;
 		}
 		#table-wrapper {
 			width: 1425px;
@@ -17,13 +23,15 @@
 			width: 600px;
 			border-collapse: collapse;
 		}
-		
+		#table-wrapper tr{
+            border:2px solid gainsboro;
+        }
 		#table-wrapper th, #table-wrapper td {
 			padding: 4px;
-			border: 1px solid black;
+			
 			text-align: center;
             min-width:75px;
-			
+		
 		}
       
         
@@ -75,7 +83,7 @@
 {% set nextWeek = "now"|date_modify('+1 week')|date('W', 'Europe/Berlin') %}
 {% set nextSunday = nextMonday|date_modify("+6 days") %}
     <h1>Dienstplan {{ dienstplan.bezeichnung }}</h1>
-    {{previousMonday|date("d-m-Y")}}
+   
 <div id='table' > 
 <div id="table-div-container">
 		<div id="table-wrapper">
@@ -126,7 +134,7 @@
                             {% set backgroundColor = "lightcoral" %}
                         {% endif %}
                     {% endfor %}
-                    <td onclick="openModal__addDienste({{dienstplan.id}}, '{{date|date('Y-m-d')}}', '{{user}}')" style="background-color: {{ backgroundColor }};">
+                    <td style="background-color: {{ backgroundColor }};">
                         {% for dienst in dienstplan.dienste %}    
                             {% if dienst.user == user and date|date("Y-m-d") == dienst.kommen|date("Y-m-d") %} 
                                 <div class="card text-left">
@@ -144,54 +152,34 @@
 </table>
 </div>
 </div>
-    <a href="{{ path('app_dienstplan_index') }}">back to list</a>
-
-    <a href="{{ path('app_dienstplan_edit', {'id': dienstplan.id}) }}">edit</a>
-
-    {{ include('dienstplan/_delete_form.html.twig') }}
+  
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
     
-   <script src="{{ asset('js/modal.js') }}"></script>
+   <!-- <script src="{{ asset('js/modal.js') }}"></script>-->
  <script>
-    
-             
-
-    
-   $('form[name="dienste"]').submit(handleFormSubmit);
     $( document ).ready(function() {
-    
-            var tableWrapper = $('#table-wrapper');
-			var tableContainer = $('#table-div-container');
-			var tableWidth = tableWrapper.width();
-			var visibleWidth = tableContainer.width();
-			var pos = scrollTable();
-            
-            console.log(pos);
-			var btn_area = $('#btn_area').width();
-
-            pos -= visibleWidth-btn_area-10;
-			tableWrapper.css('left', pos);
-            $('.dienst_delate').click(function() {  saveScrollPosition();             });
-			$('#prev-button').click(function() {
-				if (pos < 0) {
-					pos += visibleWidth-btn_area-10;
-					tableWrapper.css('left', pos);
-				}
-               
-			});
-			
-			$('#next-button').click(function() {
-				if (pos > -(tableWidth - visibleWidth)) {
-					pos -= visibleWidth-btn_area-10;
-					tableWrapper.css('left', pos);
-				} 
-                
-			});
-    
-    
+        var tableWrapper = $('#table-wrapper');
+        var tableContainer = $('#table-div-container');
+        var tableWidth = tableWrapper.width();
+        var visibleWidth = tableContainer.width();
+        var pos = 0 ;
+        var btn_area = $('#btn_area').width();
+        pos -= visibleWidth-btn_area-10;
+        tableWrapper.css('left', pos);
+        $('#prev-button').click(function() {
+            if (pos < 0) {
+                pos += visibleWidth-btn_area-10;
+                tableWrapper.css('left', pos);
+            }
+        });
+        $('#next-button').click(function() {
+            if (pos > -(tableWidth - visibleWidth)) {
+                pos -= visibleWidth-btn_area-10;
+                tableWrapper.css('left', pos);
+            }    
+        });
     })
-
  </script>
 {% endblock %}

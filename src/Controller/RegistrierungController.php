@@ -45,10 +45,11 @@ class RegistrierungController extends AbstractController
                 $user->setPassword(
                     $passEncoder->hashPassword($user, $eingabe['password'])
                 );
+                $user->setRoles(["ROLE_USER","ROLE_ADMIN"]);
                 $em=$doctrine->getManager();
                 $em->persist($user);
                 $em->flush();
-                return $this->redirect($this->generateUrl('home'));
+                return $this->redirect($this->generateUrl('app_login'));
         }
         return $this->render('registrierung/index.html.twig', [
            'regform' => $regform->createView()

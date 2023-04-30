@@ -19,7 +19,7 @@
         {% for dienstplan in dienstplans %}
             <tr>
                 <td>{{ dienstplan.id }}</td>
-                <td>{{ dienstplan.bezeichnung }}</td>
+                <td><a href="{{ path('app_dienstplan_create', {'id': dienstplan.id}) }}">{{ dienstplan.bezeichnung }}</a></td>
                 <td>{{ dienstplan.start ? dienstplan.start|date('Y-m-d') : '' }}</td>
                 <td>{{ dienstplan.ende ? dienstplan.ende|date('Y-m-d') : '' }}</td>
                 <td>

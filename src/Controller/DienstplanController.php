@@ -155,7 +155,7 @@ class DienstplanController extends AbstractController
       
     }
     #[Route('/{id}', name: 'app_dienstplan_show', methods: ['POST','GET'])]
-    public function show(Dienstplan $dienstplan, Request $request, UserRepository $userRepository): Response
+    public function show(Dienstplan $dienstplan): Response
     {
         $filePath = $this->getFilePath($dienstplan->getId());
         $data = json_decode(file_get_contents($filePath), true);
@@ -182,7 +182,34 @@ class DienstplanController extends AbstractController
             'kw' => $kw,
         ]);
     }
-    
+    #[Route('/{id}/create', name: 'app_dienstplan_create', methods: ['POST','GET'])]
+    public function create(Dienstplan $dienstplan): Response
+    {
+        $filePath = $this->getFilePath($dienstplan->getId());
+        $data = json_decode(file_get_contents($filePath), true);
+        $kw = date("W");
+        $users = $dienstplan->getUser();
+        $client = new Client();
+         // Make GET request to Nager.Date API
+        $response = $client->request('GET', 'https://date.nager.at/api/v3/publicholidays/2023/DE');
+
+        // Decode JSON response
+        $holidays = json_decode($response->getBody()->getContents(), true);
+
+        // Create array of holidays with date as key and name as value
+        $formattedHolidays = [];
+        foreach ($holidays as $holiday) {
+            $formattedHolidays[$holiday['date']] = $holiday['name'];
+        }
+
+        return $this->render('dienstplan/create.html.twig', [
+            'holidays'=> $formattedHolidays,
+            'data' => $data,
+            'users'      =>  $users,
+            'dienstplan' => $dienstplan,
+            'kw' => $kw,
+        ]);
+    }
     #[Route('/{id}/edit', name: 'app_dienstplan_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Dienstplan $dienstplan, DienstplanRepository $dienstplanRepository): Response
     {

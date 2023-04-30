@@ -1,11 +1,13 @@
 {% extends 'base.html.twig' %}
 {% block stylesheets %}
   {{ parent() }}
-    <style>
+   <style>
     
         #table-div-container {
 			width: 600px;
 			overflow: hidden;
+            margin:auto;
+            border-radius:15px;
 		}
 		#table-wrapper {
 			width: 1425px;
@@ -17,13 +19,15 @@
 			width: 600px;
 			border-collapse: collapse;
 		}
-		
+		#table-wrapper tr{
+            border:2px solid gainsboro;
+        }
 		#table-wrapper th, #table-wrapper td {
 			padding: 4px;
-			border: 1px solid black;
+			
 			text-align: center;
             min-width:75px;
-			
+		
 		}
       
         
@@ -74,10 +78,11 @@
 {% set previousSunday = previousMonday|date_modify("+6 days") %}
 {% set nextWeek = "now"|date_modify('+1 week')|date('W', 'Europe/Berlin') %}
 {% set nextSunday = nextMonday|date_modify("+6 days") %}
+ <div class='container'>
     <h1>Dienstplan {{ dienstplan.bezeichnung }}</h1>
-    {{previousMonday|date("d-m-Y")}}
+   
 <div id='table' > 
-<div id="table-div-container">
+<div id="table-div-container" >
 		<div id="table-wrapper">
 <table id='table-container'>
     <thead>
@@ -144,36 +149,33 @@
 </table>
 </div>
 </div>
-    <a href="{{ path('app_dienstplan_index') }}">back to list</a>
-
-    <a href="{{ path('app_dienstplan_edit', {'id': dienstplan.id}) }}">edit</a>
-
-    {{ include('dienstplan/_delete_form.html.twig') }}
+  
+    </div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
     
-   <!-- <script src="{{ asset('js/modal.js') }}"></script>-->
+   <script src="{{ asset('js/modal.js') }}"></script>
  <script>
     
              
 
     
-  //  $('form[name="dienste"]').submit(handleFormSubmit);
+   $('form[name="dienste"]').submit(handleFormSubmit);
     $( document ).ready(function() {
     
             var tableWrapper = $('#table-wrapper');
 			var tableContainer = $('#table-div-container');
 			var tableWidth = tableWrapper.width();
 			var visibleWidth = tableContainer.width();
-			//var pos = scrollTable();
-            var pos = 0 ;
+			var pos = scrollTable();
+            
             console.log(pos);
 			var btn_area = $('#btn_area').width();
 
             pos -= visibleWidth-btn_area-10;
 			tableWrapper.css('left', pos);
-         //   $('.dienst_delate').click(function() {  saveScrollPosition();             });
+            $('.dienst_delate').click(function() {  saveScrollPosition();             });
 			$('#prev-button').click(function() {
 				if (pos < 0) {
 					pos += visibleWidth-btn_area-10;
@@ -195,3 +197,5 @@
 
  </script>
 {% endblock %}
+
+
