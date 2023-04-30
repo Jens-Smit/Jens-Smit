@@ -85,6 +85,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Dienstplan::class, mappedBy: 'user')]
     private Collection $dienstplans;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Arbeitszeit::class)]
+    private Collection $arbeitszeits;
+
    
 
   
@@ -95,6 +98,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->contractData = new ArrayCollection();
         $this->dienste = new ArrayCollection();
         $this->dienstplans = new ArrayCollection();
+        $this->arbeitszeits = new ArrayCollection();
     
     }
 
@@ -492,6 +496,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->dienstplans->removeElement($dienstplan)) {
             $dienstplan->removeUser($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Arbeitszeit>
+     */
+    public function getArbeitszeits(): Collection
+    {
+        return $this->arbeitszeits;
+    }
+
+    public function addArbeitszeit(Arbeitszeit $arbeitszeit): self
+    {
+        if (!$this->arbeitszeits->contains($arbeitszeit)) {
+            $this->arbeitszeits->add($arbeitszeit);
+            $arbeitszeit->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArbeitszeit(Arbeitszeit $arbeitszeit): self
+    {
+        if ($this->arbeitszeits->removeElement($arbeitszeit)) {
+            // set the owning side to null (unless already changed)
+            if ($arbeitszeit->getUser() === $this) {
+                $arbeitszeit->setUser(null);
+            }
         }
 
         return $this;

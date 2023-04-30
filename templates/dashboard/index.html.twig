@@ -9,12 +9,60 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/xampp/htdocs/vision_gastro/src/Controller/DashboardController.php'|file_link(0) }}">src/Controller/DashboardController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/xampp/htdocs/vision_gastro/templates/dashboard/index.html.twig'|file_link(0) }}">templates/dashboard/index.html.twig</a></code></li>
-    </ul>
+    <h1> {{ controller_name }}! </h1>
+    <div class="card text-left">
+        <div class="card-body">
+        <h4 class="card-title" id='CheckIn'>Title</h4>
+        
+      </div>
+    </div>
+   
 </div>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+ 
+ <script>
+   // Vordefinierte Koordinaten des Standorts
+   
+const targetLat = 51.049372790658;
+const targetLng = 13.741302024057;
+
+// Abruf der aktuellen Position des Benutzers
+navigator.geolocation.getCurrentPosition(position => {
+  const userLat = position.coords.latitude;
+  const userLng = position.coords.longitude;
+
+  // Berechnung der Entfernung zwischen den beiden Koordinaten
+  const distance = getDistanceFromLatLonInKm(userLat, userLng, targetLat, targetLng);
+
+  // Überprüfen, ob die Entfernung kleiner als 1 km ist (Benutzer ist am Standort)
+  if (distance < 0.2) {
+    $('#CheckIn').html('✅ Du bist am Standort!');
+   
+  } else {
+     $('#CheckIn').html('Du bist nicht am Standort deine Entfernmung beträgt '+distance+' Km ');
+  }
+});
+
+// Funktion zur Berechnung der Entfernung zwischen zwei Koordinaten (in Kilometern)
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Radius der Erde in km
+  const dLat = deg2rad(lat2 - lat1);
+  const dLon = deg2rad(lon2 - lon1);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const d = R * c; // Entfernung in km
+  return d;
+}
+
+// Funktion zur Konvertierung von Grad in Bogenmaß
+function deg2rad(deg) {
+  return deg * (Math.PI / 180)
+}
+
+ </script>
 {% endblock %}
