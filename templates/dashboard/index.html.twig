@@ -1,18 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DashboardController!{% endblock %}
+{% block title %}Your Dashboard{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+
 
 <div class="example-wrapper">
-    <h1> {{ controller_name }}! </h1>
-    <div class="card text-left">
-        <div class="card-body">
-        <h4 class="card-title" id='CheckIn'>Title</h4>
+    
+    <div class="card text-center">
+        <div class="card-body" id='UserCheck'>
+        <h4 class="card-title" id='CheckIn'></h4>
         
       </div>
     </div>
@@ -22,47 +19,118 @@
 {% block javascripts %}
     {{ parent() }}
  
- <script>
-   // Vordefinierte Koordinaten des Standorts
-   
-const targetLat = 51.049372790658;
-const targetLng = 13.741302024057;
+  <script>
+    // Vordefinierte Koordinaten des Standorts
+  
+  function userCheckIn(){
+         $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
+    
+            console.log('userCheckIn');
+          $.ajax({
+              url: "{{path('app_arbeitszeit_checkIn')}}",
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
+                
+                  loadUserCheck();
+              },
+              error: function(xhr, status, error){
+                  console.log(error);
+              }
+          });
 
-// Abruf der aktuellen Position des Benutzers
-navigator.geolocation.getCurrentPosition(position => {
-  const userLat = position.coords.latitude;
-  const userLng = position.coords.longitude;
-
-  // Berechnung der Entfernung zwischen den beiden Koordinaten
-  const distance = getDistanceFromLatLonInKm(userLat, userLng, targetLat, targetLng);
-
-  // Überprüfen, ob die Entfernung kleiner als 1 km ist (Benutzer ist am Standort)
-  if (distance < 0.2) {
-    $('#CheckIn').html('✅ Du bist am Standort!');
-   
-  } else {
-     $('#CheckIn').html('Du bist nicht am Standort deine Entfernmung beträgt '+distance+' Km ');
+  }  
+  function userCheckOut(){
+         $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
+     $.ajax({
+              url: "{{path('app_arbeitszeit_checkOut')}}",
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
+                
+                  loadUserCheck();
+              },
+              error: function(xhr, status, error){
+                  console.log(error);
+              }
+          });
   }
-});
+  function loadUserCheck(){
+    $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
+    $.ajax({
+              url: "{{path('app_arbeitszeit')}}",
+              type: 'GET',
+              dataType: 'html',
+              success: function(response){
+                  
+                  $('#UserCheck').html(response);
+              },
+              error: function(xhr, status, error){
+                  console.log(error);
+              }
+          });
+  }
 
-// Funktion zur Berechnung der Entfernung zwischen zwei Koordinaten (in Kilometern)
-function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-  const R = 6371; // Radius der Erde in km
-  const dLat = deg2rad(lat2 - lat1);
-  const dLon = deg2rad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const d = R * c; // Entfernung in km
-  return d;
-}
 
-// Funktion zur Konvertierung von Grad in Bogenmaß
-function deg2rad(deg) {
-  return deg * (Math.PI / 180)
-}
+    
+  const targetLat = 51.049372790658;
+  const targetLng = 13.741302024057;
+
+  // Abruf der aktuellen Position des Benutzers
+  navigator.geolocation.getCurrentPosition(position => {
+    const userLat = position.coords.latitude;
+    const userLng = position.coords.longitude;
+
+    // Berechnung der Entfernung zwischen den beiden Koordinaten
+    const distance = getDistanceFromLatLonInKm(userLat, userLng, targetLat, targetLng);
+
+    // Überprüfen, ob die Entfernung kleiner als 1 km ist (Benutzer ist am Standort)
+    if (distance < 0.2) {
+      $('#CheckIn').html('✅ Du bist am Standort!');
+      var date = new Date();
+      var data = { time: date, distance: true };
+      document.cookie = JSON.stringify(data);
+      loadUserCheck();
+    
+    } else {
+      var cookieData =  document.cookie;
+     
+      let index = cookieData.indexOf("{");
+      cookieData = cookieData.substring(index)
+      cookieData = JSON.parse(cookieData);
+      console.log(cookieData.time);
+      var cookieTime = new Date(cookieData.time);
+      var currentTime = new Date();
+      var timeDiff = currentTime - cookieTime; // time difference in milliseconds
+      console.log(timeDiff);
+      if (timeDiff < 5 * 60 * 1000) {
+       console.log("save duch Cookie"); 
+        loadUserCheck();
+      } else {
+        $('#CheckIn').html('Du bist nicht am Standort deine Entfernmung beträgt '+distance+' Km ');
+      }
+      
+    }
+  });
+
+  // Funktion zur Berechnung der Entfernung zwischen zwei Koordinaten (in Kilometern)
+  function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Radius der Erde in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Entfernung in km
+    return d;
+  }
+
+  // Funktion zur Konvertierung von Grad in Bogenmaß
+  function deg2rad(deg) {
+    return deg * (Math.PI / 180)
+  }
 
  </script>
 {% endblock %}

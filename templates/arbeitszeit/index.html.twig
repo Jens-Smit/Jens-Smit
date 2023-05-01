@@ -1,0 +1,19 @@
+
+{% block body %}
+
+
+<div class="example-wrapper">
+
+{% if Arbeitszeiten|length > 0 %}
+    {% for zeit in Arbeitszeiten %}
+        <h5>CheckIn: {{ zeit.Eintrittszeit|date("H:i:s") }}</h5>
+    {% endfor %} 
+    <a name="" onclick="userCheckOut()" class="btn btn-primary" href="#" role="button">Logout</a>
+   
+{% else %}
+    <a name="" onclick="userCheckIn()" class="btn btn-primary" href="#" role="button">Login</a>
+{% endif %}
+
+   
+</div>
+{% endblock %}
