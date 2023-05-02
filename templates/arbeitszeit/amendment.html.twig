@@ -1,0 +1,45 @@
+
+{% block body %}
+    <h1>Amendment</h1>
+
+    
+        {% for item in data %}
+            <div class="card text-center">
+              
+              <div class="card-body">
+                
+                 {% for user in users %}
+              {% if user.id == item.userId %}
+                <h4 class="card-title">{{ user.vorname}} {{ user.nachname}}</h4>
+               {% endif %}
+             {% endfor %}
+              
+             
+             
+        
+             <h5> Lautdienstplan</h5>
+             {% for dienst in item.dienst %}
+           <p class="border border-info">{{ dienst.kommen}} - {{ dienst.gehen}}</p>
+             {% endfor %}
+            
+            <h5>Ist Arbeitszeit</h5>
+            <form id="save_amendment" type='POST'>
+              <select class="form-control w-100 mb-2" name="id" id="">
+                 {% for arbeitszeit in item.arbeitszeit %}
+            <option value='{{ arbeitszeit.arbeitszeitId }}'>{{ arbeitszeit.kommen}} - {{ arbeitszeit.gehen}}</option>
+             {% endfor %}
+           
+              </select>
+              <h5> Änderungswunsch</h5>
+            <div style='display:flex;'>
+            <input name="kommen" id=""  class="form-control w-50 mb-2" type="time" value="{{ item.kommen }}"> 
+            <input name="gehen" id="" class="form-control w-50 mb-2" type="time" value="{{ item.gehen }}">
+            </div>
+            <Button  id="save_amendment" class="btn btn-primary w-100"  role="button">wünsch übernehmen</Button></li>
+           </form>
+          </div>
+            </div>  
+        {% endfor %}
+    
+{% endblock %}
+

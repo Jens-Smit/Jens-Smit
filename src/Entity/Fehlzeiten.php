@@ -23,7 +23,10 @@ class Fehlzeiten
 
     #[ORM\OneToMany(mappedBy: 'Fehlzeit', targetEntity: Arbeitszeit::class)]
     private Collection $arbeitszeits;
-
+    public function __toString()
+    {
+        return $this->bezeichnung;
+    }
     public function __construct()
     {
         $this->dienste = new ArrayCollection();

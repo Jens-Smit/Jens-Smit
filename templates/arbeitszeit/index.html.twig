@@ -7,11 +7,12 @@
 {% if Arbeitszeiten|length > 0 %}
     {% for zeit in Arbeitszeiten %}
         <h5>CheckIn: {{ zeit.Eintrittszeit|date("H:i:s") }}</h5>
+            <a name="" onclick="userCheckOut()" class="btn btn-info m-2" href="#" role="button">Logout</a><br>
+            <a name="" onclick='openModal_Arbeitzzeit_aendern_beantragen({{ zeit.datum|date("U") }}, {{ zeit.user.id }})' class="btn m-2 btn-light" href="#" role="button">Vergessen zu Stempeln?</a> 
     {% endfor %} 
-    <a name="" onclick="userCheckOut()" class="btn btn-primary" href="#" role="button">Logout</a>
-   
+  
 {% else %}
-    <a name="" onclick="userCheckIn()" class="btn btn-primary" href="#" role="button">Login</a>
+    <a name="" onclick="userCheckIn()" class="btn btn-info" href="#" role="button">Login</a>
 {% endif %}
 
    

@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+    </style>
+{% endblock %}
+
+{% block title %}Zeiterfassung{% endblock %}
+
+{% block body %}
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Datum</th>
+                <th>Kommen</th>
+                <th>Gehen</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for arbeitszeit in arbeitszeiten %}
+                {{ form_start(form[arbeitszeit.id]) }}
+                <tr>
+                    <td>{{ arbeitszeit.user.vorname }}</td>
+                    <td>{{ arbeitszeit.datum|date('d.m.Y') }}</td>
+                    <td>{{ form_row(form[arbeitszeit.id].Eintrittszeit, {'label': false}) }}</td>
+                    <td>{{ form_row(form[arbeitszeit.id].Austrittszeit, {'label': false}) }}</td>
+                    <td>{{ form_widget(form[arbeitszeit.id].save, {'label': "save", 'attr': {'id': 'save-' ~ arbeitszeit.id, 'name': 'form_' ~ arbeitszeit.id}}) }}
+</td>
+                </tr>
+                {{ form_end(form[arbeitszeit.id]) }}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

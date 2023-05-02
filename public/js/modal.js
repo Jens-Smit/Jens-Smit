@@ -1,3 +1,12 @@
+
+
+function convertTimestamp(timestamp) {
+  var d = new Date(timestamp * 1000),
+    yyyy = d.getFullYear(),
+    mm = ('0' + (d.getMonth() + 1)).slice(-2),
+    dd = ('0' + d.getDate()).slice(-2);
+  return yyyy + '-' + mm + '-' + dd;
+}
 function openModal(userId) {
     $.ajax({
         url: "/user/"+userId+"/contrect/",
@@ -146,12 +155,11 @@ function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const d = R * c; // Entfernung in km
     return d;
-  }
-  
-  // Funktion zur Konvertierung von Grad in Bogenmaß
-  function deg2rad(deg) {
+}
+// Funktion zur Konvertierung von Grad in Bogenmaß
+function deg2rad(deg) {
     return deg * (Math.PI / 180)
-  }
+}
 function openModal__addDienste(dienstplanId,date, user) {
     $("#modal").modal("show");
     $("#modal-body").html("Lade...");
