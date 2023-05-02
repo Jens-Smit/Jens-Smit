@@ -38,7 +38,7 @@
       margin-left:-15px;
   }
   #silebar_icon{
-      margin-left:-10px;
+      margin-left:-15px;
   }
   #spinner {
       position: absolute;
@@ -74,6 +74,7 @@
       }
       #sidebar, footer, #dialog, .show{
         background-color:var(--secondary-background-color);
+        font-size: 20px;
       }
       .nav-link, a{
         color:var(--blue) !important;

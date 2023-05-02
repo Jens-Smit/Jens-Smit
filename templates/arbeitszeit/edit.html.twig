@@ -2,14 +2,13 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <style>
-    </style>
+    
 {% endblock %}
 
 {% block title %}Zeiterfassung{% endblock %}
 
 {% block body %}
-    <table>
+    <table class='table'>
         <thead>
             <tr>
                 <th>User</th>
@@ -23,15 +22,25 @@
             {% for arbeitszeit in arbeitszeiten %}
                 {{ form_start(form[arbeitszeit.id]) }}
                 <tr>
-                    <td>{{ arbeitszeit.user.vorname }}</td>
-                    <td>{{ arbeitszeit.datum|date('d.m.Y') }}</td>
+                    <td><p>{{ arbeitszeit.user.vorname }}</p></td>
+                    <td><p>{{ arbeitszeit.datum|date('d.m.Y') }}</p></td>
                     <td>{{ form_row(form[arbeitszeit.id].Eintrittszeit, {'label': false}) }}</td>
                     <td>{{ form_row(form[arbeitszeit.id].Austrittszeit, {'label': false}) }}</td>
-                    <td>{{ form_widget(form[arbeitszeit.id].save, {'label': "save", 'attr': {'id': 'save-' ~ arbeitszeit.id, 'name': 'form_' ~ arbeitszeit.id}}) }}
-</td>
+                    <td><p>{{ form_widget(form[arbeitszeit.id].save, {'label': "save", 'attr': {'id': 'save-' ~ arbeitszeit.id, 'name': 'form_' ~ arbeitszeit.id}}) }}</p></td>
                 </tr>
                 {{ form_end(form[arbeitszeit.id]) }}
             {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+ 
+  <script>
+  $(document).ready(function(){
+  
+$('.mb-3').removeClass('mb-3');
+  });
+
+</script>
 {% endblock %}

@@ -78,35 +78,41 @@
      
 {% if is_granted('IS_AUTHENTICATED_FULLY')  %}
 		<!-- Sidebar -->
-		<div  id="sidebar" style="max-width: 150px;">
+		<div  id="sidebar" style="max-width: 200px;">
       <button class="btn w-100" id="sidebar_toggle">
-        <i id="silebar_icon"class="fa fa-chevron-right"></i>
+        <i id="silebar_icon"class="fa fa-chevron-right border-secondary border rounded p-1 text-secondary bg-info" ></i>
       </button>
 		
 		  <div class=" pt-9 sidebar-collapsed sidebar-height">
 			<ul class="nav flex-column">
-			  <li class="nav-item">
-				<a class="nav-link active d-flex"  href="{{path('app_company_index')}}"><i class="fa fa-building"></i> <p style="margin:-5px 0px 0px 5px;" class='link_text'>Company</p></a>
+      <li class="nav-item border-bottom">
+				<a class="nav-link d-flex"  href="{{path('app_dashboard')}}"><i class="fa fa-tachometer" style='margin-left: -3px;'></i> <p style="margin:-5px 0px 0px 5px;" class='link_text'>Dashboard</p></a>
 			  </li>
-			  <li class="nav-item">
-				<a class="nav-link d-flex" href="{{path('app_objekt_index')}}"><i class="fa fa-store"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Objket</p></a>
+			  <li class="nav-item border-bottom">
+				<a class="nav-link d-flex"  href="{{path('app_company_index')}}"><i class="fa fa-building"></i> <p style="margin:-5px 0px 0px 5px;" class='link_text'>Company</p></a>
 			  </li>
-        <li class="nav-item">
+			  <li class="nav-item border-bottom">
+				<a class="nav-link d-flex" href="{{path('app_objekt_index')}}"><i class="fa fa-store" style='margin-left: -3px;'></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Objket</p></a>
+			  </li>
+        <li class="nav-item border-bottom">
 				<a class="nav-link d-flex"   href="{{path('app_user_index')}}"><i class="fa fa-user"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>User</p></a>
 			  </li>
-			  <li class="nav-item">
+			  <li class="nav-item border-bottom">
 				<a class="nav-link d-flex"   href="{{path('app_vertrag')}}"><i class="fa fa-file-contract"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Verträge</p></a>
 			  </li>
-        <li class="nav-item">
+        <li class="nav-item border-bottom">
 				<a class="nav-link d-flex"   href="{{path('app_dienstplan_index')}}"><i class="fa fa-calendar"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Dienstpläne</p></a>
 			  </li>
+         <li class="nav-item border-bottom">
+				<a class="nav-link d-flex"   href="{{path('app_arbeitszeit_edit')}}"><i class="fa fa-clock"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Stempelzeiten</p></a>
+			  </li>
         {% if app.user.objekt != null %}
-          <li class="nav-item">
+          <li class="nav-item border-bottom">
             <a class="nav-link d-flex"   href="{{ path('app_reservations', {'id': app.user.objekt.id}) }}"><i class="fa fa-cutlery"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>{{app.user.objekt.name}}</p></a>
           </li>
         {% elseif app.user.Company != null %}
           {% for objekt in  app.user.Company.Objekts %}  
-            <li class="nav-item">
+            <li class="nav-item border-bottom">
               <a class="nav-link d-flex"   href="{{ path('app_reservations', {'id': objekt.id}) }}"><i class="fa fa-cutlery"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>{{objekt.name}}</p></a>
             </li>
           {% endfor %} 

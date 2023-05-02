@@ -96,9 +96,21 @@ class ArbeitszeitController extends AbstractController
     #[Route('/test', name: 'app_arbeitszeit_test', methods: ['GET', 'POST'])]
     public function test(UserRepository $userRepository): Response
     {   
-        $datas = false; 
-     
-    return new Response($datas); 
+        // API-Schlüssel
+        $apiKey = 'geheimerKey';
+        if (!isset($_SERVER['HTTP_ACCESSTOKEN']) || $_SERVER['HTTP_ACCESSTOKEN'] !== $apiKey) {
+            header('HTTP/1.1 401 Unauthorized');
+            die('Ungültiger API-Schlüssel');
+        }
+        $data = $_POST['data'];
+        $json_data = json_decode($data);
+        $jsonData = json_encode("test");
+
+        $publicDirectory = $this->getParameter('kernel.project_dir') . '/public';
+        $filename = sprintf('%s/data/dienstplan/test.json', $publicDirectory);
+        file_put_contents($filename, $json_data);
+        chmod($filename, 0600);
+        return new Response($json_data); 
     }
     #[Route('/opanamendment', name: 'app_arbeitszeit_opanamendment', methods: ['GET', 'POST'])]
     public function opanamendment(UserRepository $userRepository): Response
