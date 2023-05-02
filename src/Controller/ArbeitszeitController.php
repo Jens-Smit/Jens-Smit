@@ -93,8 +93,8 @@ class ArbeitszeitController extends AbstractController
          
         return new Response($datas);
     }
-    #[Route('/test', name: 'app_arbeitszeit_test', methods: ['GET', 'POST'])]
-    public function test(UserRepository $userRepository): Response
+    #[Route('/ckeckin_api', name: 'app_arbeitszeit_ckeckin_api', methods: ['GET', 'POST'])]
+    public function ckeckin_api(UserRepository $userRepository,ManagerRegistry $doctrine, ArbeitszeitRepository $arbeitszeitRepository): Response
     {   
         // API-Schlüssel
         $apiKey = 'geheimerKey';
@@ -103,14 +103,44 @@ class ArbeitszeitController extends AbstractController
             die('Ungültiger API-Schlüssel');
         }
         $data = $_POST['data'];
-        $json_data = json_decode($data);
-        $jsonData = json_encode("test");
-
-        $publicDirectory = $this->getParameter('kernel.project_dir') . '/public';
-        $filename = sprintf('%s/data/dienstplan/test.json', $publicDirectory);
-        file_put_contents($filename, $json_data);
-        chmod($filename, 0600);
-        return new Response($json_data); 
+        $data = json_decode($data);
+        $time = new DateTime(date("H:i:s"));
+        $user = $userRepository->find($data);
+        $entityManager = $doctrine->getManager();
+      
+        if($user == null){
+            $datas = ["status"=> false, 'message'=>'user ist nicht definiert'];
+        }
+        else{
+            $Arbeitszeiten = $arbeitszeitRepository->findBy( ['user' => $user, 'Austrittszeit' => null ]);
+            if(count($Arbeitszeiten)>1){
+                $datas = ["status"=> false, 'message'=>'User ist mehrere mal eingcheckt'];
+            }
+            elseif(count($Arbeitszeiten)>0){
+                $Arbeitszeiten = $arbeitszeitRepository->findBy( ['user' => $user, 'Austrittszeit' => null ]);
+                $Arbeitszeit = $Arbeitszeiten[0];
+                $Arbeitszeit->setUser($user);
+                $Arbeitszeit->setAustrittszeit($time);
+                $entityManager->persist($Arbeitszeit);
+            }
+            else{
+                //Checkin
+                $day = new DateTime(date("Y-m-d"));
+                $Arbeitszeit = new Arbeitszeit();
+                $Arbeitszeit->setUser($user);
+                $Arbeitszeit->setEintrittszeit($time);
+                $Arbeitszeit->setDatum($day);
+                $entityManager->persist($Arbeitszeit);
+            }
+            //save und Check
+            $entityManager->flush();
+            if ($entityManager->contains($Arbeitszeit)) {
+                $datas = $datas = ["status"=> true, 'message'=>'erfolgreich gespeichert'];
+            } else {
+                $datas = ["status"=> false, 'message'=>'fehler beim speichern'];
+            }
+        }
+        return new JsonResponse($datas); 
     }
     #[Route('/opanamendment', name: 'app_arbeitszeit_opanamendment', methods: ['GET', 'POST'])]
     public function opanamendment(UserRepository $userRepository): Response
