@@ -1,14 +1,11 @@
-{% extends 'base.html.twig' %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    
-{% endblock %}
 
-{% block title %}Zeiterfassung{% endblock %}
+
+
 
 {% block body %}
-    <table class='table'>
+<h5>Arbeitszeiten</h5>
+<table class='table'>
         <thead>
             <tr>
                 <th>User</th>
@@ -20,27 +17,74 @@
         </thead>
         <tbody>
             {% for arbeitszeit in arbeitszeiten %}
-                {{ form_start(form[arbeitszeit.id]) }}
+                {{ form_start(form[arbeitszeit.id])}}
                 <tr>
-                    <td><p>{{ arbeitszeit.user.vorname }}</p></td>
-                    <td><p>{{ arbeitszeit.datum|date('d.m.Y') }}</p></td>
+                    <td><p style='margin-top: 0.4rem'>{{ arbeitszeit.user.vorname }}</p></td>
+                    <td><p style='margin-top: 0.4rem'>{{ arbeitszeit.datum|date('d.m.Y') }}</p></td>
+                      {% if arbeitszeit.fehlzeit is null %}
                     <td>{{ form_row(form[arbeitszeit.id].Eintrittszeit, {'label': false}) }}</td>
                     <td>{{ form_row(form[arbeitszeit.id].Austrittszeit, {'label': false}) }}</td>
-                    <td><p>{{ form_widget(form[arbeitszeit.id].save, {'label': "save", 'attr': {'id': 'save-' ~ arbeitszeit.id, 'name': 'form_' ~ arbeitszeit.id}}) }}</p></td>
+                   {% else %}
+                   <td colspan="2"><p style='margin-top: 0.4rem'>{{ arbeitszeit.fehlzeit.bezeichnung }}</p></td>
+                   
+                   {% endif  %} 
+                        
+                   
+                    <td>
+                    {{ form_widget(form[arbeitszeit.id].save, {'label': "save", 'attr': {'id': 'save-' ~ arbeitszeit.id, 'name': 'form_' ~ arbeitszeit.id}}) }}
+                    {{ form_widget(form[arbeitszeit.id].delate, {'label': "delate", 'attr': {'id': 'delate-' ~ arbeitszeit.id, 'name': 'form_' ~ arbeitszeit.id}}) }}
+                    </td>
                 </tr>
-                {{ form_end(form[arbeitszeit.id]) }}
+               {{ form_end(form[arbeitszeit.id])}}
             {% endfor %}
         </tbody>
     </table>
 {% endblock %}
 {% block javascripts %}
-    {{ parent() }}
+   
  
   <script>
+  function submitForm(event) { 
+    console.log('tets');
+        event.preventDefault();
+        var buttonValue = $(document.activeElement).val();
+        var form = $(this);
+        var data = $(this).serialize() + '&buttonValue=' + buttonValue;
+        $.ajax({
+            type: "POST",
+            url: "{{path('app_arbeitszeit_edit')}}",
+            data: data,
+            dataType: "text",
+            success: function(data) {
+             //  location.reload();
+             console.log('gespeichert');
+             if(buttonValue == 'delate'){
+                form.next().hide();
+             }
+            }
+        });
+  }
   $(document).ready(function(){
-  
-$('.mb-3').removeClass('mb-3');
+    $('.mb-3').removeClass('mb-3');
+    $('form[name="arbeitszeit"]').submit(submitForm);
   });
+window.addEventListener('load', function() {
+    // Finde alle delate-Buttons
+    const delateButtons = document.querySelectorAll('#arbeitszeit_delate');
+    
+    // Füge jedem Button einen Event-Listener hinzu
+    for (const button of delateButtons) {
+        button.addEventListener('click', function(event) {
+            // Zeige eine Bestätigungsmeldung an
+            if (!confirm('Möchtest du diesen Eintrag wirklich löschen?')) {
+                // Verhindere das Absenden des Formulars, wenn der Benutzer auf "Nein" klickt
+                event.preventDefault();
+            }
+        });
+    }
+    
 
+
+});
 </script>
 {% endblock %}

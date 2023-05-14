@@ -1,0 +1,44 @@
+
+
+
+{% block body %}
+<h5>Arbeitszeiten anlgen</h5>
+
+
+<div id ='fehlzeit_add_show' >
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+</div>
+
+
+{% endblock %}
+{% block javascripts %}
+   
+ 
+  <script>
+  function submitNewForm(event) { 
+   
+        event.preventDefault();
+        var buttonValue = $(document.activeElement).val();
+        var form = $(this);
+        var data = $(this).serialize();
+        $.ajax({
+            type: "POST",
+            url: "{{ path('app_user_arbeitszeiten_edit', {'id': user.id}) }}",
+            data: data,
+            dataType: "text",
+            success: function(data) {
+             //  location.reload();
+             
+             console.log("gespeichert");
+            }
+        });
+  }
+  $(document).ready(function(){
+    
+    $('#fehlzeiten_form').submit(submitNewForm);
+  });
+
+</script>
+{% endblock %}

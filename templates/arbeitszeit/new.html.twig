@@ -1,0 +1,39 @@
+
+
+
+{% block body %}
+<h5>Fehlzeiten</h5>
+<button id ='fehlzeit_add_show_btn' type="button" class="btn btn-info mb-3" data-toggle="tooltip" data-placement="top" title=" Click um Fehlzeiten wie Urlaub und Krank zu erfassen">
+    fehlzeit anlegen
+</button>
+<br>
+<div id ='fehlzeit_add_show' style='display:none'>
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+</div>
+<button id ='fehlzeit_pv_show_btn' type="button" class="btn btn-info mb-3" data-toggle="tooltip" data-placement="top" title=" Click um Fehlzeiten wie Urlaub und Krank zu sehen">
+    fehlzeit übersicht
+</button>
+<div id='fehlzeit_pv_show' style='display:none'>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Fehlzeit</th>
+            <th>aktion</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for arbeitszeit in arbeitszeiten %}
+        <tr>
+            <td >{{arbeitszeit.datum|date('Y-m-d')}}</td>
+            <td>{{arbeitszeit.fehlzeit.bezeichnung}}</td>
+            <td></td>
+        </tr>
+      {% endfor %} 
+    </tbody>
+</table>
+
+</div>
+{% endblock %}

@@ -8,6 +8,7 @@ use App\Entity\Dienstplan;
 use App\Entity\User;
 use App\Form\DiensteType;
 use App\Form\DienstplanType;
+use App\Repository\CompanyRepository;
 use App\Repository\DiensteRepository;
 use App\Repository\DienstplanRepository;
 use App\Repository\UserRepository;
@@ -32,11 +33,33 @@ use Symfony\Component\Routing\Annotation\Route;
 class DienstplanController extends AbstractController
 {
     #[Route('/', name: 'app_dienstplan_index', methods: ['GET'])]
-    public function index(DienstplanRepository $dienstplanRepository): Response
+    public function index(CompanyRepository $companyRepository, DienstplanRepository $dienstplanRepository): Response
     {
-        return $this->render('dienstplan/index.html.twig', [
-            'dienstplans' => $dienstplanRepository->findAll(),
-        ]);
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        //ermitteln ob der User Admin eines Company ist 
+        $companys = $companyRepository->findBy(['onjekt_admin'=> $user->getId()]);
+        if(count($companys) >=0){
+            foreach($companys as $company){
+                $objekts = $company->getObjekts(); 
+                foreach($objekts as $objekt){
+                    $dienstplans = $objekt->getDienstplans();     
+                }
+            }
+        }
+        else{
+            // ermitteln in welchen dienstplänen der user Steht
+            $dienstplans = $user->getDienstplans();
+            $dienstplans->initialize();   
+        }
+      
+        if(isset($dienstplans)){
+            return $this->render('dienstplan/index.html.twig', [
+                'dienstplans' => $dienstplans,
+            ]);
+        }   
+        else{
+            return $this->render('dashboard/noroles.html.twig');
+        }
     }
 
     #[Route('/new', name: 'app_dienstplan_new', methods: ['GET', 'POST'])]
@@ -155,77 +178,137 @@ class DienstplanController extends AbstractController
       
     }
     #[Route('/{id}', name: 'app_dienstplan_show', methods: ['POST','GET'])]
-    public function show(Dienstplan $dienstplan): Response
+    public function show(Dienstplan $dienstplan, CompanyRepository $companyRepository): Response
     {
-        $filePath = $this->getFilePath($dienstplan->getId());
-        $data = json_decode(file_get_contents($filePath), true);
-        $kw = date("W");
-        $users = $dienstplan->getUser();
-        $client = new Client();
-         // Make GET request to Nager.Date API
-        $response = $client->request('GET', 'https://date.nager.at/api/v3/publicholidays/2023/DE');
-
-        // Decode JSON response
-        $holidays = json_decode($response->getBody()->getContents(), true);
-
-        // Create array of holidays with date as key and name as value
-        $formattedHolidays = [];
-        foreach ($holidays as $holiday) {
-            $formattedHolidays[$holiday['date']] = $holiday['name'];
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        //ermitteln ob der User Admin eines Company ist 
+        $companys = $companyRepository->findBy(['onjekt_admin'=> $user->getId()]);
+        if(count($companys) >=0){
+            foreach($companys as $company){
+                $objekts = $company->getObjekts(); 
+                foreach($objekts as $objekt){
+                    $dienstplans = $objekt->getDienstplans();     
+                }
+            }
         }
+        else{
+            // ermitteln in welchen dienstplänen der user Steht
+            $dienstplans = $user->getDienstplans();
+            $dienstplans->initialize();   
+        }
+        if ($dienstplans->contains($dienstplan)) {
+            $filePath = $this->getFilePath($dienstplan->getId());
+            $data = json_decode(file_get_contents($filePath), true);
+            $kw = date("W");
+            $users = $dienstplan->getUser();
+            $client = new Client();
+            // Make GET request to Nager.Date API
+            $response = $client->request('GET', 'https://date.nager.at/api/v3/publicholidays/2023/DE');
 
-        return $this->render('dienstplan/show.html.twig', [
-            'holidays'=> $formattedHolidays,
-            'data' => $data,
-            'users'      =>  $users,
-            'dienstplan' => $dienstplan,
-            'kw' => $kw,
-        ]);
+            // Decode JSON response
+            $holidays = json_decode($response->getBody()->getContents(), true);
+
+            // Create array of holidays with date as key and name as value
+            $formattedHolidays = [];
+            foreach ($holidays as $holiday) {
+                $formattedHolidays[$holiday['date']] = $holiday['name'];
+            }
+
+            return $this->render('dienstplan/show.html.twig', [
+                'holidays'=> $formattedHolidays,
+                'data' => $data,
+                'users'      =>  $users,
+                'dienstplan' => $dienstplan,
+                'kw' => $kw,
+            ]);
+        }else{
+            return $this->render('dashboard/noroles.html.twig');   
+        }
     }
     #[Route('/{id}/create', name: 'app_dienstplan_create', methods: ['POST','GET'])]
-    public function create(Dienstplan $dienstplan): Response
-    {
-        $filePath = $this->getFilePath($dienstplan->getId());
-        $data = json_decode(file_get_contents($filePath), true);
-        $kw = date("W");
-        $users = $dienstplan->getUser();
-        $client = new Client();
-         // Make GET request to Nager.Date API
-        $response = $client->request('GET', 'https://date.nager.at/api/v3/publicholidays/2023/DE');
-
-        // Decode JSON response
-        $holidays = json_decode($response->getBody()->getContents(), true);
-
-        // Create array of holidays with date as key and name as value
-        $formattedHolidays = [];
-        foreach ($holidays as $holiday) {
-            $formattedHolidays[$holiday['date']] = $holiday['name'];
+    public function create(Dienstplan $dienstplan, CompanyRepository $companyRepository): Response
+    { 
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        //ermitteln ob der User Admin eines Company ist 
+        $companys = $companyRepository->findBy(['onjekt_admin'=> $user->getId()]);
+        if(count($companys) >=0){
+            foreach($companys as $company){
+                $objekts = $company->getObjekts(); 
+                foreach($objekts as $objekt){
+                    $dienstplans = $objekt->getDienstplans();     
+                }
+            }
         }
+        else{
+            // ermitteln in welchen dienstplänen der user Steht
+            $dienstplans = $user->getDienstplans();
+            $dienstplans->initialize();   
+        }
+        if ($dienstplans->contains($dienstplan)) {
+            $filePath = $this->getFilePath($dienstplan->getId());
+            $data = json_decode(file_get_contents($filePath), true);
+            $kw = date("W");
+            $users = $dienstplan->getUser();
+            $client = new Client();
+            // Make GET request to Nager.Date API
+            $response = $client->request('GET', 'https://date.nager.at/api/v3/publicholidays/2023/DE');
 
-        return $this->render('dienstplan/create.html.twig', [
-            'holidays'=> $formattedHolidays,
-            'data' => $data,
-            'users'      =>  $users,
-            'dienstplan' => $dienstplan,
-            'kw' => $kw,
-        ]);
+            // Decode JSON response
+            $holidays = json_decode($response->getBody()->getContents(), true);
+
+            // Create array of holidays with date as key and name as value
+            $formattedHolidays = [];
+            foreach ($holidays as $holiday) {
+                $formattedHolidays[$holiday['date']] = $holiday['name'];
+            }
+
+            return $this->render('dienstplan/create.html.twig', [
+                'holidays'=> $formattedHolidays,
+                'data' => $data,
+                'users'      =>  $users,
+                'dienstplan' => $dienstplan,
+                'kw' => $kw,
+            ]);
+        }else{
+            return $this->render('dashboard/noroles.html.twig');   
+        }
     }
     #[Route('/{id}/edit', name: 'app_dienstplan_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Dienstplan $dienstplan, DienstplanRepository $dienstplanRepository): Response
+    public function edit(Request $request,CompanyRepository $companyRepository ,Dienstplan $dienstplan, DienstplanRepository $dienstplanRepository): Response
     {
-        $form = $this->createForm(DienstplanType::class, $dienstplan);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $dienstplanRepository->save($dienstplan, true);
-
-            return $this->redirectToRoute('app_dienstplan_index', [], Response::HTTP_SEE_OTHER);
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        //ermitteln ob der User Admin eines Company ist 
+        $companys = $companyRepository->findBy(['onjekt_admin'=> $user->getId()]);
+        if(count($companys) >=0){
+            foreach($companys as $company){
+                $objekts = $company->getObjekts(); 
+                foreach($objekts as $objekt){
+                    $dienstplans = $objekt->getDienstplans();     
+                }
+            }
         }
+        else{
+            // ermitteln in welchen dienstplänen der user Steht
+            $dienstplans = $user->getDienstplans();
+            $dienstplans->initialize();   
+        }
+        if ($dienstplans->contains($dienstplan)) {
+            $form = $this->createForm(DienstplanType::class, $dienstplan);
+            $form->handleRequest($request);
 
-        return $this->renderForm('dienstplan/edit.html.twig', [
-            'dienstplan' => $dienstplan,
-            'form' => $form,
-        ]);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $dienstplanRepository->save($dienstplan, true);
+
+                return $this->redirectToRoute('app_dienstplan_index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            return $this->renderForm('dienstplan/edit.html.twig', [
+                'dienstplan' => $dienstplan,
+                'form' => $form,
+            ]);
+        }else{
+            return $this->render('dashboard/noroles.html.twig');  
+        }
     }
     private function getFilePath($id)
     {
@@ -243,21 +326,38 @@ class DienstplanController extends AbstractController
         return $filePath;
     }
     #[Route('/{id}/edit_Dienste_PV', name: 'app_edit_Dienste_PV', methods: ['GET', 'POST'])]
-    public function edit_Dienste_PV(Request $request, $id, DienstplanRepository $dienstplanRepository): Response
+    public function edit_Dienste_PV(Request $request, Dienstplan $dienstplan,CompanyRepository $companyRepository ,DienstplanRepository $dienstplanRepository): Response
     { 
+        $id = $dienstplan->getId();
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        //ermitteln ob der User Admin eines Company ist 
+        $companys = $companyRepository->findBy(['onjekt_admin'=> $user->getId()]);
+        if(count($companys) >=0){
+            foreach($companys as $company){
+                $objekts = $company->getObjekts(); 
+                foreach($objekts as $objekt){
+                    $dienstplans = $objekt->getDienstplans();     
+                }
+            }
+        }
+        else{
+            // ermitteln in welchen dienstplänen der user Steht
+            $dienstplans = $user->getDienstplans();
+            $dienstplans->initialize();   
+        }
+        if ($dienstplans->contains($dienstplan) ) {
+            // $id ist in $dienstplans enthalten
         $filePath = $this->getFilePath($id);
         if (!file_exists($filePath)) {
             return new JsonResponse(['error' => 'File not found'], Response::HTTP_NOT_FOUND);
         }
         $data = json_decode(file_get_contents($filePath), true);
-      
-       
+
         // Schlüssel hinzufügen
         $new_array = [];
         foreach ($data as $key => $value) {
             $new_array[$key] = $value;
         }
-       // dump($new_array);
         // Add fields for "Kommen" and "Gehen" for each ID
         $formBuilder = $this->createFormBuilder($new_array);
         foreach ($new_array as $key => $value) {
@@ -334,15 +434,39 @@ class DienstplanController extends AbstractController
             'form' => $form->createView(),
             'dienstplan' => $dienstplan,
         ]); 
+    } else {
+        return $this->render('dashboard/noroles.html.twig');
+    }
     }
 
     #[Route('/{id}', name: 'app_dienstplan_delete', methods: ['POST'])]
-    public function delete(Request $request, Dienstplan $dienstplan, DienstplanRepository $dienstplanRepository): Response
+    public function delete(CompanyRepository $companyRepository, Request $request, Dienstplan $dienstplan, DienstplanRepository $dienstplanRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$dienstplan->getId(), $request->request->get('_token'))) {
-            $dienstplanRepository->remove($dienstplan, true);
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        //ermitteln ob der User Admin eines Company ist 
+        $companys = $companyRepository->findBy(['onjekt_admin'=> $user->getId()]);
+        if(count($companys) >=0){
+            foreach($companys as $company){
+                $objekts = $company->getObjekts(); 
+                foreach($objekts as $objekt){
+                    $dienstplans = $objekt->getDienstplans();     
+                }
+            }
         }
+        else{
+            // ermitteln in welchen dienstplänen der user Steht
+            $dienstplans = $user->getDienstplans();
+            $dienstplans->initialize();   
+        }
+        if ($dienstplans->contains($dienstplan)) {
+            if ($this->isCsrfTokenValid('delete'.$dienstplan->getId(), $request->request->get('_token'))) {
+                $dienstplanRepository->remove($dienstplan, true);
+            }
 
-        return $this->redirectToRoute('app_dienstplan_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_dienstplan_index', [], Response::HTTP_SEE_OTHER);
+        }else{
+            return $this->render('dashboard/noroles.html.twig');   
+        }
     }
+   
 }

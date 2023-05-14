@@ -47,7 +47,24 @@ class ArbeitszeitType extends AbstractType
                 'attr' => [
                     'class' => 'btn btn-info',
                     'name' => 'my_form_id',
-                    'value' => $formId, // Hier kannst du eine variable ID einsetzen
+                    'value' => 'save', // Hier kannst du eine variable ID einsetzen
+                ],
+            ])
+            ->add('delate', SubmitType::class, [
+                'label' => 'delate',
+                'attr' => [
+                    'class' => 'btn btn-info',
+                    'name' => 'my_form_id_delate',
+                    'value' => 'delate', // Hier kannst du eine variable ID einsetzen
+                ],
+            ])
+            ->add('newsave', SubmitType::class, [
+                'label' => 'newsave',
+                'attr' => [
+                    'style' => 'display:none;',
+                    'class' => 'btn btn-info',
+                    'name' => 'my_form_id_delate',
+                    'value' => 'newsave', // Hier kannst du eine variable ID einsetzen
                 ],
             ])
         ;

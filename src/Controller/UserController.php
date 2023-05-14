@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Arbeitszeit;
 use App\Entity\Dienstplan;
 use App\Entity\Objekt;
 use TCPDF;
@@ -10,14 +11,19 @@ use App\Entity\UserContrectData;
 use App\Entity\UserDokumente;
 use App\Entity\Vertrag;
 use App\Entity\VertragVariable;
+use App\Form\ArbeitszeitType;
 use App\Form\EditRoleType;
 use App\Form\UserType;
 use App\Form\UserDokumenteType;
+use App\Repository\ArbeitszeitRepository;
 use App\Repository\CompanyRepository;
 use App\Repository\ContractDataRepository;
+use App\Repository\FehlzeitenRepository;
 use App\Repository\UserDokumenteRepository;
 use App\Repository\UserRepository;
 use App\Repository\VertragRepository;
+use DateTime;
+
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,10 +31,12 @@ use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
@@ -306,14 +314,147 @@ class UserController extends AbstractController
             'user' => $user,
         ]);
     }
+    #[Route('/{id}/arbeitszeiten', name: 'app_user_arbeitszeiten', methods: ['GET', 'POST'])]
+    public function arbeitszeiten(User $user, UserRepository $userRepository, ManagerRegistry $doctrine, ArbeitszeitRepository $arbeitszeitRepository, Request $request): Response
+    {
+      
+        $arbeitszeiten = $arbeitszeitRepository->findBy(['user' => $user]);
+        $forms = [];    
+        foreach ($arbeitszeiten as $arbeitszeit) {
+            $form = $this->createForm(ArbeitszeitType::class, $arbeitszeit, [
+                'form_id' => $arbeitszeit->getId(),
+            ]);
+            $forms[$arbeitszeit->getId()] = $form->createView(); 
+        }
+        
+        foreach ($forms as $form) {   
+            if ($request->getMethod() == 'POST') {
+                $data = $request->request->all()['arbeitszeit'];
+                
+                $arbeitszeit =$form->vars['value'];
+                $submittedForm = $request->request; 
+                $formId = intval($submittedForm->all()['arbeitszeit']['form_id']);
+                if ($formId == $arbeitszeit->getId()){
+                  
+                    if (isset($_POST['arbeitszeit']['save'])) {
+                        $dateTime = new DateTime();
+                        $array =$data['Eintrittszeit'];
+                        $dateTime->setTime($array['hour'], $array['minute']);
+                        $arbeitszeit->setEintrittszeit($dateTime);
+                        $dateTime = new DateTime();
+                        $array =$data['Austrittszeit'];
+                        $dateTime->setTime($array['hour'], $array['minute']);
+                        $arbeitszeit->setAustrittszeit($dateTime);
+                        $entityManager = $doctrine->getManager();
+                        $entityManager->persist($arbeitszeit);
+                        $entityManager->flush();
+
+                        // Query the database for the saved data
+                        $savedData = $arbeitszeitRepository->find($formId);
+
+                        // Verify that the data matches the expected values
+                        if ($savedData && $savedData->getId() != null) {
+                            $this->addFlash('success', 'Arbeitszeit gespeichert');
+                            $arbeitszeiten = $arbeitszeitRepository->findBy(['user' => $user]);
+                            $forms = [];    
+                            foreach ($arbeitszeiten as $arbeitszeit) {
+                                $form = $this->createForm(ArbeitszeitType::class, $arbeitszeit, [
+                                    'form_id' => $arbeitszeit->getId(),
+                                ]);
+                                $forms[$arbeitszeit->getId()] = $form->createView(); 
+                            }
+                        } else {
+                            $this->addFlash('danger', 'Fehler beim Speichern der Arbeitszeit');
+                        }
+                    } 
+                    elseif (isset($_POST['arbeitszeit']['delate'])) {
+                        $entityManager = $doctrine->getManager();
+                        $entityManager->remove($arbeitszeit);
+                        $entityManager->flush();
+                        $arbeitszeiten = $arbeitszeitRepository->findAll();
+        
+                        $this->addFlash('success', 'Arbeitszeit erfolgreich entfernt');
+                    } 
+                    elseif (isset($_POST['arbeitszeit']['newsave'])) {
+                        
+        
+                        $this->addFlash('success', 'Arbeitszeit erfolgreich angelegt');
+                    }
+                     
+                }
+            }    
+        }
+            
+        return $this->render('arbeitszeit/edit.html.twig', [
+            'arbeitszeiten' => $arbeitszeiten,
+            'form' => $forms,
+           
+           
+        ]);
+        
+    
+    }
+    #[Route('/{id}/arbeitszeiten_edit', name: 'app_user_arbeitszeiten_edit', methods: ['GET', 'POST'])]
+    public function arbeitszeiten_edit(User $user,FehlzeitenRepository $fehlzeitenRepository ,UserRepository $userRepository, ManagerRegistry $doctrine, ArbeitszeitRepository $arbeitszeitRepository, Request $request): Response
+    {
+        $arbeitszeit = new Arbeitszeit();
+        $arbeitszeit->setUser($user);
+        $form = $this->createForm(ArbeitszeitType::class);
+        $fehlzeiten = $fehlzeitenRepository->findAll();
+        $choices = [];
+        $choices['-'] = null;
+        foreach ($fehlzeiten as $fehlzeit) {
+            $choices[$fehlzeit->getBezeichnung()] = $fehlzeit->getId();
+        }
+        $form = $this->createFormBuilder(null, [
+            'attr' => ['id' => 'fehlzeiten_form']])
+        ->add('date', DateType::class,[
+            'label' => 'date',
+            'data' => (new \DateTime())
+            ])
+        ->add('kommen', TimeType::class,[
+            'label' => 'kommen'
+            ])
+        ->add('gehen', TimeType::class,[
+            'label' => 'gehen'
+            ])
+        ->add('fehlzeit', ChoiceType::class,[
+            'choices' => $choices,
+            
+            ])
+        ->add('save', SubmitType::class)
+        ->getForm()
+        ;
+        $form -> handleRequest($request); 
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $doctrine->getManager();
+            $arbeitszeit->setDatum($form->get('date')->getData());
+            $arbeitszeit->setEintrittszeit($form->get('kommen')->getData());
+            $arbeitszeit->setAustrittszeit($form->get('gehen')->getData());
+            $fehlzeitId = $form->get('fehlzeit')->getData();
+            if ($fehlzeitId) {
+                $fehlzeit = $fehlzeitenRepository->find($fehlzeitId);
+                $arbeitszeit->setFehlzeit($fehlzeit);
+            }
+            $entityManager->persist($arbeitszeit);
+            $entityManager->flush();
+            $this->addFlash('success', 'Arbeitszeit erfolgreich angelegt');
+            return $this->redirectToRoute('app_user_arbeitszeiten_edit', ['id' => $user->getId()]);
+        }
+        return $this->render('arbeitszeit/arbeitszeitNew.html.twig', [    
+            'form' => $form->createView(),  
+            'user' => $user,        
+        ]);
+
+    }
     #[Route('/{id}/dienstplan_show', name: 'app_user_dienstplan_show', methods: ['GET', 'POST'])]
     public function dienstplan_show(User $user, ManagerRegistry $doctrine): Response
     {    
-         $dienstplan = $user->getDienstplans();
-        
+            // ermitteln in welchen dienstplänen der user Steht
+            $dienstplans = $user->getDienstplans();
         return $this->render('user/dienstplan_show.html.twig', [
             
-            'dienstplans' => $dienstplan,
+            'dienstplans' => $dienstplans,
         ]);
     }
     #[Route('/{id}/document', name: 'app_user_document', methods: ['GET', 'POST'])]
