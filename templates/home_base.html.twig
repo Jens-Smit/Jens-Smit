@@ -1,23 +1,34 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z430ZX8TVN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Z430ZX8TVN');
+</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="keywords" content="Gastro 2.0, Vision Gastro, Gamasy, Gästemanagement, Mitarbeiterverwaltung, Reservierungen, Hotellerie, Gastronomie, kostenlose Software, webbasierte Lösung">
+  <meta name="description" content="Gamasy ist eine kostenlose webbasierte Softwarelösung für die Verwaltung von Mitarbeitern, Gästen und Reservierungen in der Hotellerie und Gastronomie. Optimiere deine Betriebsabläufe und steigere die Effizienz mit Gamasy. Jetzt kostenlos anmelden und loslegen.">
+  <link rel="canonical" href="https://www.gamasy.de/">   
+  <meta name="robots" content="index, follow"> 
+  <title>{% block title %}Vision Gastro  - Kostenlose webbasierte Softwarelösung für Gästemanagement, Mitarbeiterverwaltung und Reservierungen in der Hotellerie und Gastronomie{% endblock %}</title>
   
-  <title>{% block title %}Vision Gastro 2.0{% endblock %}</title>
-        {% block stylesheets %}
+		
+		{% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
-<link rel="stylesheet" href="{{asset('css/all.min.css')}}">
-<link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
-<link rel="stylesheet" href="{{asset('css/home_style.css')}}">
-
+			<link rel="stylesheet" href="{{asset('css/all.min.css')}}">
+			<link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
+			<link rel="stylesheet" href="{{asset('css/home_style.css')}}">
         {% endblock %}
-
         {% block javascripts %}
-      
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollToPlugin.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollToPlugin.min.js"></script>
 		{{ encore_entry_script_tags('app') }}
  
         {% endblock %}
