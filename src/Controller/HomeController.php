@@ -70,8 +70,8 @@ class HomeController extends AbstractController
     {
         return $this->render('home/Datenschutz.html.twig');
     }
-    #[Route('/contakt', name: 'contakt')]
-    public function contakt(Request $request,MailerInterface $mailer): Response
+    #[Route('/contact', name: 'contact')]
+    public function contact(Request $request,MailerInterface $mailer): Response
     {
         $form = $this->createFormBuilder(null, [
             'attr' => ['class' => 'w-100']
@@ -79,14 +79,11 @@ class HomeController extends AbstractController
         ->add('email', EmailType::class, [
             'attr' => ['class' => 'w-100']
         ])
-        ->add('Firmenname', TextType::class, [
-            'attr' => ['class' => 'w-100']
-        ])
         ->add('Nachricht', TextareaType::class, [
             'attr' => ['class' => 'w-100']
         ])
         ->add('captcha', CaptchaType::class, [
-            'label' => 'Bist du ein Computer?',
+            'label' => 'Bist du ein Computer?   ',
             
         ])
         ->add('submit', SubmitType::class, [
@@ -100,26 +97,32 @@ class HomeController extends AbstractController
        if ($form->isSubmitted() && $form->isValid()) {
            $data = $form->getData();
            $user_email= $data['email'];
-           $Firmenname = $data['Firmenname'];
+          
            $Nachricht = $data['Nachricht'];
            $email = (new Email())
             ->from($user_email)
             ->to('info@tex-mex.de')
-            ->subject('Anfrage BETA-User '.$Firmenname )
+            ->subject('Anfrage userForm Gamasy ' )
             ->text($Nachricht)
             ->html('txt');
 
             $mailer->send($email);
          
        }
-        return $this->render('home/contakt.html.twig', [
+        return $this->render('home/contact.html.twig', [
             'form' => $form->createView()
         ]);
+    }
+   
+    #[Route('/features ', name: 'features')]
+    public function features(): Response
+    {
+        return $this->render('home/features.html.twig');
     }
     #[Route('/privacy ', name: 'privacy')]
     public function privacy(): Response
     {
-        return $this->render('home/Datenschutz.html.twig');
+        return $this->render('home/datenschutz.html.twig');
     }
 
    /* public function index(Request $request,RentItemsRepository $rentItemsRepository ,ReservationRepository $reservationRepository): Response
