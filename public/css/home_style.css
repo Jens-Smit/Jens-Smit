@@ -5,7 +5,11 @@
         src: url("fonts/Roboto-Black.ttf") format("truetype");
     }
 @media screen and (min-width: 1200px) {
-		
+	h3{
+		color: white;
+    font-size: 5rem;
+    
+	}		
 h1{
     font-size: 6em;
 	}
@@ -39,9 +43,55 @@ h2{
 	font-family:Roboto-Black;
 
 	}
-}	
-@media only screen and (max-width: 1200px) {
+.list-group{
+	max-width:34rem;
+}
+#icons_left{
+	padding: 3rem;
+}
+}
+@media only screen and (max-width: 400px) {
+	#item_2{
+		left:-222px;
+		min-width:300px;
+	}	
+	#item_1{
+		min-width:300px;
+	}
+	#ipad_headline, #icons_headline, #icons_headline_2 {
+		font-size: 0.4rem;
+	}
+	#icons_left h2{
+		font-size: 4rem;
+	}
+}
+@media only screen and (max-width: 500px) {
+	#item_2{
+		left:-200px;
+		min-width:300px;
+	}	
+	#item_1{
+		
+		min-width:300px;
+	}
+	#ipad_headline, #icons_headline, #icons_headline_2, #icons_headline_3{
+		font-size: 0.4rem;
+	}
+	#icons_left h2{
+		font-size: 4rem;
+	}
+	}
 	
+
+@media only screen and (max-width: 1200px) {
+	.list-group{
+		max-width:50%;
+	}
+	h3{
+		color: white;
+    font-size: 2rem;
+    margin-top: 5rem;
+	}
 	h1 {
 	font-size: 9em;
 	}
@@ -98,6 +148,11 @@ h2{
 		}
 	
 }
+#funktionen{
+	display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
 .ipad_head{
     display: flex;
     justify-content: space-between;
@@ -128,6 +183,7 @@ text-align: center;
 	font-family:Roboto-Black;
 	transform: translateX(-50%);
 	justify-content: space-around;
+	padding: 100px;
 }	
 #icons_headline{
 	display: flex;
@@ -143,7 +199,7 @@ text-align: center;
 #icons_left{
 transform: translateX(-50%);
       height: 100%;
-    width: 300%;
+    width: 500%;
     text-align: center;
     background-color: #00ffff;
 }

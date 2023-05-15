@@ -69,6 +69,9 @@
             "./config/packages/fos_ckeditor.yaml"
         ]
     },
+    "gregwar/captcha-bundle": {
+        "version": "v2.2.0"
+    },
     "lexik/jwt-authentication-bundle": {
         "version": "2.18",
         "recipe": {

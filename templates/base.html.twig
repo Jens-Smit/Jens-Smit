@@ -15,6 +15,7 @@
     <script src="{{asset('js/jquery-3.5.1.slim.min.js')}}"></script>
    <script src="{{asset('js/jquery-3.6.3.min.js')}}"></script>
     <script src="{{asset('js/bootstrap.min.js')}}" ></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twig.js/0.8.9/twig.min.js"></script>
     <!-- js für Textareas-->
     <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
         {% endblock %}
@@ -27,7 +28,7 @@
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-light shadow">
-  <a class="navbar-brand" href="#"><img style='    height: 40px;' src="{{asset('img/logo_white.png')}}" class='logo'></a>
+  <a class="navbar-brand" href="{{path('home')}}"><img style='    height: 40px;' src="{{asset('img/logo_white.png')}}" class='logo'></a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -44,23 +45,30 @@
       </li>
     </ul>
   </div>
-  <ul class="navbar-nav ml-auto">
+     
+    {% if is_granted('IS_AUTHENTICATED_FULLY')  %}
+       <ul class="navbar-nav ml-auto">
     <li class="nav-item dropdown">
     <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-     <div class="dropdown-menu" style="position: absolute;    margin: 0px 0px 0px -100px" aria-labelledby="userDropdown">
-     </a>     
-    {% if is_granted('IS_AUTHENTICATED_FULLY')  %}
-       {{ app.user.vorname }}
+    {{ app.user.vorname }} </a>
+     <div class="dropdown-menu" style="position: absolute;    right: 0px;    padding: 15px" aria-labelledby="userDropdown">
+     
+       
       
       
            <a class="dropdown-item" href="{{ path('app_user_show', {'id': app.user.id}) }}"><i class="fa fa-cog"></i>&ensp;Settings</a>  
-           <hr>
+           
         <a class="dropdown-item" href="{{path('app_logout')}}"><i class="fa fa-sign-out"></i>&ensp;Logout</a>
-        
-         <div class="form-check form-switch"><input  class="form-check-input"  type="checkbox" role="switch" id="dark-mode-switch" /></div> 
+        <hr>
+         <div class="form-check form-switch" style='display: flex;    justify-content: space-around;'><input  class="form-check-input"  type="checkbox" role="switch" id="dark-mode-switch" /></div> 
      
         
       {% else %}
+      <ul class="navbar-nav ml-auto">
+    <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <i class="fa fa-user" style="margin-right: 0px;"></i></a>
+     <div class="dropdown-menu" style="position: absolute;    right: 0px;    padding: 15px" aria-labelledby="userDropdown">
      
         <a class="dropdown-item" href="{{path('app_login')}}"><i class="fa fa-sign-in"></i>&ensp;Login</a>
         <a class="dropdown-item" href="{{path('reg')}}"><i class="fa fa-plus"></i>&ensp;Registrieren</a>
@@ -142,7 +150,7 @@
   <!-- Footer -->
   <footer class=" py-3 mt-5 " style="    margin: 0px !important;">
     <div class="container">
-      <p>Copyright &copy; Meine Website 2021</p>
+        <p>Copyright &copy; VisionGastro</p>
     </div>
   </footer>
   

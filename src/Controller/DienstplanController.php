@@ -17,6 +17,7 @@ use Doctrine\DBAL\Types\DateType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -176,6 +177,28 @@ class DienstplanController extends AbstractController
             'form' => $form,
         ]);
       
+    }
+    #[Route('/dienstplan_save', name: 'app_dienstplan_dienstplan_save', methods: [ 'GET', 'POST'])]
+    public function dienstplan_save(Request $request, ManagerRegistry $doctrine): Response
+    {    
+        $entityManager = $doctrine->getManager();
+        $data = $request->request->all();
+        $userId = $data['user'];
+        
+        $user = $entityManager->getRepository(User::class)->find($userId);
+        
+        $dienstplanId = $data['form']['dienstplan'];
+        $dienstplan = $entityManager->getRepository(Dienstplan::class)->find($dienstplanId);
+        $user->addDienstplan($dienstplan);
+        
+        try {
+            $entityManager->flush();
+            $this->addFlash('success', 'Erfolgreich gespeichert');
+            return new JsonResponse(true);
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Fehler beim Speichern');
+            return new JsonResponse(false);
+        }
     }
     #[Route('/{id}', name: 'app_dienstplan_show', methods: ['POST','GET'])]
     public function show(Dienstplan $dienstplan, CompanyRepository $companyRepository): Response
@@ -410,6 +433,7 @@ class DienstplanController extends AbstractController
             $lastItem = end($newArray);
             if($lastItem['kommen'] =='00:00'){
                 //flashmessage -> kommen Darf nicht 00:00 Sein
+                $this->addFlash('danger', 'kommen Darf nicht 00:00 Sein');
                 array_splice($newArray, -2);
                 file_put_contents($filePath, json_encode($newArray));
                 return $this->render('dienstplan/edit_pv.html.twig', [
@@ -419,6 +443,7 @@ class DienstplanController extends AbstractController
             }
             elseif($lastItem['gehen'] =='00:00'){
                 //flashmessage -> gehen Darf nicht 00:00 Sein
+                $this->addFlash('danger', 'gehen Darf nicht 00:00 Sein');
                 array_splice($newArray, -2);
                 file_put_contents($filePath, json_encode($newArray));
                 return $this->render('dienstplan/edit_pv.html.twig', [
@@ -434,9 +459,9 @@ class DienstplanController extends AbstractController
             'form' => $form->createView(),
             'dienstplan' => $dienstplan,
         ]); 
-    } else {
-        return $this->render('dashboard/noroles.html.twig');
-    }
+        } else {
+            return $this->render('dashboard/noroles.html.twig');
+        }
     }
 
     #[Route('/{id}', name: 'app_dienstplan_delete', methods: ['POST'])]

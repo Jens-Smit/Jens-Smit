@@ -39,6 +39,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -46,7 +47,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Config\Framework\MailerConfig;
 
-#[Route('/user')]
+#[Route('/user', methods: ['GET', 'POST'])]
 class UserController extends AbstractController
 {
    
@@ -218,6 +219,7 @@ class UserController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+   
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
@@ -248,29 +250,27 @@ class UserController extends AbstractController
     public function edit(Request $request, User $user, UserRepository $userRepository, UserDokumenteRepository $userDokumenteRepository): Response
     {
         $users = $this->container->get('security.token_storage')->getToken()->getUser();
-        if ( $users->getCompany()->getId() == $user->getCompany()->getId() AND in_array("ROLE_HR", $users->getRoles())){
-            //dump($user);
-            $form = $this->createForm(UserType::class, $user);
-            $form->handleRequest($request);
-            $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
-            return $this->render('user/edit.html.twig', [
-                'user' => $user,
-                'form' => $form->createView(),
-                'dokumente' =>  $dokumente,
-            ]);  
-        }
-        else{ 
-            $form = $this->createForm(UserType::class, $users);
-            $form->handleRequest($request);
-                return $this->render('user/edit.html.twig', [
-                    'user' => $users,
-                    'form' => $form->createView(),
-                ]); 
-        }
+    if ($users->getCompany()->getId() == $user->getCompany()->getId() AND in_array("ROLE_HR", $users->getRoles())) {
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+        $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
         if ($form->isSubmitted() && $form->isValid()) {
             $userRepository->save($user, true);
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
+        return $this->render('user/edit.html.twig', [
+            'user' => $user,
+            'form' => $form->createView(),
+            'dokumente' =>  $dokumente,
+        ]);
+    } else {
+        $form = $this->createForm(UserType::class, $users);
+        $form->handleRequest($request);
+        return $this->render('user/edit.html.twig', [
+            'user' => $users,
+            'form' => $form->createView(),
+        ]);
+    }
     }
     #[Route('/{id}/dienstplan', name: 'app_user_dienstplan', methods: ['GET', 'POST'])]
     public function dienstplan(Request $request,User $user, ManagerRegistry $doctrine): Response
@@ -282,7 +282,7 @@ class UserController extends AbstractController
             $objektId = $objekt->getId();
             $dienstplans = $doctrine->getRepository(Dienstplan::class)->findBy(["Objket"=>$objektId]);
             foreach ($dienstplans as $dienstplan) {
-                $choices_dienstplan[$dienstplan->getBezeichnung()] = $dienstplan;
+                $choices_dienstplan[$dienstplan->getBezeichnung()] = $dienstplan->getId();
             }
           
         }
@@ -314,6 +314,7 @@ class UserController extends AbstractController
             'user' => $user,
         ]);
     }
+    
     #[Route('/{id}/arbeitszeiten', name: 'app_user_arbeitszeiten', methods: ['GET', 'POST'])]
     public function arbeitszeiten(User $user, UserRepository $userRepository, ManagerRegistry $doctrine, ArbeitszeitRepository $arbeitszeitRepository, Request $request): Response
     {

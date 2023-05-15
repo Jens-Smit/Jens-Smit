@@ -365,7 +365,7 @@ class ArbeitszeitController extends AbstractController
         ]);
     }
     #[Route('/fehlzeiten_save', name: 'app_arbeitszeit_fehlzeiten_save', methods: ['GET', 'POST'])]
-    public function fehlzeiten_save(ContractDataRepository $contractDataRepository,UserRepository $userRepository, FehlzeitenRepository $fehlzeitenRepository ,ManagerRegistry $doctrine, ArbeitszeitRepository $arbeitszeitRepository, Request $request): Response
+    public function fehlzeiten_save(ContractDataRepository $contractDataRepository,UserRepository $userRepository, FehlzeitenRepository $fehlzeitenRepository ,ManagerRegistry $doctrine, Request $request): Response
     { 
     	$userId = $request->get('user');
         $user= $userRepository->find($userId);
@@ -375,7 +375,7 @@ class ArbeitszeitController extends AbstractController
         
         $fehlzeit = $request->get('fehlzeit');
         $fehlzeit = $fehlzeitenRepository->find($fehlzeit);
-       $von  = $request->get('von');
+        $von  = $request->get('von');
         $von = $von." 08:00:00";
         $von = new DateTime($von); 
         
@@ -386,21 +386,27 @@ class ArbeitszeitController extends AbstractController
         $bis  = $request->get('bis'); 
         $bis = new DateTime($bis);
         
-        $return ="test";    
+        $return ="";    
         while ($von <= $bis) { 
-            $Arbeitszeit = new Arbeitszeit();
+           $Arbeitszeit = new Arbeitszeit();
             $Arbeitszeit->setUser($user);
             $Arbeitszeit->setDatum($von);
             $Arbeitszeit->setFehlzeit($fehlzeit);
             $Arbeitszeit->setEintrittszeit($von);
             $Arbeitszeit->setAustrittszeit($end); 
-            if ($arbeitszeitRepository->save($Arbeitszeit, true)) { $return ="Speichern war erfolgreich!"; } else {$return =$startdatetime;};
-           
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($Arbeitszeit);
+            $entityManager->flush();
+            if ($Arbeitszeit->getId()) {
+                $return = "Speichern war erfolgreich!";
+            } else {
+                $return = "Fehler beim Speichern!";
+            };
             $von->modify('+1 day');
             $end->modify('+1 day');  
         }
          
 
-        return new JsonResponse ($end);
+        return new JsonResponse ($return);
     }
 }

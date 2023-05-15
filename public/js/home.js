@@ -84,7 +84,7 @@
 			  //  markers: true, // Element wird an die Position gepinnt
 			},
 		});
-		// animation Section 2
+		// animation Section 3
 		let icons_headlineValue;
 		if (window.innerWidth < 900) {
 		  icons_headlineValue = -50;
@@ -100,11 +100,12 @@
 			  //  markers: true, // Element wird an die Position gepinnt
 			},
 		});
+
 		let icons_headline_2Value;
 		if (window.innerWidth < 900) {
-		  icons_headline_2Value = 700;
+		  icons_headline_2Value = 300;
 		} else {
-		  icons_headline_2Value = 1000;
+		  icons_headline_2Value = 600;
 		}
 		gsap.to("#icons_headline_2", {
 			x: icons_headline_2Value, // Endposition des Elements
@@ -115,3 +116,23 @@
 			  //  markers: true, // Element wird an die Position gepinnt
 			},
 		});
+		// animation Section 4
+		
+		
+
+		let icons_headline_3Value;
+		if (window.innerWidth < 900) {
+		  icons_headline_3Value = 360;
+		} else {
+		  icons_headline_3Value = 900;
+		}
+		gsap.to("#icons_headline_3", {
+			x: icons_headline_3Value, // Endposition des Elements
+			duration: 2, 
+			scrollTrigger: {
+				trigger: "#icons_headline_3", // Element, das den ScrollTrigger auslöst  
+				scrub: 2, // Animation wird mit dem Scrollen synchronisiert
+			  //  markers: true, // Element wird an die Position gepinnt
+			},
+		});
+		

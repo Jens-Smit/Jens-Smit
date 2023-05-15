@@ -20,19 +20,54 @@ function openModal(userId) {
         }
     });
 }
-function openModal1(userId) {
+function saveDienstplan(userId) {
+    var formDataArray = $('#addDenstplan').serializeArray();
+    console.log(formDataArray);
+    // Neues Objekt mit dem gewünschten Wert hinzufügen
+    formDataArray.push({name: 'user', value: userId});
+    console.log(formDataArray);
+    // Array in eine serialisierte Zeichenfolge konvertieren
+    var formData = $.param(formDataArray);
+    var url = "/dienstplan/dienstplan_save";
     $.ajax({
-        url: "/user/"+userId+"/dienstplan/",
-        type: "GET",
-        success: function(response) {
-            $("#modal-body").html(response);
-            $("#modal").modal("show");
-        },
-        error: function() {
-            alert("Es gab einen Fehler beim Laden des Vertragsdaten-Moduls");
+      url: url,
+      type: "POST",
+      data: formData,
+      success: function(response) {
+        if(response = true){
+            closeModal();
+         
+            console.log("Erfolgreich gesendet: " + response) ;
         }
+        else{
+            
+            console.log("fehler: " + response) ;
+        }
+      },
+      error: function() {
+        alert("Es gab einen Fehler beim Senden des Formulars");
+      }
     });
-}
+  }
+ 
+  function openModal1(userId) {
+    $.ajax({
+      url: "/user/"+userId+"/dienstplan/",
+      type: "GET",
+      success: function(response) {
+        $("#modal-body").html(response);
+        $("#modal").modal("show");
+        $('#addDenstplan').submit(function(event){
+          event.preventDefault();
+          console.log("erste funktion");
+          saveDienstplan(userId);
+        });
+      },
+      error: function() {
+        alert("Es gab einen Fehler beim Laden des Vertragsdaten-Moduls");
+      }
+    });
+  }
 function openModal_objekt_dienstplan(userId) {
     $.ajax({
         url: "/objekt/"+userId+"/dienstplan/",
