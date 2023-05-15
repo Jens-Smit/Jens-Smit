@@ -39,6 +39,11 @@
   }
   #silebar_icon{
       margin-left:-15px;
+      color: white !important;
+      border: none !important;
+      border-radius: 24px !important;
+      width: 24px;
+      height: 24px;
   }
   #spinner {
       position: absolute;

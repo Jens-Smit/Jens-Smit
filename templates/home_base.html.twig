@@ -25,15 +25,7 @@
 			<link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
 			<link rel="stylesheet" href="{{asset('css/home_style.css')}}">
         {% endblock %}
-        {% block javascripts %}
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js"></script>
-			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollToPlugin.min.js"></script>
-			<script src="{{asset('jquery-3.5.1.slim.min.js')}}" ></script>
-
-		{{ encore_entry_script_tags('app') }}
- 
-        {% endblock %}
+   
 
    
 
@@ -87,6 +79,7 @@
           
           <a class="dropdown-item" href="{{path('app_logout')}}">Logout</a>
           <a class="dropdown-item" href="{{path('app_user_index')}}">Settings</a>
+		  <a class="dropdown-item" href="{{path('reg')}}">Registrieren</a>
         </div>
           
         {% else %}
@@ -96,7 +89,7 @@
         <div class="dropdown-menu" style="position: absolute;    margin: 0px 0px 0px -100px" aria-labelledby="userDropdown">
           
           <a class="dropdown-item" href="{{path('app_login')}}">Login</a>
-          <a class="dropdown-item" href="{{path('reg')}}">Registrieren</a>
+          
         </div>
         <!-- alt -->
         
@@ -204,6 +197,24 @@
 	<div style='position: relative;bottom: -55px;width: 100%;color: #0dcaf0;text-align: center;'>
 	<a class="navbar-brand" href="{{path('privacy')}}">Datenschutzerklärung</a>
 	</div>
+	{% block javascripts %}
+	
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/gsap.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.1/ScrollTrigger.min.js"></script>
+			<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollToPlugin.min.js"></script>
+				<script type="module" src="{{asset('js/home.js')}}"></script>
+
+		{{ encore_entry_script_tags('app') }}
+			<script src="{{asset('js/jquery-3.5.1.slim.min.js')}}"></script>
+
+	<script src="{{asset('js/bootstrap.min.js')}}"></script>
+   
+	
+				<script type="module" src="{{asset('js/home.js')}}"></script>
+
+		{{ encore_entry_script_tags('app') }}
+ 
+        {% endblock %}
 </body>
 </html>
 
