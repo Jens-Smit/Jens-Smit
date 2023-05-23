@@ -1,7 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Vertrag bearbeiten{% endblock %}
-
+{% block stylesheet %}
+{{ parent() }}
+<style>
+span{
+    boder: 1px solid red; 
+    
+}
+</style>
+{% endblock %}
 {% block body %} 
     <h1>Vertrag bearbeiten</h1>
 
@@ -31,8 +39,8 @@
             <p>Klicken Sie auf eine Variable, um sie in den Vertragstext einzufügen:</p>
             
             {% for variable in variablen %}
-                <a href="#" class="variable-link" data-insert-var="{{ variable.name }}">{{ variable.var }}</a>
-            {% endfor %}
+                 <a href="#" class="variable" onclick="addVariable('{{variable.var}}')">{{variable.name}}</a>
+             {% endfor %}
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
@@ -44,4 +52,31 @@
 
 
 
+{% endblock %}
+{% block javascripts %}
+{{  parent() }}
+<script>
+$(document).ready(function(){
+
+});
+        function addVariable(variable){
+                       
+                        
+                        
+                        var string =  '#<span style="background:red;    padding: 3px;    border-radius: 5px;" >'+variable+'</span>#</p>'
+                        
+                       // CKEDITOR.instances.form_text.insertText(string);
+                        var editor = CKEDITOR.instances.form_text;
+                        var content = editor.getData();
+                        let lastIndex = content.lastIndexOf("</p>");
+                        if (lastIndex !== -1) {
+                         content = content.substring(0, lastIndex);
+                        }
+                        content = content+string;
+                        editor.setData(content);
+                        
+                        $('#varModal').modal('hide');
+        }
+  
+</script>
 {% endblock %}

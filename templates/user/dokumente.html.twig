@@ -21,8 +21,10 @@
                               
                             </li>
                         {% for dokument in dokumente %}
-                            <li class="list-group-item">
+                            <li class="list-group-item text-info d-flex justify-content-between">
                                 <a href="{{ asset(dokument.path) }}" target="_blank">{{ dokument.titel }}</a>
+                                <a class='delat_dokument' delat-dokument-data='{{dokument.id}}' href="" ><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                
                             </li>
                         {% endfor %}
                     </ul>

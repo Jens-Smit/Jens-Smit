@@ -108,12 +108,12 @@
 			  <li class="nav-item border-bottom">
 				<a class="nav-link d-flex"   href="{{path('app_vertrag')}}"><i class="fa fa-file-contract"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Verträge</p></a>
 			  </li>
-        <li class="nav-item border-bottom">
-				<a class="nav-link d-flex"   href="{{path('app_dienstplan_index')}}"><i class="fa fa-calendar"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Dienstpläne</p></a>
-			  </li>
-         <li class="nav-item border-bottom">
-				<a class="nav-link d-flex"   href="{{path('app_arbeitszeit_edit')}}"><i class="fa fa-clock"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Stempelzeiten</p></a>
-			  </li>
+        {% for dienstplan in app.user.dienstplans %}
+         <li class="nav-item border-bottom">   
+            <a class="nav-link d-flex"   href="{{ path('app_dienstplan_show', {'id': dienstplan.id}) }}"><i class="fa fa-calendar"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>{{ dienstplan.bezeichnung }}</p></a>
+			   </li> 
+        {% endfor %}
+         
         {% if app.user.objekt != null %}
           <li class="nav-item border-bottom">
             <a class="nav-link d-flex"   href="{{ path('app_reservations', {'id': app.user.objekt.id}) }}"><i class="fa fa-cutlery"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>{{app.user.objekt.name}}</p></a>
@@ -163,19 +163,8 @@ $(document).ready(function() {
 
 
 
-  $('a[data-insert-var]').click(function() {
-                var variable = $(this).data('insert-var');
-                console.log(variable);
-                CKEDITOR.instances.form_text.insertText(variable);
-                console.log("finisch");
-                var editor = CKEDITOR.instances.form_text;
-                var content = editor.getData();
-                content = content.replace(/(Var_[a-zA-Z0-9]+)/g, '<span style="background-color:yellow">$1</span>');
-                editor.setData(content);
-                $('#varModal').modal('hide');
-            });
+  
   const darkModeSwitch = document.getElementById('dark-mode-switch');
-
   darkModeSwitch.addEventListener('change', (event) => {
     if (event.target.checked) {
       document.documentElement.classList.add('dark-mode');
@@ -191,7 +180,7 @@ $(document).ready(function() {
 	  $(".link_text").show();
 	  $("#silebar_icon").removeClass('fa-chevron-right').addClass('fa-chevron-left');
     } else {
-      $('#sidebar').addClass('sidebar-collapsed');
+    $('#sidebar').addClass('sidebar-collapsed');
 	  $(".link_text").hide();
 	  $("#silebar_icon").removeClass('fa-chevron-left').addClass('fa fa-chevron-right');
     }

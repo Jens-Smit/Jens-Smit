@@ -1,13 +1,35 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}edit user Role{% endblock %}
 
 {% block body %}
-  <h1>Edit User Role</h1>
+  <h1>Rechte zuweisen</h1>
 
     {{ form_start(form) }}
-        {{ form_row(form) }}
         
+        {{ form_row(form, {'label': false})}}
     {{ form_end(form) }}
+{% endblock %}
+{% block javascripts %}
+<script>
+ $(document).ready(function() {
+ $('form[name="edit_role"]').submit(function(event){
+                            event.preventDefault();
+                            
+                            var form_data = $(this).serialize();
+                            var user = {{user.id}};
+                            form_data += '&user=' + user;
+                            $.ajax({
+                                type: "POST",
+                              
+                                url: "{{ path('app_role_save') }}",
+                                data: form_data,
+                                dataType: "text",
+                                success: function(data) {
+                                  location.reload();       
+                                  //console.log(data);
+                                }
+                            }); 
+
+                        });
+  });
+                        </script>
 {% endblock %}
 

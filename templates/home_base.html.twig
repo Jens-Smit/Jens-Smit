@@ -52,7 +52,11 @@
 	
 		<div style='position: sticky;top: 0px;z-index: 50;opacity: 0.92;'>
 		<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="{{path('home')}}"><img style='    height: 40px;' src="{{asset('img/logo_white.png')}}" class='logo'></a>
+    <div id="logo">
+	<a  class="navbar-brand" href="{{path('home')}}">
+	<img style='    height: 40px;' src="{{asset('img/logo_white.png')}}" class='logo'>
+	</a>
+	</div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -100,6 +104,14 @@
 		</div>
 	
     <section id='first_section'>
+		<div id="ipad_headline"> 
+			<h1>
+				<span class="highlight">so</span> <br>
+				<span class="highlight">individuell</span><br>
+				<span class="highlight">wie dein</span><br>
+				<span class="highlight"> Bussiness</span>
+			</h1>
+		</div>
 		<div class='ipad' id='ipad'>
 			<div class='ipad_head'>
 				<div class='ipad_head_Itams'>
@@ -117,12 +129,7 @@
 				<i class="fa fa-square"></i>
 			</div>
 		</div>
-		<div id="ipad_headline"> <h1>
-		<span class="highlight">so</span> <br>
-		<span class="highlight">individuell</span><br>
-		<span class="highlight">wie dein</span><br>
-		<span class="highlight"> Bussiness</span>
-		</h1></div>
+		
 
 	</section>
 	

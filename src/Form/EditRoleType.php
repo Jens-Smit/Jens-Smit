@@ -40,6 +40,7 @@ class EditRoleType extends AbstractType
                 ])
                 ->add('submit', SubmitType::class, [
                     'label' => 'Save',
+                    'attr' => ['class' => 'btn btn-info w-100'],
                 ]);
     }
 }

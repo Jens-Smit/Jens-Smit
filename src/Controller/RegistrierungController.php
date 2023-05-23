@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -17,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class RegistrierungController extends AbstractController
 {
     #[Route('/Registrierung', name: 'reg')]
-    public function reg(Request $request,UserPasswordHasherInterface $passEncoder,ManagerRegistry $doctrine): Response
+    public function reg(Request $request,UserPasswordHasherInterface $passEncoder,ManagerRegistry $doctrine, UserRepository $userRepository): Response
     {
         $regform = $this->createFormBuilder()
         ->add('email', TextType::class,[
@@ -38,18 +39,27 @@ class RegistrierungController extends AbstractController
         $regform -> handleRequest($request);
         if($regform->isSubmitted()){
                 $eingabe = $regform->getData();
-                $user = new User();
-                $user->setEmail($eingabe['email']);
-                $user->setVorname($eingabe['vorname']);   
-                $user->setNachname($eingabe['nachname']);              
-                $user->setPassword(
-                    $passEncoder->hashPassword($user, $eingabe['password'])
-                );
-                $user->setRoles(["ROLE_USER","ROLE_ADMIN"]);
-                $em=$doctrine->getManager();
-                $em->persist($user);
-                $em->flush();
-                return $this->redirect($this->generateUrl('app_login'));
+                $userPruft = $userRepository->findBy(['email' => $eingabe['email']]);
+                if(!isset($userPruft)){
+                    $user = new User();
+                    $user->setEmail($eingabe['email']);
+                    $user->setVorname($eingabe['vorname']);   
+                    $user->setNachname($eingabe['nachname']);              
+                    $user->setPassword(
+                        $passEncoder->hashPassword($user, $eingabe['password'])
+                    );
+                    $user->setRoles(["ROLE_USER","ROLE_ADMIN"]);
+                    $em=$doctrine->getManager();
+                    $em->persist($user);
+                    $em->flush();
+                    return $this->redirect($this->generateUrl('app_login'));
+                }else{
+                    $this->addFlash('danger', 'User bereits vorhanden');
+                    return $this->redirect($this->generateUrl('app_login'));
+                }
+
+                  
+                
         }
         return $this->render('registrierung/index.html.twig', [
            'regform' => $regform->createView()

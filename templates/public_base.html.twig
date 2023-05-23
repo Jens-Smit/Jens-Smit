@@ -88,6 +88,12 @@
   <div class="container-fluid">
           <!-- Content -->
       <div class="container">
+       
+      {% for type, messages in app.session.flashbag.all %}
+    {% for message in messages %}
+        <div class="alert alert-{{ type }}">{{ message|trans }}</div>
+    {% endfor %}
+{% endfor %}
          {% block body %}{% endblock %}
       </div>
   </div>

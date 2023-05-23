@@ -8,7 +8,8 @@ use App\Entity\CompensationTypes;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -17,15 +18,38 @@ class ContractDataType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('startDate', DateType::class)
-            ->add('singDate', DateType::class)
-            ->add('lohn')
-            ->add('stunden')
-            ->add('endDate',DateType::class)
-            ->add('Urlaub')
-            ->add('bezeichnung')
-            ->add('user',EntityType::class,[
+            ->add('bezeichnung',TextType::class,[
+                'label'=> 'Bezeichnung der Vertragsdaten',
+            ])
+            ->add('startDate', DateType::class, [
+                'data' => new \DateTime(),
+                'label'=> 'Tage des Vertragsstarts',
+            ])
+            ->add('singDate', DateType::class, [
+                'data' => new \DateTime(),
+                'label'=> 'Tag der Vnterschrift',
+            ])
+            ->add('lohn',NumberType::class,[
+                'label'=> 'Vergütung in euro',
+            ])
+            ->add('stunden',NumberType::class,[
+                'label'=> 'wöchentliche Arbeitsstunden',
+            ])
+            ->add('endDate',DateType::class,[
+                'label'=> 'Austrittsdatum',
+                'required' => false,
+                'empty_data' => null,
+            ])
+            ->add('Urlaub',NumberType::class,[
+                'label'=> 'Jahresurlaub in Tagen',
+            ])
+            
+            ->add('user',EntityType::class,[ 
                 'class' => User::class,
+                'label'=> false,
+                 'attr' => [
+                    'style' => 'display:none;'
+                    ] 
             ])
             ->add('CompensationTypes', EntityType::class, [
                 'class' => CompensationTypes::class,

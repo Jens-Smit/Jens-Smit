@@ -7,7 +7,7 @@
             <tr>
                 <th>Id</th>
                 <th>Bezeichnung</th>
-                <th>Start</th>
+                <th>status</th>
                 <th>Ende</th>
                 <th>actions</th>
             </tr>
@@ -17,8 +17,12 @@
             <tr>
                 <td>{{ dienstplan.id }}</td>
                 <td>{{ dienstplan.bezeichnung }}</td>
-                <td>{{ dienstplan.start ? dienstplan.start|date('Y-m-d') : '' }}</td>
-                <td>{{ dienstplan.ende ? dienstplan.ende|date('Y-m-d') : '' }}</td>
+                {% if dienstplan.ende is defined %}
+                  <td>aktiv</td>   {# do something #}
+                {% else %}
+                 <td>beendet</td> 
+                {% endif %}
+              
                 <td>
                     <a href="{{ path('app_dienstplan_show', {'id': dienstplan.id}) }}">show</a>
                     <a href="{{ path('app_dienstplan_edit', {'id': dienstplan.id}) }}">edit</a>

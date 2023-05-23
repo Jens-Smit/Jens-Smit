@@ -43,8 +43,8 @@ class ContractData
     #[ORM\Column(length: 255)]
     private ?string $bezeichnung = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?int $status = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $status = null;
     
     
 
@@ -166,12 +166,12 @@ class ContractData
         return $this->bezeichnung;
     }
 
-    public function getStatus(): ?int
+    public function getStatus(): ?string
     {
         return $this->status;
     }
 
-    public function setStatus(?int $status): self
+    public function setStatus(?string $status): self
     {
         $this->status = $status;
 

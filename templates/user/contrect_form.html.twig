@@ -1,7 +1,10 @@
 
-
-{% block body %}
+<div class="container">
+<a class="btn btn-info"   href="{{path('app_vertrag_new')}}"><i class="fa fa-plus"></i> </a>
+			  
+ {% block body %}
 {{ form_start(form) }}
    {{ form_widget(form) }}
 {{ form_end(form) }}
-{% endblock %}
+{% endblock %}  
+</div>

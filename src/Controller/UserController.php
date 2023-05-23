@@ -18,6 +18,7 @@ use App\Form\UserDokumenteType;
 use App\Repository\ArbeitszeitRepository;
 use App\Repository\CompanyRepository;
 use App\Repository\ContractDataRepository;
+use App\Repository\DienstplanRepository;
 use App\Repository\FehlzeitenRepository;
 use App\Repository\UserDokumenteRepository;
 use App\Repository\UserRepository;
@@ -30,6 +31,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Asset\Package;
+use Symfony\Component\Asset\VersionStrategy\StaticVersionStrategy;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -125,6 +128,37 @@ class UserController extends AbstractController
             'form' => $form,
         ]);
     }
+    #[Route('/role_save', name: 'app_role_save', methods: ['GET', 'POST'])]
+    public function role_save( Request $request,ManagerRegistry $doctrine, UserRepository $userRepository): Response
+    {
+        $data = $request->request->all();
+       
+        if (isset($data)) {
+            $data = $request->request->all();
+            $roles = $data['edit_role']['roles'];
+            $user = $userRepository->find($data['user']);
+            $user->setRoles($roles);
+            $em=$doctrine->getManager();
+            $em->persist($user);
+            $em->flush();
+            $this->addFlash('success', 'User Rechte erfolgreich geändert');
+            return new JsonResponse('success');
+        }
+    }
+    #[Route('/dienstplan_remov', name: 'app_dienstplan_remov', methods: ['GET', 'POST'])]
+    public function dienstplan_remov( Request $request,DienstplanRepository $dienstplanRepository,ManagerRegistry $doctrine, UserRepository $userRepository): Response
+    {
+        $data = $request->request->all();
+        $user =$userRepository->find($data['user'] );
+        $dienstplan = $data['dienstplan'];
+        $dienstplan = $dienstplanRepository->find($dienstplan);
+        $user->removeDienstplan($dienstplan);
+        $entityManager = $doctrine->getManager();
+        $entityManager->flush();
+        $this->addFlash('success', 'Dienstplan zuordnung entfernt');
+        return new JsonResponse($data);
+    
+    }
     #[Route('/password_reset', name: 'password_reset', methods: ['GET', 'POST'])]
     public function NewPassword(Request $request,ManagerRegistry $doctrine,UserPasswordHasherInterface $passEncoder,MailerInterface $mailer): Response
     {
@@ -219,7 +253,36 @@ class UserController extends AbstractController
             'form' => $form->createView()
         ]);
     }
-   
+    #[Route('/delate_dokument', name: 'delate_dokument', methods: ['GET', 'POST'])]
+    public function delate_dokument(ManagerRegistry $doctrine, Request $request, UserDokumenteRepository $userDokumenteRepository)
+    {
+        $id = $request->request->get('id');
+        $document  = $userDokumenteRepository->find($id);
+        
+        // Überprüfen Sie, ob das Dokument gefunden wurde
+        if (!$document) {
+            return new JsonResponse('Das Dokument wurde nicht gefunden.', 404);
+        }
+        // Holen Sie den Dateipfad des Dokuments
+        $file = $document->getPath();
+        
+      if (!file_exists($file)) {
+        return new Response('Die Datei existiert / nicht.'.$file);
+        }
+        // Löschen Sie die Datei
+        if (unlink($file)) {
+            // Löschen Sie das Dokument aus der Datenbank
+            $entityManager = $doctrine->getManager();
+            $entityManager->remove($document);
+            $entityManager->flush();
+
+            return new JsonResponse('Das Dokument wurde erfolgreich gelöscht.');
+        } else {
+            return new JsonResponse('Fehler beim Löschen des Dokuments.', 500);
+        }
+       
+        
+    }
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
@@ -246,31 +309,32 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
+   
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, UserRepository $userRepository, UserDokumenteRepository $userDokumenteRepository): Response
     {
         $users = $this->container->get('security.token_storage')->getToken()->getUser();
-    if ($users->getCompany()->getId() == $user->getCompany()->getId() AND in_array("ROLE_HR", $users->getRoles())) {
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-        $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $userRepository->save($user, true);
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        if ($users->getCompany()->getId() == $user->getCompany()->getId() AND in_array("ROLE_HR", $users->getRoles())) {
+            $form = $this->createForm(UserType::class, $user);
+            $form->handleRequest($request);
+            $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $userRepository->save($user, true);
+                return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            }
+            return $this->render('user/edit.html.twig', [
+                'user' => $user,
+                'form' => $form->createView(),
+                'dokumente' =>  $dokumente,
+            ]);
+        } else {
+            $form = $this->createForm(UserType::class, $users);
+            $form->handleRequest($request);
+            return $this->render('user/edit.html.twig', [
+                'user' => $users,
+                'form' => $form->createView(),
+            ]);
         }
-        return $this->render('user/edit.html.twig', [
-            'user' => $user,
-            'form' => $form->createView(),
-            'dokumente' =>  $dokumente,
-        ]);
-    } else {
-        $form = $this->createForm(UserType::class, $users);
-        $form->handleRequest($request);
-        return $this->render('user/edit.html.twig', [
-            'user' => $users,
-            'form' => $form->createView(),
-        ]);
-    }
     }
     #[Route('/{id}/dienstplan', name: 'app_user_dienstplan', methods: ['GET', 'POST'])]
     public function dienstplan(Request $request,User $user, ManagerRegistry $doctrine): Response
@@ -459,7 +523,7 @@ class UserController extends AbstractController
         ]);
     }
     #[Route('/{id}/document', name: 'app_user_document', methods: ['GET', 'POST'])]
-    public function document(Request $request, User $user, ManagerRegistry $doctrine): Response
+    public function document(Request $request, User $user, ManagerRegistry $doctrine,UserDokumenteRepository $userDokumenteRepository): Response
     {
         $document = new UserDokumente();
         $form = $this->createForm(UserDokumenteType::class, $document);
@@ -475,14 +539,19 @@ class UserController extends AbstractController
             $file = $form->get('path')->getData();
             $filename = $titel."_".$date.".pdf";
             $path = 'data/'.$user->getId();
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
             $move_path= 'data/'.$user->getId();
             $file->move($move_path, $filename);
             $document->setPath($path . '/' . $filename);
             
+
             $entityManager = $doctrine->getManager();
             $entityManager->persist($document);
             $entityManager->flush();
-           
+            
+           //successs medung
             return $this->redirectToRoute('app_user_document_list', ['id' => $user->getId()]);
         }
 
@@ -492,14 +561,11 @@ class UserController extends AbstractController
         ]);
     }
     #[Route('/{id}/document_show', name: 'app_user_document_list', methods: ['GET', 'POST'])]
- 
     public function dokumenteAnzeigen(User $user,UserDokumenteRepository $userDokumenteRepository )
     {
         $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
-        return $this->render('user/dokumente.html.twig', [
-            'dokumente' => $dokumente,
-            'user' => $user,
-        ]);
+        return $this->redirectToRoute('app_user_edit', ['id' => $user->getId()]);
+  
     }
     #[Route('/{id}/edit-role', name: 'edit_role', methods: ['GET', 'POST'])]
     public function editRole(User $user, Request $request,ManagerRegistry $doctrine)

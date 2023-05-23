@@ -4,52 +4,7 @@
         font-family: "Roboto-Black";
         src: url("fonts/Roboto-Black.ttf") format("truetype");
     }
-@media screen and (min-width: 1200px) {
-	h3{
-		color: white;
-    font-size: 5rem;
-    
-	}		
-h1{
-    font-size: 6em;
-	}
-h2{
-    font-size: 5em;
-	color:white;
-	}
-	section {
-		height: 100vh;
-		width: 100%;
-		display:flex;
-		overflow:hidden;
-		justify-content: space-between;
-		}
-.ipad{
-    width: 40%;
-	max-width:450px;
-    background: black;
-    border-radius: 20px;
-    max-height: 90vh;
-	height: 550px;
-    color: white;
-    padding: 10px;
-    margin: auto;
-	transform: translateX(-100%);
-	}
-#ipad_headline{
-    transform: translateX(100%);
-	display: flex;
-    width: 40%;
-	font-family:Roboto-Black;
 
-	}
-.list-group{
-	max-width:34rem;
-}
-#icons_left{
-	padding: 3rem;
-}
-}
 @media only screen and (max-width: 400px) {
 	#item_2{
 		left:-222px;
@@ -75,78 +30,71 @@ h2{
 		min-width:300px;
 	}
 	#ipad_headline, #icons_headline, #icons_headline_2, #icons_headline_3{
-		font-size: 0.4rem;
+		font-size: 0.4rem  !important;
 	}
 	#icons_left h2{
 		font-size: 4rem;
+	}
+	.ipad{
+		
+	}
+	#first_section{
+		display:block;
 	}
 	}
 	
 
 @media only screen and (max-width: 1200px) {
+	#first_section{
+		display:block;
+	}
 	.list-group{
-		max-width:50%;
+		width: 100%;
 	}
 	h3{
 		color: white;
-    font-size: 2rem;
-    margin-top: 5rem;
+    font-size: 5rem;
+    
+	}		
+h1{
+    font-size: 6em;
 	}
-	h1 {
-	font-size: 9em;
-	}
-	h2 {
-	font-size: 9em;
-	text-align:center;
+h2{
+    font-size: 5em;
 	color:white;
 	}
-	#full-screen{
-		flex-direction: row  !important;
-	}
 	section {
-		height: 100vh;
+		
 		width: 100%;
 		display:flex;
 		overflow:hidden;
 		justify-content: space-between;
-		flex-direction: column;
 		}
-	.ipad_head,
-	.ipad_footer
-	 {
-	transform: translateX(0%);
+.ipad{
+    width: 80% !important;
+	max-width:450px;
+    background: black;
+    border-radius: 20px;
+    max-height: 90vh;
+	height: 550px;
+    color: white;
+    padding: 10px;
+    margin: auto;
+	transform: translateX(-100%);
 	}
-	#first_section{
-		flex-direction: column-reverse;
-	}
-	.ipad {
-		width: 80%;
-		
-		background: black;
-		border-radius: 20px;
-		max-height: 90vh;
-		height: 50%;
-		color: white;
-		padding: 10px;
-		margin-left: auto;
-		transform: translateX(-100%);
-	}
-	#icons_left, #icons_headline, #icons_headline_2{
-	align-items: center;
-    display: flex;
-    justify-content: space-around;
-	height:33vh;
+#ipad_headline{
+    transform: translateX(100%);
+	display: flex;
+    width: 40%;
+	font-family:Roboto-Black;
 
 	}
-	#ipad_headline{
-		transform: translateX(100%);
-		display: flex;
-		width: 80%;
-		font-family:Roboto-Black;
-		justify-content:right;
-	
-		}
-	
+.list-group{
+	max-width:34rem;
+}
+#icons_left{
+	padding: 3rem;
+}
 }
 #funktionen{
 	display: flex;

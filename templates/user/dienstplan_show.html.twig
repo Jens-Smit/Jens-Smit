@@ -1,9 +1,30 @@
 
 {% block body %}
    <div class="container">
+   <table class="table">
+    <thead>
+        <tr>
+           
+            <th>Bezeichnung</th>
+            <th>aktion</th>
+        </tr>
+    </thead>
+    <tbody>
+   
    {% for dienstplan in dienstplans %}
     
-    {{ dienstplan.bezeichnung }}
-{% endfor %}
+        <tr>
+            
+            <td>{{ dienstplan.bezeichnung }}</td>
+            <td>
+            <a  onclick="sendDeleteRequest({{dienstplan.id }})">Delete</a>
+            </td>
+        </tr>
+    
+   
+    {% endfor %}
+</tbody> 
+</table>
     </div>
 {% endblock %}
+

@@ -35,11 +35,24 @@
         <div class="col p-3 col-sm-6 col-12">
             <div class="card">
                 <div class="card-body">
-                    <blockquote class="blockquote">
-                    <a class="btn w-100 btn-info" href="{{ path('app_objekt_opening', {'id': objekt.id}) }}">Opening Times</a>
-                    <a class="btn w-100 btn-info" href="{{ path('rent_items', {'id': objekt.id}) }}">Areas &amp Itams</a>
-                    <a class ='btn w-100 btn-info' href="#" onclick="openModal_objekt_dienstplan({{ objekt.id }})">Dienstplan</a>
-                    </blockquote>
+
+                <ul class="nav nav-tabs">
+                    <li class="nav-item w-100 text-center">
+                        <a class="nav-link nav-link-user  " href="{{ path('app_objekt_opening', {'id': objekt.id}) }}">Opening Times</a>
+                    </li>
+                     <li class="nav-item w-100 text-center">
+                        <a class="nav-link nav-link-user  " href="{{ path('rent_items', {'id': objekt.id}) }}">Areas &amp Itams</a>
+                    </li>
+                     <li class="nav-item w-100 text-center">
+                        <a class="nav-link nav-link-user  " href="#" onclick="openModal_objekt_dienstplan({{ objekt.id }})">Dienstplan</a>
+                    </li>
+                     <li class="nav-item w-100 text-center">
+                        <a class="nav-link nav-link-user  " href="#" onclick="openModal_objekt_vertrag()">vertrag</a>
+                    </li>
+                </ul>
+
+
+                    
                 </div>
             </div> 
         </div>

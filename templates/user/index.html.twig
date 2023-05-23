@@ -7,34 +7,20 @@
 
     <table class="table">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Objekt</th>
-                <th>Roles</th>
-                <th>Vorname</th>
+            <tr><th>Vorname</th>
                 <th>Nachname</th>
-                <th>actions</th>
+                <th>Objekt</th>
+                
             </tr>
         </thead>
         <tbody>
         {% for user in users %}
             <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.objekt  }}</td>
-                <td>
                 
-                <a href="{{ path('edit_role', {'id': user.id}) }}">
-                edit
-                </a>
+                <td><a href="{{ path('app_user_edit', {'id': user.id}) }}">{{ user.vorname }}</a></td>
+                <td><a href="{{ path('app_user_edit', {'id': user.id}) }}">{{ user.nachname }}</a></td>
+                <td>{{ user.objekt   }}</td>
                 
-                </td>
-                <td>{{ user.vorname }}</td>
-                <td>{{ user.nachname }}</td>
-                
-                <td>
-                    <a href="{{ path('app_user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-                </td>
             </tr>
         {% else %}
             <tr>

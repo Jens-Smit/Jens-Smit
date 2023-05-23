@@ -38,7 +38,19 @@ class ContractDataRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-    
+    public function updateUserStatus(int $id, string $status): void
+    {
+        $entityManager = $this->getEntityManager();
+        $entity = $this->find($id);
+        
+        if ($entity) {
+            $entity->setStatus($status);
+            $entityManager->persist($entity);
+            $entityManager->flush();
+        } else {
+            throw new \InvalidArgumentException('Entity not found.');
+        }
+    }
     
 
 //    /**

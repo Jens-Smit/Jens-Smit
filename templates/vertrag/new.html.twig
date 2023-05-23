@@ -33,7 +33,7 @@
             <p>Klicken Sie auf eine Variable, um sie in den Vertragstext einzufügen:</p>
             
             {% for variable in variablen %}
-                <a href="#" class="variable-link" data-insert-var="{{ variable.name }}">{{variable.var}}</a>
+                <a href="#" class="variable" onclick="addVariable('{{variable.var}}')">{{variable.name}}</a>
             {% endfor %}
         </div>
         <div class="modal-footer">
@@ -46,4 +46,25 @@
 
     
 {% endblock %}
-
+{% block javascripts %}
+{{  parent() }}
+<script>
+  
+        function addVariable(variable){
+                       
+                        
+                        
+                        CKEDITOR.instances.form_text.insertText(variable);
+                        
+                        var editor = CKEDITOR.instances.form_text;
+                        var content = editor.getData();
+                        console.log(content);
+                        content = content.replace('<p>', '<span class="variable"style="background-color:yellow">');
+                        content = content.replace('</p>', '</span>');
+                        console.log(content);
+                        editor.setData(content);
+                    // $('#varModal').modal('hide');
+        }
+  
+</script>
+{% endblock %}

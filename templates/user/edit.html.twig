@@ -18,7 +18,7 @@
     </div>
 </div>
 
-    <h1>User bearbeiten</h1>
+    <h1>{{user.vorname}} {{user.nachname}} bearbeiten</h1>
 <div class="group w-100 d-flex flex-wrap justify-content-around ">
     <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -39,7 +39,9 @@
     <li class="nav-item">
         <a class="nav-link nav-link-user" href="#" data-target="#Arbeitszeiten">Arbeitszeiten</a>
     </li>
-    
+    <li class="nav-item">
+        <a class="nav-link nav-link-user" href="#" data-target="#role">Rechte</a>
+    </li>
     </ul>
     
         <!-- Vertragsdaten-->
@@ -47,37 +49,47 @@
          <div class='card-head bg-info text-right' style='text-align: right;font-size: 1.5rem;' ></div>
             <div class="card-body">
                 <h5>Vertragsdaten</h5>
-                <a class ='btn btn-sm btn-primary shadow-sm'href="{{ path('app_contract_data_new') }}">
+               <a class='btn btn-sm btn-primary shadow-sm' id='new_contractData' href="#">
                 <i class="fa fa-plus" aria-hidden="true"></i></a>
                     
                 <table class="table w-100">
         
                     <thead>
                         <tr>  
-                            
+                            <th>Bezei</th>
                             <th>Start</th>
-                            <th>Ende</th>
+                           
                             <th>Actions</th>
                             
                         </tr>
                     </thead>
                     <tbody>
                     {% for contract in user.contractData %}
-                        <tr>
+                        
                             
-                            <td><a href="{{ path('app_contract_data_show', {'id': contract.id}) }}">{{ contract.startDate|date('Y-m-d') }}</a></td>
-                            {% if contract.endDate is null %}
-                            <td> Aktiv</td>
+                            
+                            {% if contract.status == 'aktiv' %}
+                            <tr >
+                            <td><a class='edit_contractData' data-contract='{{ contract.id }}' href="{{ contract.id }}">{{ contract.bezeichnung }}</a></td>
+                             <td>{{ contract.startDate|date('Y-m-d') }}</td>
+                            <td>  
+                            <a href="#" onclick="openModal_user_status({{  contract.id }})">Status</a>
+                            
+                            
+                            <br><a href="#" onclick="openModal({{ user.id }})">Drucken</a></td>
+                            </tr>
                             {% else %}
-                            <td> {{ contract.endDate|date('Y-m-d') }}</td>
+                            <tr class="bg-secondary">
+                            <td><a class='edit_contractData text-light' data-contract='{{ contract.id }}' href="{{ contract.id }}">{{ contract.bezeichnung }}</a></td>
+                             <td>{{ contract.startDate|date('Y-m-d') }}</td>
+                            <td> 
+                            <a href="#" onclick="openModal_user_status({{  contract.id }})">Status</a>
+                            <br><a href="#" class='text-light' onclick="openModal({{ user.id }})">Drucken</a></td> 
+                            </tr>
                             {% endif %}
                             
-                            
-                            <td>
-                            
-                                <a href="#" onclick="openModal({{ user.id }})">print</a>
-                            </td>
-                        </tr>
+                           
+                       
                     
                     
                     {% endfor %}
@@ -113,6 +125,15 @@
            
             </div>
         </div>
+        <!-- Role-->
+        <div class="card text-right w-100 d-none" id='role'>
+             <div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
+             <div class="card-body" id='role'>
+           {{ render(url('edit_role', {'id': user.id })) }}
+            </div>
+            
+        </div>
+       
         <!-- Arbeitszeiten-->
          <div class="card text-right w-100 d-none" id='Arbeitszeiten'>
                      <div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
@@ -150,7 +171,113 @@
     {{ parent() }}
     <script src="{{ asset('js/modal.js') }}"></script>
     <script>
+ function sendDeleteRequest(dienstplan) {
+    event.preventDefault();
+    var user = {{user.id}};
+    $.ajax({
+            type: "POST",
+            url: "{{path('app_dienstplan_remov')}}",
+            data: {   
+                    'user': user,
+                    'dienstplan': dienstplan,
+            },
+            dataType: "text",
+            success: function(data) {
+              location.reload(); 
+            }
+        }); 
+    
+        }
         $(document).ready(function() {
+            $('.delat_dokument').click(function(event) {
+                event.preventDefault();
+             var data = $(this).attr('delat-dokument-data');
+             
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('delate_dokument') }}",
+                    data: {   
+                        'id': data,
+                    },
+                    dataType: "text",
+                    success: function(data) {
+                        location.reload();
+                       
+                    }
+                });
+            });
+            
+            
+            $('#new_contractData').click(function() {
+                $.ajax({
+                    type: "POST",
+                    url: "{{ path('app_contract_data_new') }}",
+                    data: {   
+                        'userId': {{user.id}},
+                    },
+                    dataType: "text",
+                    success: function(data) {
+                        $("#modal-body").html(data);
+                        $("#modal").modal("show");
+                        
+                        $('form[name="contract_data"]').submit(function(event){
+                            event.preventDefault();
+                            
+                            var form_data = $(this).serialize();
+                            $.ajax({
+                               
+                                type: "POST",
+                                url: "{{ path('app_contract_data_new_save') }}",
+                                data: form_data,
+                                dataType: "text",
+                                success: function(data) {
+                                    location.reload();
+                                      
+                                           
+                                }
+                            }); 
+
+                        });        
+                     }
+                }); 
+            }); 
+            $('.edit_contractData').click(function() {
+                event.preventDefault();
+                var contract = $(this).attr('href');
+                console.log(contract);
+                var url = '/contract/data/'+contract+'/edit/';
+                $.ajax({
+                    type: "GET",
+                    url : url,
+                    success: function(data) {
+                        $("#modal-body").html(data);
+                        $("#modal").modal("show");
+                       
+                        $('form[name="contract_data"]').submit(function(event){
+                            event.preventDefault();
+                            
+                            var form_data = $(this).serialize();
+                           
+                            $.ajax({
+                                type: "POST",
+                                url: "{{path('app_contract_data_editSave')}}",
+                                data: form_data,
+                                
+                                success: function(data) {
+                                    location.reload();
+                                      
+                                           
+                                }
+                            }); 
+
+
+
+                           
+
+                        });       
+                     }
+                }); 
+            });
             // handle nav link clicks
             $('.nav-link-user').click(function(event) {
                 event.preventDefault();
@@ -190,7 +317,6 @@
                 $("#fehlzeiten").html(data);
                 $('#fehlzeit_add_show_btn').click(function(){
                     $('#fehlzeit_add_show').toggle(1000);
-                    
                 });
                 $('#fehlzeit_pv_show_btn').click(function(){
                     $('#fehlzeit_pv_show').toggle(1000);
@@ -220,7 +346,7 @@
                         type: "POST",
                         url: "{{path('app_arbeitszeit_fehlzeiten_save')}}",
                         data: {   
-                            'user': {{user.id}},
+                            'user': userId,
                             'fehlzeit': fehlzeit,
                             'von': von_date,
                             'bis': bis_date,

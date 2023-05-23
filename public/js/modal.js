@@ -49,7 +49,20 @@ function saveDienstplan(userId) {
       }
     });
   }
- 
+  function openModal_user_status(contractId) {
+    $.ajax({
+        url: "/contract/data/"+contractId+"/status/",
+        type: "GET",
+        success: function(response) {
+          $("#modal-body").html(response);
+          $("#modal").modal("show");
+           
+        },
+        error: function() {
+          alert("Es gab einen Fehler beim Laden des Vertragsdaten-Moduls");
+        }
+      });
+  }
   function openModal1(userId) {
     $.ajax({
       url: "/user/"+userId+"/dienstplan/",
@@ -71,6 +84,19 @@ function saveDienstplan(userId) {
 function openModal_objekt_dienstplan(userId) {
     $.ajax({
         url: "/objekt/"+userId+"/dienstplan/",
+        type: "GET",
+        success: function(response) {
+            $("#modal-body").html(response);
+            $("#modal").modal("show");
+        },
+        error: function() {
+            alert("Es gab einen Fehler beim Laden des Vertragsdaten-Moduls");
+        }
+    });
+}
+function openModal_objekt_vertrag() {
+    $.ajax({
+        url: "/vertrag/",
         type: "GET",
         success: function(response) {
             $("#modal-body").html(response);
