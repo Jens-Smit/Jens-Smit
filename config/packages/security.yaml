@@ -45,7 +45,7 @@ security:
         - { path: ^/vertrag, roles: [ROLE_HR, ROLE_ADMIN] }
         - { path: ^/dienstplan/\d+/create, roles: [ROLE_HR, ROLE_ADMIN] }
         - { path: ^/dienstplan/\d+, roles: [ROLE_USER, ROLE_ADMIN] }
-        - { path: ^/, roles: [ROLE_ADMIN] }
+        - { path: ^/, roles: [PUBLIC_ACCESS] }
         
          
 when@test:
