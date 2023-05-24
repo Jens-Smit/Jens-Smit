@@ -34,18 +34,18 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/user/\d+/edit-role, roles:  ROLE_ADMIN }
-        - { path: ^/user/\d+, roles:   [ROLE_HR, ROLE_ADMIN] }
-        - { path: ^/user/password_reset, roles:  PUBLIC_ACCESS }
-        - { path: ^/user/, roles:  ROLE_USER }
-        - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/user/\d+/edit-role, roles: ROLE_ADMIN }
+        - { path: ^/user/\d+, roles: [ROLE_HR, ROLE_ADMIN] }
+        - { path: ^/user/password_reset, roles: PUBLIC_ACCESS }
+        - { path: ^/user/, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: ^/dashboard, roles: [ROLE_USER, ROLE_ADMIN] }
         - { path: ^/objekt, roles: ROLE_ADMIN }
         - { path: ^/company, roles: ROLE_ADMIN }
         - { path: ^/dienste, roles: ROLE_ADMIN }
         - { path: ^/vertrag, roles: [ROLE_HR, ROLE_ADMIN] }
-        - { path: ^/dienstplan/\d+/create, roles:  [ROLE_HR, ROLE_ADMIN]  }
-        - { path: ^/dienstplan/\d+, roles: ROLE_USER }
-        - { path: ^/, roles: PUBLIC_ACCESS }
+        - { path: ^/dienstplan/\d+/create, roles: [ROLE_HR, ROLE_ADMIN] }
+        - { path: ^/dienstplan/\d+, roles: [ROLE_USER, ROLE_ADMIN] }
+        - { path: ^/, roles: [ROLE_ADMIN] }
         
          
 when@test:

@@ -40,7 +40,9 @@ class RegistrierungController extends AbstractController
         if($regform->isSubmitted()){
                 $eingabe = $regform->getData();
                 $userPruft = $userRepository->findBy(['email' => $eingabe['email']]);
-                if(!isset($userPruft)){
+                
+                if(count($userPruft)<1){
+                   // dump(count($eingabe['password']));
                     $user = new User();
                     $user->setEmail($eingabe['email']);
                     $user->setVorname($eingabe['vorname']);   
@@ -53,6 +55,7 @@ class RegistrierungController extends AbstractController
                     $em->persist($user);
                     $em->flush();
                     return $this->redirect($this->generateUrl('app_login'));
+                    $this->addFlash('success', 'User erfolgreich registriert');
                 }else{
                     $this->addFlash('danger', 'User bereits vorhanden');
                     return $this->redirect($this->generateUrl('app_login'));

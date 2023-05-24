@@ -3,12 +3,12 @@
 {% block title %}User{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
+    <h1>Stammdaten</h1>
 
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
+                <th>Personalnummer</th>
                 <td>{{ user.id }}</td>
             </tr>
             <tr>
@@ -75,9 +75,5 @@
         </tbody>
     </table>
 
-    <a class ="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"href="{{ path('app_user_index') }}">zurück</a><br><br>
-
-    <a class ="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" href="{{ path('app_user_edit', {'id': user.id}) }}">bearbeiten</a>
-<br><br>
-    {{ include('user/_delete_form.html.twig') }}
+   
 {% endblock %}

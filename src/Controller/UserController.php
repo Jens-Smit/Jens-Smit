@@ -62,7 +62,8 @@ class UserController extends AbstractController
         //aktuelle benutzer
         // Aktuellen Benutzer abrufen
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        if (in_array("ROLE_HR", $user->getRoles())){
+        if (in_array("ROLE_HR", $user->getRoles())||in_array("ROLE_ADMIN", $user->getRoles())){
+
             $users =[];
             $userId = $user->getId();
             if ($user->getCompany() !== null) {
@@ -311,29 +312,47 @@ class UserController extends AbstractController
     }
    
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, UserRepository $userRepository, UserDokumenteRepository $userDokumenteRepository): Response
+    public function edit(CompanyRepository $companyRepository ,Request $request, User $user, UserRepository $userRepository, UserDokumenteRepository $userDokumenteRepository): Response
     {
         $users = $this->container->get('security.token_storage')->getToken()->getUser();
-        if ($users->getCompany()->getId() == $user->getCompany()->getId() AND in_array("ROLE_HR", $users->getRoles())) {
-            $form = $this->createForm(UserType::class, $user);
-            $form->handleRequest($request);
-            $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $userRepository->save($user, true);
-                return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+        $company = $companyRepository->findOneBy(['onjekt_admin' => $users]);
+        if($users->getCompany() != null){
+            if (
+                $users->getCompany()->getId() == $user->getCompany()->getId() &&
+                in_array("ROLE_HR", $users->getRoles()) ||
+                $company->getId() == $user->getCompany()->getId() &&
+                in_array("ROLE_HR", $users->getRoles())
+            ){
+                $form = $this->createForm(UserType::class, $user);
+                $form->handleRequest($request);
+                $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
+                if ($form->isSubmitted() && $form->isValid()) {
+                    $userRepository->save($user, true);
+                    return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+                }
+                return $this->render('user/edit.html.twig', [
+                    'user' => $user,
+                    'form' => $form->createView(),
+                    'dokumente' =>  $dokumente,
+                ]);
+            } else {
+                $form = $this->createForm(UserType::class, $users);
+                $form->handleRequest($request);
+                $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
+                return $this->render('user/edit.html.twig', [
+                    'user' => $users,
+                    'form' => $form->createView(),
+                    'dokumente' =>  $dokumente,
+                ]);
             }
-            return $this->render('user/edit.html.twig', [
-                'user' => $user,
-                'form' => $form->createView(),
-                'dokumente' =>  $dokumente,
-            ]);
-        } else {
-            $form = $this->createForm(UserType::class, $users);
-            $form->handleRequest($request);
-            return $this->render('user/edit.html.twig', [
-                'user' => $users,
-                'form' => $form->createView(),
-            ]);
+        }else{
+            $company = $companyRepository->findOneBy(['onjekt_admin' => $users]);
+            $user->setCompany($company);
+            $userRepository->save($user, true);
+          //  dump($user);
+            $this->addFlash('success', 'Userdaten erfolgreich gespeichert');
+                            
+            return $this->redirectToRoute('app_user_index');
         }
     }
     #[Route('/{id}/dienstplan', name: 'app_user_dienstplan', methods: ['GET', 'POST'])]
@@ -371,7 +390,7 @@ class UserController extends AbstractController
             $entityManager = $doctrine->getManager();
             $entityManager->flush();
           
-        return $this->redirectToRoute('app_user_show', ['id' => $user->getId]);
+        return $this->redirectToRoute('app_user_show', ['id' => $user->getId()]);
         }
         return $this->render('user/dienstplan.html.twig', [
             'form' => $form->createView(),

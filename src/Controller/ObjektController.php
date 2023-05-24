@@ -52,17 +52,29 @@ class ObjektController extends AbstractController
             // Wenn der Benutzer kein Admin eines Unternehmens ist, verwende das eigene Unternehmen
             $objekt  = $this->container->get('security.token_storage')->getToken()->getUser()->getObjekt();
             $objekts = [0 => $objekt];
-            return $this->render('objekt/index.html.twig', [   
-                'objekts' => $objekts
-            ]);
+            
+            if (empty($objekts[0])){
+               
+                return $this->redirectToRoute('app_company_new');
+            }else{
+               // dump($objekts);
+                return $this->render('objekt/index.html.twig', [   
+                    'objekts' => $objekts
+                ]);
+            }
         } else {
             // Alle Objekte für die Unternehmen mit einer einzigen Abfrage mittels IN-Operator abrufen
             $companyIds = array_map(function($company) { return $company->getId(); }, $companies);
             $objekts = $objektRepository->findBy((['company' => $companyIds]));
-
+            if (empty($objekts)){
+                
+                return $this->redirectToRoute('app_objekt_new');
+            }else{
+                
             return $this->render('objekt/index.html.twig', [   
                 'objekts' => $objekts
             ]);
+            }
         }
 
     }
@@ -74,15 +86,17 @@ class ObjektController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-           $bild = $request->files->get['bild']['anhang'];
-           if($bild){
+            $bild = $request->files->get('objekt')['bild'];
+
+           if($bild != null){
             $bildname = md5(uniqid()).'.'.$bild->guessClientExtension();
-           }
+           
            $bild->move(
                 $this->getParameter('bilder_ordner'),
                 $bildname
            );
            $objekt->setBild($bildname);
+         }
             $objektRepository->save($objekt, true);
 
             return $this->redirectToRoute('app_objekt_index', [], Response::HTTP_SEE_OTHER);
@@ -404,20 +418,21 @@ class ObjektController extends AbstractController
                 if ($form->isSubmitted() && $form->isValid()) {
                     $bild = $form->get('bild')->getData();
                    // $bild = $request->files->get['bild']['anhang'];
-                   if($bild){
-                    $bildname = md5(uniqid()).'.'.$bild->guessClientExtension();
-                   }
-                   $bild->move(
-                        $this->getParameter('bilder_ordner'),
-                        $bildname
-                   );
-                   $Objekt->setBild($bildname);
+                   if($bild != null){
+                        $bildname = md5(uniqid()).'.'.$bild->guessClientExtension();
+                    
+                    $bild->move(
+                            $this->getParameter('bilder_ordner'),
+                            $bildname
+                    );
+                    $objekt->setBild($bildname);
+                    }
         
                     $objektRepository->save($Objekt, true);
         
                     return $this->redirectToRoute('app_objekt_index', [], Response::HTTP_SEE_OTHER);
                 }
-        
+      
                 return $this->renderForm('objekt/edit.html.twig', [
                     'objekt' => $Objekt,
                     'form' => $form,
@@ -430,6 +445,7 @@ class ObjektController extends AbstractController
                 ]);  
              }
         }else {
+            
             return $this->render('objekt/show.html.twig', [   
                 'objekt' => $objektRepository->find(0)
             ]);  
@@ -478,27 +494,39 @@ class ObjektController extends AbstractController
         $SpecialOpeningTimes = $specialOpeningTimeRepository->findBy(['objket'=>$objekt]);
           
         if ($form->isSubmitted() && $form->isValid()) {
-            $SpecialOpeningTimes = $specialOpeningTimeRepository->findBy(['objket'=>$objekt]);
-            $openingTime -> setObjekt($objekt);
-            $day = $openingTime ->getDay();
-            $del_openingTime = $openingTimeRepository->findOneBy(['day'=>$day]);
-            if($del_openingTime){
-            $openingTimeRepository->remove($del_openingTime, true);
+            $SpecialOpeningTimes = $specialOpeningTimeRepository->findBy(['objket' => $objekt]);
+            $openingTime->setObjekt($objekt);
+            $day = $openingTime->getDay();
+            $del_openingTimes = $openingTimeRepository->findBy(['day' => $day]);
+        
+            foreach ($del_openingTimes as $del_openingTime) {
+                if (
+                    ($del_openingTime->getStart() >= $openingTime->getStart() && $del_openingTime->getStart() <= $openingTime->getEnd()) ||
+                    ($del_openingTime->getEnd() >= $openingTime->getStart() && $del_openingTime->getEnd() <= $openingTime->getEnd()) ||
+                    ($del_openingTime->getStart() <= $openingTime->getStart() && $del_openingTime->getEnd() >= $openingTime->getEnd())||
+                    ($del_openingTime->getStart() == $openingTime->getStart() && $del_openingTime->getEnd() == $openingTime->getEnd())
+                    ) {
+                    $openingTimeRepository->remove($del_openingTime, true);
+                }
             }
+        
             $openingTimeRepository->save($openingTime, true);
+        
             $this->addFlash(
-            'success',
-            'erfolgreich gespeichert'
+                'success',
+                'Erfolgreich gespeichert'
             );
-            $openingTimes = $openingTimeRepository->findBy(['objekt' => $objekt],[ 'day' => 'ASC']);
+        
+            $openingTimes = $openingTimeRepository->findBy(['objekt' => $objekt], ['day' => 'ASC']);
             return $this->renderForm('objekt/openingTime.html.twig', [
                 'openingTimes' => $openingTimes,
-                'form' => $form,  
+                'form' => $form,
                 'SpecialOpeningTimes' => $SpecialOpeningTimes,
-                'Sform' => $Sform,  
+                'Sform' => $Sform,
             ]);
-            
         }
+        
+        
         elseif($Sform->isSubmitted() ){
             $SpecialOpeningTimes = $specialOpeningTimeRepository->findBy(['objket'=>$objekt]);
            

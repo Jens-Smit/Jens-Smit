@@ -6,8 +6,12 @@
 
 
     <div class="container">
-<h1>Opening Times</h1>
-        {{ form_start(form) }}
+        <div class='d-flex'><h1>Öffnungszeiten</h1> <a href=''data-toggle="collapse" data-target="#new_times" ><i class="fa fa-plus" ></i></a></div>
+       <div class="card text-center">
+         
+         <div class="card-body collapse" id='new_times'>
+           <h4 class="card-title">Öffnungszeiten anlegen</h4>
+            {{ form_start(form) }}
             
                 {{ form_widget(form.day) }}
                 {{ form_widget(form.start) }}
@@ -16,7 +20,10 @@
                 <div style='display:none;'> {{ form_widget(form.objekt) }}</div>
                 <button class="w-100 d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Save') }}</button>
            
-        {{ form_end(form) }}
+            {{ form_end(form) }}
+         </div>
+       </div>
+       
     </div>
     <div class="container">
         
@@ -63,19 +70,24 @@
         </table>
     </div>
  <div class="container">
- <h1> Special Opening Times</h1>
-<div class="container">
-{{ form_start(Sform) }}
-    
-        {{ form_widget(Sform.day) }}
-        {{ form_widget(Sform.start) }}
-        {{ form_widget(Sform.end) }}
-        {{ form_widget(Sform.close) }}
-        <button class="w-100 d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Save') }}</button>
-   
-   
 
-{{ form_end(form) }}
+ <div class='d-flex'><h1>Sonderöffnungszeiten</h1> <a href=''data-toggle="collapse" data-target="#new_Stimes" ><i class="fa fa-plus" ></i></a></div>
+       <div class="card text-center">
+         
+         <div class="card-body collapse" id='new_Stimes'>
+           <h4 class="card-title">Sonderöffnungszeiten anlegen</h4>
+            {{ form_start(Sform) }}
+                {{ form_widget(Sform.day) }}
+                {{ form_widget(Sform.start) }}
+                {{ form_widget(Sform.end) }}
+                {{ form_widget(Sform.close) }}
+                <button class="w-100 d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Save') }}</button>
+            {{ form_end(form) }}
+         </div>
+       </div>
+
+<div class="container">
+
 </div>
    <table class="table">
         <thead>

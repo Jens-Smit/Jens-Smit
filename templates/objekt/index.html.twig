@@ -3,45 +3,57 @@
 {% block title %}Objekt index{% endblock %}
 
 {% block body %}
-
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" id="modalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()"></button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Hier wird der Inhalt von app_user_contrect geladen -->
+            </div>
+        </div>
+    </div>
+</div>
  
-    <h1>Objekt index </h1>
+   <div class='d-flex'> <h1>Objekt index </h1><a class="" href="{{ path('app_objekt_new') }}"><i class="fas fa-plus"></i></a></div>
+        <div class="container">
+            {% for objekt in objekts %}
+                <div class="card" >
+                    {%  if objekt.bild is null  %}
+                    {{objekt.bild}}
+                        <img class="card-img-top" src="{{asset('images/' ~ objekt.bild)}}" alt="Objekt Foto">
+                    {% else %}
+                        <i class="fas fa-image"></i>
+                    {% endif %}
+                    <div class="card-body d-flex justify-content-around flex-wrap">
+                        <div class='infos'>
+                            <div class='d-flex'><h4 class="card-title">{{ objekt.name }}</h4> <a class=" text-info " href="{{ path('app_objekt_edit', {'id': objekt.id}) }}"><i style='margin-left:5px;'class="fa fa-cog "></i></a></div>
+                            <div class='d-flex'><h6 class="card-title">{{ objekt.company.name }}</h6> <a class=" text-info " href="{{ path('app_company_edit', {'id': objekt.company.id}) }}"><i style='position: absolute;margin-left: 5px;font-size: 0.7rem;'class="fa fa-cog "></i></a></div>
+                            <p class="card-text">{{ objekt.adresse }},{{ objekt.plz }} {{ objekt.ort }}
+                            <br>Telefon: {{ objekt.telefon }}
+                            <br>Email: {{ objekt.mainMail }}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><a href="{{ path('app_objekt_opening', {'id': objekt.id}) }}">Öffnungszeiten</a></li>
+                            <li class="list-group-item"><a href="{{ path('rent_items', {'id': objekt.id}) }}">Area & Itams</a></li>
+                            <li class="list-group-item"><a href="#" onclick="openModal_objekt_dienstplan({{ objekt.id }})">Dienstplan</a></li>
+                            <li class="list-group-item"><a href="#" onclick="openModal_objekt_vertrag()">Verträg & Vereinbarungen</a></li>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Adresse</th>
-                <th>Ort</th>
-                <th>Plz</th>
+                        </ul>
+                    </div>
+                   
                 
-               
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for objekt in objekts %}
-            <tr>
-                <td>{{ objekt.id }}</td>
-                <td> <a href="{{ path('app_objekt_show', {'id': objekt.id}) }}">{{ objekt.name }}</a></td>
-                <td>{{ objekt.adresse }}</td>
-                <td>{{ objekt.ort }}</td>
-                <td>{{ objekt.plz }}</td>
-                
-                
-                <td>
-                    <a href="{{ path('app_objekt_show', {'id': objekt.id}) }}">show</a>
-                    <a href="{{ path('app_objekt_edit', {'id': objekt.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="15">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                </div>
+            {% endfor %}
+        </div>  
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/modal.js') }}"></script>
+    
+    
 
-    <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" href="{{ path('app_objekt_new') }}">Create new</a>
 {% endblock %}

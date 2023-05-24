@@ -11,6 +11,9 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\LessThan;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class OpeningTimeType extends AbstractType
 {
@@ -32,9 +35,23 @@ class OpeningTimeType extends AbstractType
                 'style' =>'padding:5px; width:100%;'
                 ],
             ])
-            ->add('start', TimeType::class,[
+            ->add('start', TimeType::class, [
                 'label' => 'open',
                 'widget' => 'single_text',
+                'constraints' => [
+                    new Callback(function ($value, ExecutionContextInterface $context) {
+                        $form = $context->getRoot();
+                        $endValue = $form['end']->getData();
+        
+                        if ($value >= $endValue) {
+                           
+                            $context->buildViolation('Die Startzeit muss vor der Endzeit liegen.')
+                                ->atPath('start')
+                                ->addViolation();
+                         
+                        }
+                    })
+                ]
             ])
             ->add('end', TimeType::class,[
                 'label' => 'close',

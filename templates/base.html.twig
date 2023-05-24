@@ -96,18 +96,14 @@
       <li class="nav-item border-bottom">
 				<a class="nav-link d-flex"  href="{{path('app_dashboard')}}"><i class="fa fa-tachometer" style='margin-left: -3px;'></i> <p style="margin:-5px 0px 0px 5px;" class='link_text'>Dashboard</p></a>
 			  </li>
+			
 			  <li class="nav-item border-bottom">
-				<a class="nav-link d-flex"  href="{{path('app_company_index')}}"><i class="fa fa-building"></i> <p style="margin:-5px 0px 0px 5px;" class='link_text'>Company</p></a>
-			  </li>
-			  <li class="nav-item border-bottom">
-				<a class="nav-link d-flex" href="{{path('app_objekt_index')}}"><i class="fa fa-store" style='margin-left: -3px;'></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Objket</p></a>
+				<a class="nav-link d-flex" href="{{path('app_objekt_index')}}"><i class="fa fa-building" style='margin-left: -3px;'></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Objket</p></a>
 			  </li>
         <li class="nav-item border-bottom">
 				<a class="nav-link d-flex"   href="{{path('app_user_index')}}"><i class="fa fa-user"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>User</p></a>
 			  </li>
-			  <li class="nav-item border-bottom">
-				<a class="nav-link d-flex"   href="{{path('app_vertrag')}}"><i class="fa fa-file-contract"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Verträge</p></a>
-			  </li>
+			  
         {% for dienstplan in app.user.dienstplans %}
          <li class="nav-item border-bottom">   
             <a class="nav-link d-flex"   href="{{ path('app_dienstplan_show', {'id': dienstplan.id}) }}"><i class="fa fa-calendar"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>{{ dienstplan.bezeichnung }}</p></a>

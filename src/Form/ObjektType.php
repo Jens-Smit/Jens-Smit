@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Company;
 use App\Entity\Objekt;
+use App\Entity\ObjektCategories;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -40,24 +41,45 @@ class ObjektType extends AbstractType
             ->add('name')
             ->add('adresse')
             ->add('ort')
-            ->add('bild', FileType::class,array(
-                'data_class' => null
-            ))
+           
             ->add('plz')
             ->add('main_mail')
-            ->add('website')
+            
             ->add('telefon')
-            ->add('fax')
-            ->add('bestellung_mail')
-            ->add('fibi_mail')
-            ->add('ust_id')
-            ->add('Handelsregister')
-            ->add('Amtsgericht')
+            ->add('website', null, [
+                'required' => false,
+            ])
+            ->add('bild', FileType::class,array(
+                'data_class' => null,
+                 'required' => false,
+                
+            ))
+            ->add('fax', null, [
+                'required' => false,
+            ])
+            ->add('bestellung_mail', null, [
+                'required' => false,
+            ])
+            ->add('fibi_mail', null, [
+                'required' => false,
+            ])
+            ->add('ust_id', null, [
+                'required' => false,
+            ])
+            ->add('Handelsregister', null, [
+                'required' => false,
+            ])
+            ->add('Amtsgericht', null, [
+                'required' => false,
+            ])
             ->add('company', ChoiceType::class, [
                 'choices' => $choices,
                 'expanded' => true,
                 'multiple' => false,
                 'label' => 'company',
+            ])
+            ->add('categories', EntityType::class, [
+                'class' => ObjektCategories::class,
             ])
         ;
     }

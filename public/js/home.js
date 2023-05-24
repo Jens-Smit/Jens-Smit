@@ -25,7 +25,7 @@
 					var elements = document.getElementsByClassName("item_text");
 					for (var i = 0; i < elements.length; i++) {
 					  gsap.to(elements[i], {duration: 3, opacity: 1, onComplete: function(){
-						gsap.to(window, {duration: 2, scrollTo: "#first_section"});
+					//	gsap.to(window, {duration: 2, scrollTo: "#first_section"});
 						// Aufgabe: item_1, item_2, glow_1 und glow_2 sollen in das logo geschrieben werden und die Größe der items soll auf 500px width und height geändert werden
 			  
 					
@@ -55,10 +55,10 @@
 			},
 		});
 		let ipad_headlineValue;
-		if (window.innerWidth < 900) {
-		  ipad_headlineValue = 0;
+		if (window.innerWidth < 100) {
+		  ipad_headlineValue = 90;
 		} else {
-		  ipad_headlineValue = -400;
+		  ipad_headlineValue = -150;
 		}
 		gsap.to("#ipad_headline", {
 			
@@ -106,10 +106,10 @@
 		});
 
 		let icons_headline_2Value;
-		if (window.innerWidth < 900) {
-		  icons_headline_2Value = 300;
+		if (window.innerWidth < 750) {
+		  icons_headline_2Value = 150;
 		} else {
-		  icons_headline_2Value = 600;
+		  icons_headline_2Value = 750;
 		}
 		gsap.to("#icons_headline_2", {
 			x: icons_headline_2Value, // Endposition des Elements
@@ -125,10 +125,10 @@
 		
 
 		let icons_headline_3Value;
-		if (window.innerWidth < 900) {
-		  icons_headline_3Value = 360;
+		if (window.innerWidth < 850) {
+		  icons_headline_3Value = 150;
 		} else {
-		  icons_headline_3Value = 900;
+		  icons_headline_3Value = 850;
 		}
 		gsap.to("#icons_headline_3", {
 			x: icons_headline_3Value, // Endposition des Elements

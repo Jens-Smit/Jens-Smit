@@ -154,23 +154,20 @@
                      <div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
              <div class="card-body" id='Stammdaten_body'>
                 {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
-                <br>
-                <a class='d-none w-100 d-sm-inline-block btn btn-sm btn-primary shadow-sm'href="{{ path('app_user_index') }}">zurück</a>
-                  <br><br>
-                {{ include('user/_delete_form.html.twig') }}
+                
+                
             </div>
         </div>
      </div>
-    <script>
-    function printDocument(url) {
-    window.open(url, '_blank', 'width=600,height=400');
-}
-    </script>
+    
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/modal.js') }}"></script>
     <script>
+    function printDocument(url) {
+    window.open(url, '_blank', 'width=600,height=400');
+}
  function sendDeleteRequest(dienstplan) {
     event.preventDefault();
     var user = {{user.id}};
