@@ -2,42 +2,8 @@
 
 {% block title %}Edit RentItems{% endblock %}
 {% block javascripts %}
-
-
-       
-         
-        
-{% endblock %}
-{% block body %}
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-    <style>
-        .pt-5 {
-            padding-top: 0rem!important;
-        }
-        .tabel{
-            background-color:silver;
-            opacity: 0.75;
-           
-        }    
-        #tab_area{
-               
-                right: -100px;
-                    width: 80px;
-                   
-                display: flex;
-                flex-direction: column;
-                border: 2px solid var(--primery-link-color);
-                height: auto;
-                border-radius: 15px;
-        }
-        .Item-header{
-               background-color: var(--primery-link-color);
-                border-radius: 12px 12px 0px 0px;
-                text-align: center;
-        }
-        
-        </style>
-    <script src="{{asset('js/jquery-3.6.3.min.js')}}"></script>    
+{{ parent() }}
+  <script src="{{asset('js/jquery-3.6.3.min.js')}}"></script>    
     <script src="{{asset('js/jquery-ui.min.js')}}"></script> 
      <script src="{{asset('js/jquery.ui.touch-punch.js')}}"></script>  
         <script>
@@ -66,17 +32,24 @@
         $("#new_item").click(function(event) {
                     // Verhindern, dass der Link ausgeführt wird
                     event.preventDefault();
+                    var objekt =  $("#new_item").attr('data-objket');
+                    
                     $("#dialog").dialog("open");
+                    
                     $.ajax({
+                        type:  'POST',
                         url: '{{path('ajax_item_form')}}',
-                        type: 'get',
+                        data: {
+                                objketId: objekt,
+                            },
+                        
                         success: function(response) {
-                        
-                        $("#ui-id-1").html("New Item");
-                        $("#dialog").html(response);
-                        
+                            $("#ui-id-1").html("Edit Area");
+                            $("#dialog").html(response);
                         }
                     });
+
+                    
 
 
 
@@ -104,11 +77,13 @@
                     // Verhindern, dass der Link ausgeführt wird
                     event.preventDefault();
                     $("#dialog").dialog("open");
-                   
                     $.ajax({
-                        url: '{{path('ajax_area_form')}}',
-                        type: 'get',
-                        success: function(response) {
+                     type: "POST",
+                    url: "{{path('ajax_area_form')}}",
+                    data: {
+                        'objket': {{objket.id}},
+                    },
+                    success: function(response) {
                             $("#ui-id-1").html("New Area");
                             $("#dialog").html(response);
                             
@@ -211,6 +186,41 @@
     });
     
     </script> 
+
+       
+         
+        
+{% endblock %}
+{% block body %}
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <style>
+        .pt-5 {
+            padding-top: 0rem!important;
+        }
+        .tabel{
+            background-color:silver;
+            opacity: 0.75;
+           
+        }    
+        #tab_area{
+               
+                right: -100px;
+                    width: 80px;
+                   
+                display: flex;
+                flex-direction: column;
+                border: 2px solid var(--primery-link-color);
+                height: auto;
+                border-radius: 15px;
+        }
+        .Item-header{
+               background-color: var(--primery-link-color);
+                border-radius: 12px 12px 0px 0px;
+                text-align: center;
+        }
+        
+        </style>
+  
 <div id="dialog"   style="position:relative;    z-index: 100;" title="">
 <div id="dialog_content"></div>
  </div>
@@ -245,7 +255,7 @@
         {% endfor %}
  
          
-        <button id="new_item" class="btn mx-auto btn_calc btn-primary btn-lg btn-block" type="button"> <i class="fa fa-plus"></i> </button>
+        <button id="new_item" class="btn mx-auto btn_calc btn-primary btn-lg btn-block" type="button" data-objket='{{objket.id}}'> <i class="fa fa-plus"></i> </button>
                       
     </div>
 

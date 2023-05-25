@@ -37,6 +37,19 @@
   #sidebar li{
       margin-left:-15px;
   }
+  .infoSecunder{
+    background-color:#EDEDED;
+    border-color: #2AD1FF;
+  }
+  .online_icon
+  {
+    margin: 0px 10px 0px 0px;
+    padding: 0px 0px 0px 15px;
+    border-radius: 10px;
+    background: greenyellow;
+    color: black;
+  }
+  
   #silebar_icon{
       margin-left:-15px;
       color: white !important;
@@ -104,8 +117,11 @@
         color:var(--primery-color) !important;
         background-color:var(--secondary-background-color);
       }
+      #navbarNav ul li{
+        background-color: var(--secondary-background-color);
+      }
       nav a{color:var(--primery-color) !important;}
-      #navbarNav ul li a{color:var(--primery-color) !important;}
+      #navbarNav ul li a{color:var(--primery-link-color) !important;}
       .bg-success{
         background-color:var(--green) !important;
       }

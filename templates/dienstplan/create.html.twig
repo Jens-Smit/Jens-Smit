@@ -47,7 +47,7 @@
         }
     </style>
 {% endblock %}
-{% block title %}Dienstplan{% endblock %}
+{% block title %}Dienstplan Bearbeiten{% endblock %}
 
 {% block body %}
 
@@ -79,7 +79,7 @@
 {% set nextWeek = "now"|date_modify('+1 week')|date('W', 'Europe/Berlin') %}
 {% set nextSunday = nextMonday|date_modify("+6 days") %}
  <div class='container'>
-    <h1>Dienstplan {{ dienstplan.bezeichnung }}</h1>
+      <div class = 'd-flex'><h1> {{ dienstplan.bezeichnung }} bearbeiten</h1><a href ="{{ path('app_dienstplan_show', {'id': dienstplan.id}) }}"><i class="fa fa-eye"></i></a></div>
    
 <div id='table' > 
 <div id="table-div-container" >

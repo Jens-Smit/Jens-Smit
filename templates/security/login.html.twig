@@ -1,6 +1,6 @@
 {% extends 'public_base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Login!{% endblock %}
 
 {% block body %}
 <form method="post">
@@ -9,8 +9,10 @@
     {% endif %}
 
     {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+        <div class="mb-3 p-1 d-flex">
+             <p class='text-success online_icon' >online <i class="fa fa-check" aria-hidden="true"></i> </p>
+           
+             {{ app.user.userIdentifier }}<a style='margin-left:10px;' href="{{ path('app_logout') }}"> Logout</a>
         </div>
     {% endif %}
 
@@ -35,10 +37,10 @@
         </div>
     #}
 <br>
-    <button class="btn btn-lg btn-primary  w-100" type="submit">
+    <button class="btn btn-lg btn-info  w-100 text-light" type="submit">
         Sign in
     </button>
 </form><br>
-<a style='    display: flex;   justify-content: center;' class="btn w-100 btn-lg btn-primary" href="{{path('password_reset')}}"><i class="fa fa-bolt"></i>  <p style="margin:-5px 0px 0px 5px;" class=''>Passwort vergessen?</p></a>
+<a style='    display: flex;   justify-content: center;' class="btn w-100 btn-lg infoSecunder" href="{{path('password_reset')}}"><i class="fa fa-bolt"></i>  <p style="margin:-5px 0px 0px 5px;" class=''>Passwort vergessen?</p></a>
 			  
 {% endblock %}

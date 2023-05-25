@@ -34,15 +34,59 @@
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home</a>
+      
+      <li class="nav-item ">
+         <a class="nav-link btn btn-light d-lg-flex flex-column justify-content-center"  
+         href="{{path('app_dashboard')}}">
+         <i class="fa fa-tachometer" style='margin-left: 15px;text-align: center;'></i>
+         Dashboard</a>   
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">About</a>
+       <li class="nav-item ">
+         <a class="nav-link btn btn-light d-lg-flex flex-column justify-content-center"  
+         href="{{path('app_objekt_index')}}">
+         <i class="fa fa-building" style='margin-left: 15px;text-align: center;'></i>
+         mein Unternehmen</a>   
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Contact</a>
+       <li class="nav-item ">
+         <a class="nav-link btn btn-light d-lg-flex flex-column justify-content-center"  
+         href="{{path('app_user_index')}}">
+         <i class="fa fa-user" style='margin-left: 15px;text-align: center;'></i>
+         mein Team</a>   
       </li>
+      {% for dienstplan in app.user.dienstplans %}
+          <li class="nav-item ">   
+              <a class="nav-link btn btn-light d-lg-flex flex-column justify-content-center"   
+              href="{{ path('app_dienstplan_show', {'id': dienstplan.id}) }}">
+              <i class="fa fa-calendar" style='margin-left: 15px;text-align: center;'></i>  {{ dienstplan.bezeichnung }}</a>
+          </li> 
+          {% endfor %}
+          
+          {% if app.user.objekt != null %}
+            <li class="nav-item ">
+              <a class="nav-link btn btn-light d-lg-flex flex-column justify-content-center"   
+              href="{{ path('app_reservations', {'id': app.user.objekt.id}) }}">
+              <i class="fa fa-cutlery" style='margin-left: 15px;text-align: center;'></i>  
+              {{app.user.objekt.name}}</a>
+            </li>
+          {% elseif app.user.Company != null %}
+            {% for objekt in  app.user.Company.Objekts %}  
+              <li class="nav-item ">
+                <a class="nav-link btn btn-light d-lg-flex text-info flex-column justify-content-center"   
+                href="{{ path('app_reservations', {'id': objekt.id}) }}">
+                <i class="fa fa-cutlery" style='margin-left: 15px;text-align: center;'></i>  
+                {{objekt.name}}
+                </a>
+              </li>
+            {% endfor %} 
+          {% else %}
+          {% endif %}
+
+
+
+
+
+
+
     </ul>
   </div>
      
@@ -81,66 +125,25 @@
 
   
   <!-- Page -->
-  <div class="container-fluid">
-    <div class="row" style="flex-wrap: nowrap;">
+  <div class="container-fluid mt-3">
+  
+    
+  </div>
+    
      
-{% if is_granted('IS_AUTHENTICATED_FULLY')  %}
-		<!-- Sidebar -->
-		<div  id="sidebar" style="max-width: 200px;">
-      <button class="btn w-100" id="sidebar_toggle">
-        <i id="silebar_icon"class="fa fa-chevron-right border-secondary border rounded p-1 text-secondary bg-info" ></i>
-      </button>
-		
-		  <div class=" pt-9 sidebar-collapsed sidebar-height">
-			<ul class="nav flex-column">
-      <li class="nav-item border-bottom">
-				<a class="nav-link d-flex"  href="{{path('app_dashboard')}}"><i class="fa fa-tachometer" style='margin-left: -3px;'></i> <p style="margin:-5px 0px 0px 5px;" class='link_text'>Dashboard</p></a>
-			  </li>
-			
-			  <li class="nav-item border-bottom">
-				<a class="nav-link d-flex" href="{{path('app_objekt_index')}}"><i class="fa fa-building" style='margin-left: -3px;'></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>Objket</p></a>
-			  </li>
-        <li class="nav-item border-bottom">
-				<a class="nav-link d-flex"   href="{{path('app_user_index')}}"><i class="fa fa-user"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>User</p></a>
-			  </li>
-			  
-        {% for dienstplan in app.user.dienstplans %}
-         <li class="nav-item border-bottom">   
-            <a class="nav-link d-flex"   href="{{ path('app_dienstplan_show', {'id': dienstplan.id}) }}"><i class="fa fa-calendar"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>{{ dienstplan.bezeichnung }}</p></a>
-			   </li> 
-        {% endfor %}
-         
-        {% if app.user.objekt != null %}
-          <li class="nav-item border-bottom">
-            <a class="nav-link d-flex"   href="{{ path('app_reservations', {'id': app.user.objekt.id}) }}"><i class="fa fa-cutlery"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>{{app.user.objekt.name}}</p></a>
-          </li>
-        {% elseif app.user.Company != null %}
-          {% for objekt in  app.user.Company.Objekts %}  
-            <li class="nav-item border-bottom">
-              <a class="nav-link d-flex"   href="{{ path('app_reservations', {'id': objekt.id}) }}"><i class="fa fa-cutlery"></i>  <p style="margin:-5px 0px 0px 5px;" class='link_text'>{{objekt.name}}</p></a>
-            </li>
-          {% endfor %} 
-        {% else %}
-        {% endif %}
-			</ul>
 
-		  </div>
-		  <!-- Toggle-Schaltfläche -->
-		
-		</div>
- {% endif %}
 
       <!-- Content -->
-      <div class="col-10 pt-5">
+      
       {% for type, messages in app.session.flashbag.all %}
     {% for message in messages %}
         <div class="alert alert-{{ type }}">{{ message|trans }}</div>
     {% endfor %}
 {% endfor %}
        {% block body %}{% endblock %}
-      </div>
+      
     
-    </div>
+    
   </div>
   
   <!-- Footer -->

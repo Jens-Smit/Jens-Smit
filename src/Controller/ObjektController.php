@@ -25,13 +25,22 @@ use App\Repository\RentItemsRepository;
 use App\Repository\SpecialOpeningTimeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Twig\Environment;
 
@@ -116,7 +125,8 @@ class ObjektController extends AbstractController
         $areas = $areaRepository->findBy(['objekt'=> $objekt]);
         return $this->render('rent_items/edit_area_layout.html.twig', [
             'Areas' => $areas,
-            'form' => $item_form->createView() 
+            'form' => $item_form->createView(),
+            'objket' => $objekt
         ]);
     }
     #[Route('/rent-items/{item}/update_size_item', name: 'update_size_item')]
@@ -234,24 +244,121 @@ class ObjektController extends AbstractController
         }
         return new JsonResponse();
     }
-    #[Route('/ajax_item_form', name: 'ajax_item_form')]
-    public function ajax_item_form(Request $request): Response
-    {
-        $item = new RentItems();
-        $form = $this->createForm(RentItemsType::class, $item);
-        $form->handleRequest($request);
-        
-        return $this->renderForm('objekt/newForm.html.twig', [
+    #[Route('/ajax_item_form', name: 'ajax_item_form', methods: ['GET', 'POST'])]
+    public function ajax_item_form(Request $request,TokenStorageInterface $tokenStorage,ManagerRegistry $doctrine, FormFactoryInterface $formFactory): Response
+    {   $item = new RentItems();
+        $objektId = $request->get("objketId");
+     // $objektId = 4;
+        $objekt = $doctrine->getRepository(Objekt::class)->find($objektId);
+       ;
             
-            'form' => $form,
+        $choices_areas = [];
+            $areas = $doctrine->getRepository(Area::class)->findBy(['objekt' => $objekt]);
+            foreach ($areas as $area) {
+                $choices_areas[$area->getName()] = $area;
+            }
+        $form = $formFactory->createBuilder(FormType::class, $item)
+            ->add('id', NumberType::class, [
+                'required' => false,
+            ])
+            ->add('name')
+            ->add('description')
+            ->add('pax')
+            ->add('Category')
+            ->add('objekt', EntityType::class, [
+                'class' => Objekt::class,
+                'data' =>  $objekt,
+                
+                
+                'label' => false,
+                'attr' => [
+                    'style' => 'display:none',
+                ],          
+            ])
+            ->add('area', EntityType::class, [
+                'class' => Area::class,
+                    'choices' => $choices_areas,
+                    'expanded' => true,
+                    'multiple' => false,
+                    'label' => 'Area',
+                    'attr' => [
+                        'class' => 'area-select',
+                        
+                    ],
+                ])
+            ->add('status')
+                ->add('save', SubmitType::class, [
+                    'label' => 'save',
+                    'attr' => [
+                        'class' => 'btn btn-info w-100',
+                        'name' => 'save',
+                    ],
+            ])
+            ->add('save', SubmitType::class);
+        $form = $form->getForm();
+
+        return $this->render('objekt/newForm.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
     
     #[Route('/ajax_item_edit', name: 'ajax_item_edit')]
-    public function ajax_item_edit(Request $request, RentItemsRepository $rentItemsRepository): Response
+    public function ajax_item_edit(Request $request,ManagerRegistry $doctrine, RentItemsRepository $rentItemsRepository,FormFactoryInterface $formFactory): Response
     {   $item_id = $request->get("item");
+        //$item_id = 5;
+      
+        
         $item = $rentItemsRepository->find($item_id);
-        $form = $this->createForm(RentItemsType::class, $item);
+        $objekt = $item->getObjekt();
+        $choices_areas = [];
+        $areas = $doctrine->getRepository(Area::class)->findBy(['objekt' => $objekt]);
+        foreach ($areas as $area) {
+            $choices_areas[$area->getName()] = $area;
+        }
+        $form = $formFactory->createBuilder(FormType::class, $item)
+            ->add('id', NumberType::class, [
+                'required' => false,
+            ])
+            ->add('name')
+            ->add('description')
+            ->add('pax')
+            ->add('Category')
+            ->add('objekt', EntityType::class, [
+                'class' => Objekt::class,
+                'data' =>  $objekt,
+                
+                
+                'label' => false,
+                'attr' => [
+                    'style' => 'display:none',
+                ],          
+            ])
+            ->add('area', EntityType::class, [
+                'class' => Area::class,
+                    'choices' => $choices_areas,
+                    'expanded' => true,
+                    'multiple' => false,
+                    'label' => 'Area',
+                    'attr' => [
+                        'class' => 'area-select',
+                        
+                    ],
+                ])
+            ->add('status')
+                ->add('save', SubmitType::class, [
+                    'label' => 'save',
+                    'attr' => [
+                        'class' => 'btn btn-info w-100',
+                        'name' => 'save',
+                    ],
+            ])
+            ->add('save', SubmitType::class);
+          $form = $form->getForm();
+
+
+
+
+
         $form->handleRequest($request);
         
         return $this->renderForm('objekt/editForm.html.twig', [
@@ -263,9 +370,9 @@ class ObjektController extends AbstractController
     #[Route('/ajax_ItemUpdate', name: 'ajax_ItemUpdate')]
     public function ajax_ItemUpdate( Request $request,AreaRepository $areaRepository ,ObjektRepository $objektRepository, ItemCategoriesRepository $itemCategoriesRepository ,RentItemsRepository $rentItemsRepository, AuthenticationUtils $authenticationUtils): Response
     {  
-        if ($authenticationUtils !== null && isset($_POST['rent_items'])) {
+        if ($authenticationUtils !== null && isset($_POST['form'])) {
            
-            $data = $_POST['rent_items'];
+            $data = $_POST['form'];
             
             
             $item = $rentItemsRepository->find($data['id']);
@@ -286,29 +393,35 @@ class ObjektController extends AbstractController
         return new JsonResponse();
       
     }
-    #[Route('/ajax_ItemNewSave', name: 'ajax_ItemNewSave')]
+    #[Route('/ajax_ItemNewSave', name: 'ajax_ItemNewSave', methods: ['GET', 'POST'])]
     public function ajax_ItemNewSave( Request $request,AreaRepository $areaRepository ,ObjektRepository $objektRepository, ItemCategoriesRepository $itemCategoriesRepository ,RentItemsRepository $rentItemsRepository, AuthenticationUtils $authenticationUtils): Response
     {  
-        if ($authenticationUtils && isset($_POST['rent_items'])) {
+        if ($authenticationUtils && isset($_POST['form'])) {
            
-           $data = $_POST['rent_items'];
-            $form = $this->createForm(RentItemsType::class);
-            $form->handleRequest($request);
-             $item = new RentItems();
+            $data = $_POST['form'];
+            $objekt = $objektRepository->find($data['objekt']);
+            $Category = $itemCategoriesRepository->find($data['Category']) ;
+            $area = $areaRepository->find($data['area']) ;
+            $item = new RentItems();
             $item->setName($data['name']);
             $item->setDescription($data['description']);
             $item->setPax($data['pax']);
-            $objekt = $objektRepository->find($data['objekt']);
             $item->setObjekt($objekt);
-            $Category = $itemCategoriesRepository->find($data['Category']) ;
             $item->setCategory($Category);
-            $area = $areaRepository->find($data['area']) ;
             $item->setArea($area);
+            $bezeichnung = $Category->getName();
             $rentItemsRepository->save($item, true);   
-        /*   */     // Get the ID of the saved item
+            $this->addFlash(
+                'success',
+                $bezeichnung.' erfolgreich angelegt'
+            );
+          
+          return new JsonResponse($data);
+         }  
+              // Get the ID of the saved item
              
-            return new JsonResponse();
-        }
+            
+        
       
     }
     

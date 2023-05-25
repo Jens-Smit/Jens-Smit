@@ -25,7 +25,11 @@
                         }
                     });
              
-                });           
+        });   
+         
+
+
+
       });  
         
    </script>  
@@ -36,7 +40,8 @@
 
 
 {{ form_start(form, {'attr': {'class': 'edit_form'} }) }}
-   
+
+   {{ form_widget(form.id, {'attr': {'style': 'display:none;'} })}}
  
     
 
