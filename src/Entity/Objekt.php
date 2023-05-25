@@ -209,7 +209,7 @@ class Objekt
         return $this->website;
     }
 
-    public function setWebsite(string $website): self
+    public function setWebsite(?string $website): self
     {
         $this->website = $website;
 
@@ -233,7 +233,7 @@ class Objekt
         return $this->fax;
     }
 
-    public function setFax(string $fax): self
+    public function setFax(?string $fax): self
     {
         $this->fax = $fax;
 
@@ -245,7 +245,7 @@ class Objekt
         return $this->bestellung_mail;
     }
 
-    public function setBestellungMail(string $bestellung_mail): self
+    public function setBestellungMail(?string $bestellung_mail): self
     {
         $this->bestellung_mail = $bestellung_mail;
 
@@ -257,7 +257,7 @@ class Objekt
         return $this->fibi_mail;
     }
 
-    public function setFibiMail(string $fibi_mail): self
+    public function setFibiMail(?string $fibi_mail): self
     {
         $this->fibi_mail = $fibi_mail;
 
@@ -269,7 +269,7 @@ class Objekt
         return $this->ust_id;
     }
 
-    public function setUstId(string $ust_id): self
+    public function setUstId(?string $ust_id): self
     {
         $this->ust_id = $ust_id;
 
@@ -281,7 +281,7 @@ class Objekt
         return $this->Handelsregister;
     }
 
-    public function setHandelsregister(string $Handelsregister): self
+    public function setHandelsregister(?string $Handelsregister): self
     {
         $this->Handelsregister = $Handelsregister;
 
@@ -293,7 +293,7 @@ class Objekt
         return $this->Amtsgericht;
     }
 
-    public function setAmtsgericht(string $Amtsgericht): self
+    public function setAmtsgericht(?string $Amtsgericht): self
     {
         $this->Amtsgericht = $Amtsgericht;
 

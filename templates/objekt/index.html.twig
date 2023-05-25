@@ -22,11 +22,15 @@
         <div class="container">
             {% for objekt in objekts %}
                 <div class="card" >
-                    {%  if objekt.bild is null  %}
-                    {{objekt.bild}}
-                        <img class="card-img-top" src="{{asset('images/' ~ objekt.bild)}}" alt="Objekt Foto">
-                    {% else %}
+                    {% if objekt.bild is null %}
+                        {{ objekt.bild }}
                         <i class="fas fa-image"></i>
+                    {% else %}
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                            <img class="card-img-top" style='max-height: 250px; object-fit: cover;' src="{{ asset('images/' ~ objekt.bild) }}" alt="Objekt Foto">
+                        {% else %}
+                            <i class="fas fa-image"></i>
+                        {% endif %}
                     {% endif %}
                     <div class="card-body d-flex justify-content-around flex-wrap">
                         <div class='infos'>
