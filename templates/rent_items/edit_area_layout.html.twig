@@ -9,6 +9,8 @@
         <script>
             
         $(document).ready(function() {
+            $('.container').removeClass( "container" );
+            $('.container').addClass('container-fluid')
         $(".page").hide();
         $(".page").first().show();
          $( "#dialog" ).dialog({
@@ -44,7 +46,7 @@
                             },
                         
                         success: function(response) {
-                            $("#ui-id-1").html("Edit Area");
+                            $("#ui-id-1").html("Itam anlegen");
                             $("#dialog").html(response);
                         }
                     });
@@ -68,7 +70,7 @@
                             },
                         
                         success: function(response) {
-                            $("#ui-id-1").html("Edit Area");
+                            $("#ui-id-1").html("Area bearbeiten");
                             $("#dialog").html(response);
                         }
                     });         
@@ -84,8 +86,8 @@
                         'objket': {{objket.id}},
                     },
                     success: function(response) {
-                            $("#ui-id-1").html("New Area");
-                            $("#dialog").html(response);
+                            $("#ui-id-1").html("Area anlegen");
+                           $("#dialog").html(response);
                             
                         }
                     });         
@@ -113,19 +115,20 @@
                 dataType: "text",
                 success: function(data) {
                    $("#dialog").html(data);  
-                   $("#ui-id-1").html("Edit Item");
+                   $("#ui-id-1").html("Item bearbeiten");
                 },  
                 error : function(xhr, textStatus, errorThrown) {  
                     alert('Ajax request failed delate.');
                 }
             });
         });
-        var $page = $(".page");
-        $page.resizable({
+        
+        $(".page").resizable({
             stop: function(event, ui) {
-                var id = $page.attr('id');
-                var width = $page.css('width');
-                var height = $page.css('height');
+                var page = $(this);
+                var id = page.attr('id');
+                var width = page.css('width');
+                var height = page.css('height');
                 $.ajax({
                 type: 'POST',
                 url: '{{ path('update_size_page', {'id': 1}) }}',
@@ -224,11 +227,13 @@
 <div id="dialog"   style="position:relative;    z-index: 100;" title="">
 <div id="dialog_content"></div>
  </div>
- <div id="area"><button id="new_area" class="btn mx-auto btn_calc btn-primary btn-lg btn-block" type="button"> <i class="fa fa-plus"></i> </button>
-        
+      <div id="area">  
     {% for Area in Areas %}
-        <a class='btn btn-info area_btn' href="area_{{Area.id}}">{{Area.name}}</a>
+    <a class='btn btn-info area_btn' href="area_{{Area.id}}">{{Area.name}}</a>
     {% endfor %}
+    <a href='' id="new_area" class=" btn btn-secondary" type="button"> <i class="fa fa-plus"> </i><b>Area</b></a>
+    <a href='' id="new_item" class="btn btn-secondary" type="button" data-objket='{{objket.id}}'> <i class="fa fa-plus"></i><b>Itam</b> </a>
+         
     </div>
     <div style="display:flex;">
         {% for Area in Areas %}
@@ -255,8 +260,7 @@
         {% endfor %}
  
          
-        <button id="new_item" class="btn mx-auto btn_calc btn-primary btn-lg btn-block" type="button" data-objket='{{objket.id}}'> <i class="fa fa-plus"></i> </button>
-                      
+                     
     </div>
 
 

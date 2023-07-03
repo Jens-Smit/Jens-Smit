@@ -68,6 +68,11 @@
    <script src="{{asset('js/jquery.ui.touch-punch.js')}}"></script>  
  
   <script language = "javascript">  
+  function resetBackgroundColor(tab) {
+  setTimeout(function() {
+    $(tab).css('background-color', ''); // Setze die Hintergrundfarbe zurück
+  }, 3000); // Timeout von 3 Sekunden (kann angepasst werden)
+}
     $(document).ready(function(){  
        var spinner =  '<div id="spinner"> </div>';
        $(".page").hide();
@@ -103,6 +108,33 @@
        });
        $( ".draggable" ).draggable({
                   start: function() {
+                     
+                  if ($(this).attr('id') == "Res_WalkIn"){
+                    console.log('test');  
+                    //ajay rerunf free items
+                     $.ajax({
+                            type: "POST",
+                            url: "{{path('ajax_freeItamsNow')}}",
+                            data: {
+                              'id': {{objekt.id}},
+                            },
+                            dataType: "text",
+                            success: function(data) {
+                           
+                              var items = JSON.parse(data);
+                            
+                              for (var i = 0; i < items.length; i++) {
+                                var tab = '#Tab'+items[i].item_id; 
+                                $(tab).css('background-color','var(--green)');
+                               resetBackgroundColor(tab)
+                              }
+                            }
+                          });
+                    // schleife der Itams
+                    // itam id mit zusatz Tab als id suchen und grün einfärben
+
+                 
+                  }
                    var item = "Tab"+$(this).attr('name');
                    
                    $('#'+item).css("background-color","rgb(75, 181, 67)");
@@ -115,6 +147,7 @@
                     var item = "Tab"+$(this).attr('name');
                    $('#'+item).css("background","none");
                    $("#delat").css("display","none");
+                   
                   }
        });
        
@@ -124,6 +157,7 @@
                  
                   var TabId = $(this).attr("id");
                   var ResId =  $("#var").html();
+                  //reservierung auschecken
                     if(TabId ==  "delat"){
                    
                         $.ajax({
@@ -134,7 +168,7 @@
                             },
                             dataType: "text",
                             success: function(data) {
-                              $("#"+ResId).remove(); 
+                             location.reload(true); 
                             },  
                             error : function(xhr, textStatus, errorThrown) {  
                               alert('Ajax request failed delate.');
@@ -143,16 +177,17 @@
                        
                     
                     }
+                    //walk in Einchecken
                     else if (ResId == "Res_WalkIn"){
                          
-                          var html = '<div class="dialog_content mx-auto"><input id="personen"><div class="row">';
+                          var html = '<div class="dialog_content mx-auto"><input style="    text-align: center;    width: 100%;    margin: 10px 0px;" id="personen"><table     style="margin: auto;"><tr>';
                           for (var i = 1; i <= 10; i++) {
-                            html += '<div class="col-4"><button class="btn mx-auto btn_calc btn-primary btn-lg w-100 h-100 btn-block" type="button">' + i + '</button></div>';
+                            html += '<td class="col-4"><button class="btn mx-auto btn_calc btn-primary btn-lg w-100 h-100 btn-block" type="button">' + i + '</button></td>';
                             if (i % 3 == 0) {
-                            html += '</div><div class="row">';
+                            html += '</tr><tr >';
                             }
                           }
-                          html += '<div class="col-4"><button class="btn mx-auto btn-success btn-lg w-100 h-100 btn-block" id ="save_walkin" type="button"><i class="fa fa-check"></i></button></div><div class="col-4"><button id ="CE" class="btn mx-auto btn-danger w-100 h-100 btn-lg btn-block" type="button"><i class="fa fa-trash"></i></button></div></div></div>';
+                          html += '<td><button class="btn mx-auto btn-success btn-lg w-100 h-100 btn-block" id ="save_walkin" type="button"><i style="margin: auto;" class="fa fa-check"></i></button></td><td class="col-4"><button id ="CE" class="btn mx-auto btn-danger w-100 h-100 btn-lg btn-block" type="button"><i  style="margin: auto;"    class="fa fa-trash"></i></button></td></tr></tabel></div>';
                           
                           $("#dialog").html(html);
                          $(".dialog_content").css("width", "200px");  
@@ -183,38 +218,7 @@
                               },
                               dataType: "text",
                               success: function(data) {
-                                $("#Res_WalkIn").css({
-                                  "left": "0px",
-                                   "top": "0px"
-                                });
-                                var $originalDiv = $("#"+ResId);
-                                var $copiedDiv = $originalDiv.clone();
-                                var reservierung = jQuery.parseJSON(data);
-                                var res_id = reservierung.res_id; 
-                                $copiedDiv.attr("id", "Res"+res_id);
-                                
-                                $("#"+TabId).html($copiedDiv);
-                                 $( ".draggable" ).draggable({
-                                            start: function() {
-                                            var item = "Tab"+$(this).attr('name');
-                                            
-                                            $('#'+item).css("background-color","rgb(75, 181, 67)");
-                                            $("#delat").css("display","block");
-                                            },
-                                            drag: function() {
-                                              $("#var").html($(this).attr("id"));
-                                            },
-                                            stop: function() {
-                                              var item = "Tab"+$(this).attr('name');
-                                            $('#'+item).css("background","none");
-                                            $("#delat").css("display","none");
-                                            }
-                                });
-                                $("#Res"+res_id).css("left","auto");
-                                $("#Res"+res_id).css("top","auto"); 
-                               
-                               
-                                $( "#dialog" ).dialog( "close" ); 
+                               location.reload(true); 
                               },  
                               error : function(xhr, textStatus, errorThrown) {  
                                 alert('Ajax request failed .');
@@ -228,6 +232,7 @@
                           });
 
                     }
+                    //reservierung einchecken
                     else{
                           var bestaetigung = window.confirm('CheckIn ?');
                           if(bestaetigung) {
@@ -240,10 +245,7 @@
                               },
                               dataType: "text",
                               success: function(data) {
-                                var reservierung = jQuery.parseJSON(data);
-                                $("#"+TabId).append($("#"+ResId) );
-                                $("#"+ResId).css("left","auto");
-                                $("#"+ResId).css("top","auto"); 
+                                location.reload(true); 
                               },  
                               error : function(xhr, textStatus, errorThrown) {  
                                 alert('Ajax request failed .');
@@ -263,7 +265,9 @@
                     $.ajax({
                       type: "POST",
                       url: "{{path('ajax_ResNew')}}",
-                      
+                      data: {
+                        'data': {{objekt.id}},
+                      },
                       dataType: "text",
                       success: function(data) {
                         $("#dialog").html(data);
@@ -322,7 +326,8 @@
    
     <h8>Reservation</h8>
     {% for Reservation in Reservations %} 
-      {% if Reservation.status is null %}
+     {% if (Reservation.status is  null) and (Reservation.points is null) %}
+     
         <div class='card bg-success draggable border-primary mb-3' id='Res{{ Reservation.id }}' name= '{{ Reservation.item_id }}'style=' margin: initial; max-width: 5rem;z-index:3; margin:auto ; font-size:10px;'> 
           <div class='row'> 
             <div class='col'><b>{{ Reservation.user }}</b></div>
@@ -368,14 +373,14 @@
                     {% for Reservation in Reservations %} 
                           {% if (Reservation.status is not null) and (Reservation.aktiv is null) %}
                             {% if Reservation.item_id == rentItem.id %}
-                                <div class='card draggable bg-success border-primary mb-3' id='Res{{ Reservation.id }}' name= '{{ Reservation.item_id }}'style='max-width: 5rem; margin:auto ; font-size:10px;z-index:3;'> 
-                                <div class='row'> 
-                              <div class='col'><b>{{ Reservation.user }}</b></div>
-                              </div>
-                            <div class='row'> 
-                              <div class='col'>{{ Reservation.kommen|date("H:i") }}</div><div class='col' style="padding-left: 0px;">{{ Reservation.pax }} Pax</div>
-                            </div>
-                          </div>
+                                <div class='card draggable bg-transparent text-center border-primary mb-3' data-points='{{Reservation.points}}' id='Res{{ Reservation.id }}' name= '{{ Reservation.item_id }}'style='max-width: 5rem; margin:auto ; font-size:10px;z-index:3;'> 
+                                  <div class='row' > 
+                                    <div class='col'><b>{{ Reservation.user }}</b></div>
+                                  </div>
+                                  <div class='row'> 
+                                    <div class='col'>{{ Reservation.kommen|date("H:i") }}</div><div class='col' >{{ Reservation.pax }} Pax</div>
+                                  </div>
+                               </div>
                             {% endif %}
                           {% endif %}
                       {% endfor %} 

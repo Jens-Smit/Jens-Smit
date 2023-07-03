@@ -31,12 +31,12 @@ class Reservation
      */
 
     #[Assert\DateTime()]
-    #[ORM\Column (type: 'datetime')]
-  
+    #[ORM\Column(type: 'datetime')]
     private  $kommen = null;
+
+   
     #[Assert\DateTime()]
     #[ORM\Column(type: 'datetime')]
-    #[Groups(['Reservation:list', 'conference:item'])]
     private  $gehen = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
@@ -105,10 +105,7 @@ class Reservation
     {
         return $this->id;
     }
-    public function __construct()
-    {
-        return $this->kommen;
-    }
+   
    
 
   
@@ -181,30 +178,6 @@ class Reservation
     public function setAktiv(?string $aktiv): self
     {
         $this->aktiv = $aktiv;
-
-        return $this;
-    }
-
-    public function getStart(): ?\DateTimeInterface
-    {
-        return $this->start;
-    }
-
-    public function setStart(\DateTimeInterface $start): self
-    {
-        $this->start = $start;
-
-        return $this;
-    }
-
-    public function getEnde(): ?\DateTimeInterface
-    {
-        return $this->ende;
-    }
-
-    public function setEnde(\DateTimeInterface $ende): self
-    {
-        $this->ende = $ende;
 
         return $this;
     }

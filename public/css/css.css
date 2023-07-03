@@ -97,6 +97,14 @@
       .nav-link, a{
         color:var(--blue) !important;
       }
+      .btn-aktiv{
+        background-color: var(--green);
+      }
+      .btn-secondary{
+        background-color:var(--primery-background-color) !important;
+        color:var(--blue) !important;
+        border-color:var(--blue) !important;
+      }
       .btn-success{
         background-color:var(--green) !important;
         color:var(--secondary-link-color) !important;

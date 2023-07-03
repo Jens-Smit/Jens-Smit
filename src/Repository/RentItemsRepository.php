@@ -71,10 +71,147 @@ public function findAllfree( $date, $time,  $pax){
             )order by
             item_id';
     $stmt = $conn->prepare($sql);
-$resultSet = $stmt->executeQuery(['time' => $time, 'date' => $date,  'pax' =>$pax]); 
-$datas = $resultSet->fetchAllAssociative();
-return $datas ;
+    $resultSet = $stmt->executeQuery(['time' => $time, 'date' => $date,  'pax' =>$pax]); 
+    $datas = $resultSet->fetchAllAssociative();
+    return $datas ;
+    }
+
+public function freeItems($date, $objekt, $pax, $category, $resId)
+{ $conn = $this->getEntityManager()->getConnection();
+    if($resId>0){
+       
+        $sql = 'SELECT item.usetime, item.pax, item.objekt_id, item.category_id, item.name, o.id as objekt_id, item.id as item_id
+                FROM rent_items as item
+                JOIN objekt as o ON item.objekt_id = o.id
+                WHERE item.objekt_id = :objekt
+                AND item.pax >= :pax
+                AND item.category_id = :category
+                AND item.id NOT IN (
+                    SELECT item_id FROM reservation res
+                    WHERE (
+                        res.kommen <= :date + INTERVAL item.usetime MINUTE 
+                        AND res.gehen > :date
+                        AND res.id != :resId
+                    ) OR (
+                        res.kommen >= :date 
+                        AND res.kommen < :date + INTERVAL item.usetime MINUTE
+                        AND res.id != :resId
+                    )
+                    
+                )
+                ORDER BY item_id';
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery([
+            'objekt' => $objekt,
+            'date' => $date,
+            'category' => $category,
+            'pax' => $pax,
+            'resId' => $resId
+        ]);
+        
+    }
+    else{
+        $sql = 'SELECT item.usetime, item.pax, item.objekt_id, item.category_id, item.name, o.id as objekt_id, item.id as item_id
+            FROM rent_items as item
+            JOIN objekt as o ON item.objekt_id = o.id
+            WHERE item.objekt_id = :objekt
+            AND item.pax >= :pax
+            AND item.category_id = :category
+            AND item.id NOT IN (
+                SELECT item_id FROM reservation res
+                WHERE (
+                    res.kommen <= :date + INTERVAL item.usetime MINUTE 
+                    AND res.gehen > :date
+                ) OR (
+                    res.kommen >= :date 
+                    AND res.kommen < :date + INTERVAL item.usetime MINUTE
+                )
+                
+            )
+            ORDER BY item_id';
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery([
+            'objekt' => $objekt,
+            'date' => $date,
+            'category' => $category,
+            'pax' => $pax
+        ]);
+    }
+    $datas = $resultSet->fetchAllAssociative();
+        return $datas;
 }
+
+//wählt freies Itam für die Reseditervierung aus
+public function selectFreeItemsEdit($kommen, $gehen, $objekt, $pax, $category,$resId)
+{
+    $conn = $this->getEntityManager()->getConnection();
+    $sql = 'SELECT item.usetime, item.pax, item.objekt_id, item.category_id, o.name, o.id as objekt_id, item.id as item_id
+            FROM rent_items as item
+            JOIN objekt as o ON item.objekt_id = o.id
+            WHERE item.objekt_id = :objekt
+            AND item.pax >= :pax
+            AND item.category_id = :category
+            AND item.id NOT IN (
+                SELECT item_id 
+                FROM reservation res 
+                WHERE (
+                    res.kommen <= :gehen 
+                    AND res.gehen > :kommen
+                    AND res.id != :resId
+                ) OR (
+                    res.kommen >= :kommen 
+                    AND res.kommen < :gehen
+                    AND res.id != :resId
+                )
+            )
+            ORDER BY item.pax';
+    $stmt = $conn->prepare($sql);
+    $resultSet = $stmt->executeQuery([
+        'objekt' => $objekt,
+        'kommen' => $kommen,
+        'gehen' => $gehen,
+        'resId' => $resId,
+        'category' => $category,
+        'pax' => $pax
+    ]);
+    $datas = $resultSet->fetchAllAssociative();
+    return $datas;
+}
+public function selectFreeItems($kommen, $gehen, $objekt, $pax, $category)
+{
+    $conn = $this->getEntityManager()->getConnection();
+    $sql = 'SELECT item.usetime, item.pax, item.objekt_id, item.category_id, o.name, o.id as objekt_id, item.id as item_id
+            FROM rent_items as item
+            JOIN objekt as o ON item.objekt_id = o.id
+            WHERE item.objekt_id = :objekt
+            AND item.pax >= :pax
+            AND item.category_id = :category
+            AND item.id NOT IN (
+                SELECT item_id 
+                FROM reservation res 
+                WHERE (
+                    res.kommen <= :gehen 
+                    AND res.gehen > :kommen
+                    AND res.aktiv is null
+                ) OR (
+                    res.kommen >= :kommen 
+                    AND res.kommen < :gehen
+                    AND res.aktiv is null
+                )
+            )
+            ORDER BY item.pax';
+    $stmt = $conn->prepare($sql);
+    $resultSet = $stmt->executeQuery([
+        'objekt' => $objekt,
+        'kommen' => $kommen,
+        'gehen' => $gehen,
+        'category' => $category,
+        'pax' => $pax
+    ]);
+    $datas = $resultSet->fetchAllAssociative();
+    return $datas;
+}
+
 public function findfree( $date, $time, $objekt, $pax){
     $conn = $this->getEntityManager()->getConnection();
    $sql =  'SELECT  item.usetime,item.pax, item.objekt_id, item.category_id ,o.name, o.id, item.id as item_id
@@ -94,9 +231,9 @@ public function findfree( $date, $time, $objekt, $pax){
             )order by
             item_id';
     $stmt = $conn->prepare($sql);
-$resultSet = $stmt->executeQuery(['time' => $time, 'date' => $date, 'objekt' =>$objekt, 'pax' =>$pax]); 
-$datas = $resultSet->fetchAllAssociative();
-return $datas ;
+    $resultSet = $stmt->executeQuery(['time' => $time, 'date' => $date, 'objekt' =>$objekt, 'pax' =>$pax]); 
+    $datas = $resultSet->fetchAllAssociative();
+    return $datas ;
 }
     public function findOneBySomeField($value): ?RentItems
     {

@@ -1,0 +1,129 @@
+{% block javascripts %} 
+   
+       
+   
+   <script language = "javascript">  
+      $(document).ready(function(){  
+          var id =  $(this).attr('id');
+          if($('#form_Item').length){
+            $('.form-check-input').click(function(){
+              console.log('click');
+              if ($(this).parent().hasClass('btn-aktiv')) {
+                console.log('aktiv');
+                $(this).parent().removeClass('btn-aktiv') ;
+                $(this).parent().addClass('btn-info') ;
+                 var str = $(this).parent().children('.form-check-label').html();
+                var match = str.match(/Pax:\s*(\d+)/);
+                var pax = parseInt(match[1]);
+                 var temp = parseInt($('#selectPax').html());
+                 $('#selectPax').html(temp-pax);
+                //  console.log('Pax:', parseInt(pax)+8);
+
+              } else {
+                $(this).parent().addClass('btn-aktiv') ;
+              
+                $(this).parent().removeClass('btn-info') ;
+                var str = $(this).parent().children('.form-check-label').html();
+                var match = str.match(/Pax:\s*(\d+)/);
+                var pax = parseInt(match[1]);
+                 var temp = parseInt($('#selectPax').html());
+                 $('#selectPax').html(temp+pax);
+                 if(parseInt($('#sollPax').html()) <= (temp+pax)){
+                  $('.w-100').addClass('btn-aktiv')
+                  $('.w-100').removeClass('btn-info')
+                 }
+               //  console.log('PaxTemp:', parseInt(temp));
+                
+               
+              }
+            });
+           
+          }
+          else{
+          
+            $('input[type="radio"]').change(function(){
+            
+              $('.btn-aktiv').addClass('btn-info') ;
+              $('.btn-aktiv').removeClass('btn-aktiv') ;
+              $(this).parent().addClass('btn-aktiv');
+              $('.btn-aktiv').removeClass('btn-info') ;
+            
+            });
+          }
+        
+          $('.form-check').addClass(' btn btn-info m-1'); 
+          $('.form-check').css('font-size', '0.9rem') 
+           $('.form-check-input').addClass('d-none'); 
+           if ($('#form_telefon').length) {
+            //save Reservierung mit mehrern Objekten
+               $(".edit_form").submit(function(e) {
+                    e.preventDefault(); //
+                    var form = $(this);
+                    
+                 
+                    $.ajax({
+                        type: "POST",
+                        url: "{{path('ajax_Group_select_item')}}",
+                        data: form.serialize(), // serializes the form's elements.
+                        success: function(data)
+                        {
+                         $('#dialog').html(data);
+                        
+                        },
+                        error : function(xhr, textStatus, errorThrown) {  
+                          
+                          alert('Ajax request failed new form.');
+                          
+                        }
+                    });
+                    console.log('form submitted')
+                });
+           }
+           else{
+               $(".edit_form").submit(function(e) {
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+                    var form = $(this);
+                    
+                  
+                    $.ajax({
+                        type: "POST",
+                        url: "{{path('ajax_Group_select_item')}}",
+                        data: form.serialize(), // serializes the form's elements.
+                        success: function(data)
+                        {
+                         $('#dialog').html(data);
+                        
+                        },
+                        error : function(xhr, textStatus, errorThrown) {  
+                          
+                          alert('Ajax request failed new form.');
+                          
+                        }
+                    });
+             
+               });            
+          }
+      });  
+        
+   </script>  
+{% endblock %} 
+
+          
+{% block body %} 
+
+<div class="card text-left">
+ 
+  <div class="card-body d-flex" style='font-size: 1rem;'>
+    <p style='margin-left:5px;margin-right:5px;'id='selectPax'> 0 </p> Plätze von <p style='margin-left:5px;margin-right:5px;' id="sollPax">{{data.pax}}</p> Pätzen zugeortnet
+  </div>
+</div>
+
+{{ form_start(form, {'attr': {'class': 'edit_form'} }) }}
+    
+ 
+    
+ 
+{{ form_end(form) }}
+{% endblock %}
+
+

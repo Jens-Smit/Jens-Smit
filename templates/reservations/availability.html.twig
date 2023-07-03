@@ -1,0 +1,94 @@
+{% block javascripts %} 
+   
+       
+   
+   <script language = "javascript">  
+      $(document).ready(function(){  
+         //  var id =  $(this).attr('id');
+        $('input[type="radio"]').change(function(){
+          console.log("okay");
+          $('.btn-aktiv').addClass('btn-info') ;
+          $('.btn-aktiv').removeClass('btn-aktiv') ;
+          $(this).parent().addClass('btn-aktiv');
+          $('.btn-aktiv').removeClass('btn-info') ;
+        
+    });
+        
+           $('.form-check').addClass(' btn btn-info m-1'); 
+           $('.form-check').css('font-size', '0.9rem') 
+           $('.form-check-input').addClass('d-none'); 
+            if ($('#form_email').val() == '') {
+                  //new Reservierung
+                  $(".edit_form").submit(function(e) {
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+                    var form = $(this);
+                    
+                  
+                    $.ajax({
+                        type: "POST",
+                        url: "{{path('ajax_ResNewSave')}}",
+                        data: form.serialize(), // serializes the form's elements.
+                        success: function(data)
+                        {
+                         location.reload(true); 
+                         
+                        },
+                        error : function(xhr, textStatus, errorThrown) {  
+                          
+                          alert('Ajax request failed new form.');
+                          
+                        }
+                    });
+             
+               });
+            } else {
+                  //Edit reservierung
+                   $(".edit_form").submit(function(e) {
+                    e.preventDefault(); // avoid to execute the actual submit of the form.
+                    var form = $(this);
+                    $.ajax({
+                        type: "POST",
+                        url: "{{path('ajax_ResEditUpdate')}}",
+                        data: form.serialize(), // serializes the form's elements.
+                        success: function(data)
+                        {
+                          if(data == true){
+                            
+                             console.log(data);
+                           // location.reload(true);
+                          }else{
+                            //  $( "#dialog" ).html(data);
+                            //save Reservierung Edit
+                              console.log(data);
+                          }
+                        },
+                        error : function(xhr, textStatus, errorThrown) {  
+                          alert('Ajax request failed sss.');
+                        }
+                    });
+             
+         }); 
+               }
+         
+            
+             
+            
+      });  
+        
+   </script>  
+{% endblock %} 
+
+          
+{% block body %} 
+
+
+{{ form_start(form, {'attr': {'class': 'edit_form'} }) }}
+    
+ 
+    
+ 
+{{ form_end(form) }}
+
+{% endblock %}
+
+

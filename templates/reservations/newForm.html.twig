@@ -10,14 +10,16 @@
                 $(".edit_form").submit(function(e) {
                     e.preventDefault(); // avoid to execute the actual submit of the form.
                     var form = $(this);
-                  
+                   
                     $.ajax({
                         type: "POST",
-                        url: "{{path('ajax_ResNewSave')}}",
+                        url: "{{path('ajax_availability')}}",
                         data: form.serialize(), // serializes the form's elements.
                         success: function(data)
                         {
-                          $( "#dialog" ).dialog( "close" ); 
+                          // console.log('success')
+                        $( "#dialog" ).html(data);
+                         // $( "#dialog" ).dialog( "close" ); 
                          
                         },
                         error : function(xhr, textStatus, errorThrown) {  
@@ -28,13 +30,10 @@
                     });
              
                 });
-                $("#reservation_new_kommen_date").keyup(function() {
-                 
-                  $("#reservation_new_gehen_date").val($("#reservation_new_kommen_date").val())
-                });
-                $("#reservation_new_kommen_time").keyup(function() {
-                  $("#reservation_new_gehen_time").val($("#reservation_new_kommen_time").val())
-                });
+
+
+
+              
              
             
       });  

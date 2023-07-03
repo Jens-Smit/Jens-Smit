@@ -5,39 +5,47 @@
    <script language = "javascript">  
       $(document).ready(function(){  
          //  var id =  $(this).attr('id');
-        
+   
                 
                 $(".edit_form").submit(function(e) {
                     e.preventDefault(); // avoid to execute the actual submit of the form.
                     var form = $(this);
-                  console.log(form);
+                  
                     $.ajax({
                         type: "POST",
                         url: "{{path('ajax_ResEditUpdate')}}",
                         data: form.serialize(), // serializes the form's elements.
                         success: function(data)
                         {
-
-                          $( "#dialog" ).dialog( "close" ); 
+                          if(data == true){
+                            location.reload(true);
+                          }else{
+                            console.log(data);
+                          // $( "#dialog" ).dialog( "close" );
+                          $.ajax({
+                              type: "POST",
+                              url: "{{path('ajax_availability')}}",
+                              data: data, // serializes the form's elements.
+                              success: function(data)
+                              {
+                               
+                               //    console.log(data);
+                              $( "#dialog" ).html(data); 
+                              
+                              },
+                              error : function(xhr, textStatus, errorThrown) {  
+                                alert('Ajax request failed zu viele Gäste.');
+                              }
+                          }); 
+                          }
                         },
                         error : function(xhr, textStatus, errorThrown) {  
-                          
                           alert('Ajax request failed sss.');
-                          
                         }
                     });
              
                 });
-                $("#reservation_edit_date_date").keyup(function() {
-                  var temp = $("#reservation_edit_date_date").val();
-                  console.log(temp);
-                  $("#reservation_edit_time_date").val($("#reservation_edit_date_date").val())
-                });
-                $("#reservation_edit_date_time").keyup(function() {
-                  var temp = $("#reservation_edit_time_time").val();
-                  console.log(temp);
-                  $("#reservation_edit_time_time").val($("#reservation_edit_date_time").val())
-                });
+               
             
       });  
         
