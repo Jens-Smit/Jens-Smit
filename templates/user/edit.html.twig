@@ -21,27 +21,38 @@
     <h1>{{user.vorname}} {{user.nachname}} bearbeiten</h1>
 <div class="group w-100 d-flex flex-wrap justify-content-around ">
     <ul class="nav nav-tabs">
+    <!-- Stammdaten-->
     <li class="nav-item">
         <a class="nav-link nav-link-user active" href="#" data-target="#Stammdaten">Stammdaten</a>
     </li>
+    <!-- Vertragsdaten-->
     <li class="nav-item">
         <a class="nav-link nav-link-user " href="#" data-target="#Vertragsdaten">Vertragsdaten</a>
     </li>
+     <!-- Dokumente-->
     <li class="nav-item">
         <a class="nav-link nav-link-user" href="#" data-target="#Dokumente">Dokumente</a>
     </li>
+     <!-- Dienstplan-->
     <li class="nav-item">
         <a class="nav-link nav-link-user" href="#" data-target="#Dienstplan">Dienstplan</a>
     </li>
+    <!-- Fehlzeiten-->
     <li class="nav-item">
         <a class="nav-link nav-link-user" href="#" data-target="#fehlzeiten_card">Fehlzeiten</a>
     </li>
+     <!-- Arbeitszeiten-->
     <li class="nav-item">
         <a class="nav-link nav-link-user" href="#" data-target="#Arbeitszeiten">Arbeitszeiten</a>
     </li>
+    <!-- rechte ändern-->
     <li class="nav-item">
         <a class="nav-link nav-link-user" href="#" data-target="#role">Rechte</a>
     </li>
+    <!-- Passwort ändern-->
+    <li class="nav-item">
+        <a class ="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"href="{{ path('changePassword') }}">Password ändern</a></td>
+    </li>      
     </ul>
     
         <!-- Vertragsdaten-->

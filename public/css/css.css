@@ -15,10 +15,12 @@
   --primery-link-color: :#75F94D;
   --primery-color: #ffffff;
   }
-  
+  .card{background-color: var(--secondary-background-color)!important;}
     body {  
   background-color: var(--primery-background-color);}
-
+  h1, h2, h3, h4, h5{
+    color:var( --primery-color);
+  }
   body, .container-fluid{
     background-color: var(--primery-background-color) !important;  
     }
@@ -127,6 +129,7 @@
       }
       #navbarNav ul li{
         background-color: var(--secondary-background-color);
+        margin-left: 7px;
       }
       nav a{color:var(--primery-color) !important;}
       #navbarNav ul li a{color:var(--primery-link-color) !important;}

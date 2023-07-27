@@ -160,14 +160,21 @@
 $(document).ready(function() {
 
 
+ const darkModeSwitch = document.getElementById('dark-mode-switch');
+  const darkModeEnabled = localStorage.getItem('darkModeEnabled');
 
-  
-  const darkModeSwitch = document.getElementById('dark-mode-switch');
+  if (darkModeEnabled === 'true') {
+    darkModeSwitch.checked = true;
+    document.documentElement.classList.add('dark-mode');
+  }
+
   darkModeSwitch.addEventListener('change', (event) => {
     if (event.target.checked) {
       document.documentElement.classList.add('dark-mode');
+      localStorage.setItem('darkModeEnabled', 'true');
     } else {
       document.documentElement.classList.remove('dark-mode');
+      localStorage.setItem('darkModeEnabled', 'false');
     }
   });
     $('#sidebar').addClass('sidebar-collapsed');

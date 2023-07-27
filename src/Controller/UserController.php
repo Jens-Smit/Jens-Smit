@@ -661,7 +661,7 @@ class UserController extends AbstractController
                 'data' => $contract->getId(),
             ])
             ->getForm();
-           
+          // dump($variables);
             return $this->render('user/contrect.html.twig', [
                 'form' => $form->createView(),
                 'contracts' => $replacedContracts,

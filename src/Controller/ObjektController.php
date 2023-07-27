@@ -529,29 +529,26 @@ class ObjektController extends AbstractController
                 $form = $this->createForm(ObjektType::class, $Objekt);
                 $form->handleRequest($request);
                 if ($form->isSubmitted() && $form->isValid()) {
-                    $bild = $form->get('bild')->getData();
+                   $bild = $form->get('bild')->getData();
                    // $bild = $request->files->get['bild']['anhang'];
+                   
+                 
                    if($bild != null){
-                        $bildname = md5(uniqid()).'.'.$bild->guessClientExtension();
-                    
-                    $bild->move(
-                            $this->getParameter('bilder_ordner'),
-                            $bildname
-                    );
-                    $objekt->setBild($bildname);
+                        $bildname = md5(uniqid()).'.'.$bild->guessClientExtension(); 
+                        $bild->move(
+                                $this->getParameter('bilder_ordner'),
+                                $bildname
+                        );
+                        $objekt->setBild($bildname);
                     }
-        
+
                     $objektRepository->save($Objekt, true);
-        
                     return $this->redirectToRoute('app_objekt_index', [], Response::HTTP_SEE_OTHER);
                 }
-      
                 return $this->renderForm('objekt/edit.html.twig', [
                     'objekt' => $Objekt,
-                    'form' => $form,
-                    
+                    'form' => $form,  
                 ]);
-            
              }else{
                 return $this->render('dashboard/noroles.html.twig', [   
                     'objekt' => $objektRepository->find(0)

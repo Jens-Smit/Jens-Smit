@@ -22,18 +22,23 @@
     {% elseif variable.entity == 'ContractData' %}
             {% set varValue = attribute(userContractData, varName) %}
     {% endif %}
+{% if varValue.timestamp is defined %}
+    {%  set varis = varValue|date('d.m.Y') %}
+{% else %}
+    {% set varis = varValue %}
+{% endif %}
 
-    {% set contractText = contractText|replace({(variable.var): varValue}) %}
-
+    {% set contractText = contractText|replace({(variable.var): varis}) %}
      {% set contractText = contractText|replace({'red': 'none'}) %}
       {% set contractText = contractText|replace({'#': ''}) %}
       {% set contractText = contractText|replace({'5px': '0px'}) %}
       {% set contractText = contractText|replace({'3px': '0px'}) %}
+    
          {% endfor %}
 
        
       {% endfor %} 
-      {{ contractText|raw }}
+     {{ contractText|raw }}
     </div>
   {% endfor %}
   {{ form_start(form) }}

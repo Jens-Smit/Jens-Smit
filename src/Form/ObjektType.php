@@ -52,6 +52,8 @@ class ObjektType extends AbstractType
             ->add('bild', FileType::class,array(
                 'data_class' => null,
                  'required' => false,
+                 'data' => $objekt->getBild(), // Setze den Wert des Feldes auf den Namen des vorhandenen Bildes
+
                 
             ))
             ->add('fax', null, [
