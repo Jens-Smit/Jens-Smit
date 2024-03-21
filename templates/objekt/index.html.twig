@@ -23,11 +23,13 @@
             {% for objekt in objekts %}
                 <div class="card" >
                     {% if objekt.bild is null %}
-                        {{ objekt.bild }}
+                        
                         <i class="fas fa-image"></i>
                     {% else %}
                         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                            <img class="card-img-top" style='max-height: 250px; object-fit: cover;' src="{{ asset('images/' ~ objekt.bild) }}" alt="Objekt Foto">
+                        
+                            <img class="card-img-top" style='max-height: 250px; object-fit: cover;position:relative' src="{{ asset('images/' ~ objekt.bild) }}" alt="Objekt Foto">
+                            <button onclick="delateImage('{{ objekt.bild }}')"  type="button" style="position: absolute; right: 0; margin: 10px; border: none; background: none;" class="fas fa-trash text-danger"></button>
                         {% else %}
                             <i class="fas fa-image"></i>
                         {% endif %}
@@ -57,7 +59,19 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="{{ asset('js/modal.js') }}"></script>
+    <script>
+
     
+    const sa = document.getElementById('datalte_image');
+    function delateImage(bild){
+       
+        DelateObjektImage(bild);
+        
+    } 
+    
+
+
+    </script>
     
 
 {% endblock %}

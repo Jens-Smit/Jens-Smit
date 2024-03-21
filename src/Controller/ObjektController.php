@@ -25,6 +25,7 @@ use App\Repository\RentItemsRepository;
 use App\Repository\SpecialOpeningTimeRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Id;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -86,6 +87,35 @@ class ObjektController extends AbstractController
             }
         }
 
+    }
+    #[Route('/DelateObjektImage', name: 'DelateObjektImages', methods: [ 'POST'])]
+    public function delateObjektImage(ObjektRepository $objektRepository, EntityManagerInterface $entityManager): Response
+    {
+
+        $data = $_POST['bild'];
+        $objekt = $objektRepository->findOneBy(['bild'=>$data]);
+        
+        $bild = $objekt->getBild();
+        // Dateipfad zum Bild
+        $bildDateipfad = "./images/$bild";
+        $objekt->setBild(null);
+        
+        $entityManager->persist($objekt);
+        $entityManager->flush();
+        // Überprüfen, ob die Datei existiert, und dann löschen
+      
+        if (file_exists($bildDateipfad)) {
+            // Bild löschen
+            unlink($bildDateipfad);
+            $objekt->setBild('');
+            
+            return new JsonResponse('Das Bild wurde erfolgreich gelöscht.'); 
+           
+        } else {
+           return new JsonResponse('Die Datei existiert nicht'); 
+        }
+        
+        return new JsonResponse( $objekt);
     }
     #[Route('/new', name: 'app_objekt_new', methods: ['GET', 'POST'])]
     public function new(Request $request, ObjektRepository $objektRepository, Environment $twig): Response

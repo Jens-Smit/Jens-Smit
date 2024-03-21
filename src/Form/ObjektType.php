@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\Company;
 use App\Entity\Objekt;
 use App\Entity\ObjektCategories;
+use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -32,6 +33,8 @@ class ObjektType extends AbstractType
         //companys des benutzers ermitteln -admin einer Company
         $companies = $this->doctrine->getRepository(Company::class)->findBy(['onjekt_admin' => $user]);
 
+        $userobjekt = $this->doctrine->getRepository(User::class)->find( $user); 
+        $objekt = $userobjekt->getObjekt();
         foreach ($companies as $company) {
             $choices[$company->getName()] = $company;
         }
@@ -48,15 +51,22 @@ class ObjektType extends AbstractType
             ->add('telefon')
             ->add('website', null, [
                 'required' => false,
-            ])
-            ->add('bild', FileType::class,array(
-                'data_class' => null,
-                 'required' => false,
-                 'data' => $objekt->getBild(), // Setze den Wert des Feldes auf den Namen des vorhandenen Bildes
+            ]);
+            if( $objekt->getBild()){
 
-                
-            ))
-            ->add('fax', null, [
+            
+            
+            }
+            else{
+                $builder->add('bild', FileType::class,array(
+                    'data_class' => null,
+                     'required' => false,
+                     'data' => $objekt->getBild(), // Setze den Wert des Feldes auf den Namen des vorhandenen Bildes
+    
+                    
+                ));
+            }
+            $builder->add('fax', null, [
                 'required' => false,
             ])
             ->add('bestellung_mail', null, [

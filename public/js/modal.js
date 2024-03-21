@@ -1,4 +1,21 @@
 
+function DelateObjektImage(bild){
+    $.ajax({
+        url: "/objekt/DelateObjektImage",
+        type: "POST",
+        
+        data:   {
+                 "bild": bild
+                }
+            ,
+        success: function(response) {
+            console.log(response)
+        },
+        error: function() {
+            alert("Es gab einen Fehler beim Löschen des Objekt bildes");
+        }
+    });
+}
 
 function convertTimestamp(timestamp) {
   var d = new Date(timestamp * 1000),

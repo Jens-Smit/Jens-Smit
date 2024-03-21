@@ -21,7 +21,7 @@ class OpeningTimeType extends AbstractType
     {
         $builder
             ->add('day', ChoiceType::class, [
-                'label' => 'day',
+                'label' => 'Wochentag',
                 'choices'  => [
                     'Sonntag' => 0,
                     'Montag' => 1,
@@ -36,7 +36,7 @@ class OpeningTimeType extends AbstractType
                 ],
             ])
             ->add('start', TimeType::class, [
-                'label' => 'open',
+                'label' => '',
                 'widget' => 'single_text',
                 'constraints' => [
                     new Callback(function ($value, ExecutionContextInterface $context) {
