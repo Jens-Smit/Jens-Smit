@@ -29,7 +29,6 @@ class AreaType extends AbstractType
         $this->tokenStorage = $tokenStorage;
         $this->doctrine = $doctrine;
      }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         
