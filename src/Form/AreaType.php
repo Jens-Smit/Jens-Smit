@@ -35,8 +35,13 @@ class AreaType extends AbstractType
         
         $objektRepository = $this->doctrine->getRepository(Objekt::class);
         $user = $this->tokenStorage->getToken()->getUser();
-        $objekte = $objektRepository->findMy($user);
-//dump($objekte);
+        $objekt = $objektRepository->findMy($user);
+      
+        $choices_objekte = [];
+        $choices_objekte[$objekt->getName()] = $objekt;
+        
+     // dump($choices_objekte);
+
     $builder
        
         ->add('name')
@@ -45,10 +50,11 @@ class AreaType extends AbstractType
 
         ))
         ->add('objekt', ChoiceType::class, [
-            'choices' => $objekte,
+            'choices' => $choices_objekte,
             'choice_label' => 'name',
             'choice_value' => 'id',
         ])
+        
         ->add('save',SubmitType::class,[
             'label' => 'save' ,
             'attr' => [
