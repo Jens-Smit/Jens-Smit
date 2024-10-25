@@ -18,6 +18,23 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/')]
 class HomeController extends AbstractController
 {
+    /**
+     * The above function in PHP creates a form, processes user input, and sends an email with the form
+     * data if the form is submitted and valid.
+     * 
+     * @param Request request The `` parameter in the `index` method of your Symfony controller
+     * represents the current HTTP request. It contains information about the request such as the
+     * request method, headers, parameters, and more. In your code snippet, you are using the
+     * `` parameter to handle the form submission.
+     * @param MailerInterface mailer The code you provided is a Symfony controller action that handles
+     * a form submission for sending an email using the MailerInterface service. The MailerInterface
+     * service is used to send emails in Symfony applications.
+     * 
+     * @return Response The code snippet provided is a Symfony controller method for handling a form
+     * submission on the homepage route. The method creates a form with fields for email, company name,
+     * and message, and a submit button. If the form is submitted and valid, it extracts the form data,
+     * constructs an email message, and sends it using the MailerInterface.
+     */
     #[Route('/', name: 'home', methods: ['GET', 'POST'])]
     public function index(Request $request,MailerInterface $mailer): Response
     {
@@ -62,11 +79,32 @@ class HomeController extends AbstractController
             'form' => $form->createView()
         ]);
     }
+    /**
+     * The above function is a PHP route that renders a Twig template for the "about" page.
+     * 
+     * @return Response The `about()` function is returning a response that renders the
+     * 'Datenschutz.html.twig' template located in the 'home' directory.
+     */
     #[Route('/about', name: 'about')]
     public function about(): Response
     {
         return $this->render('home/Datenschutz.html.twig');
     }
+    /**
+     * The function `contact` in PHP creates a form for users to submit their email and message, sends
+     * an email with the submitted data to a specified address, and renders a contact form template.
+     * 
+     * @param Request request The `` parameter in the `contact` function represents the
+     * incoming request made to the `/contact` route. It contains information about the request such as
+     * headers, parameters, and other data sent by the client.
+     * @param MailerInterface mailer The `` parameter in the `contact` function is an instance
+     * of `Symfony\Component\Mailer\Mailer\MailerInterface`. This interface provides methods for
+     * sending emails in Symfony applications. In the provided code snippet, the `` service is
+     * used to send an email with the user's input data
+     * 
+     * @return Response The `contact` method is returning a Response object which renders the
+     * `contact.html.twig` template with the form data passed to it.
+     */
     #[Route('/contact', name: 'contact')]
     public function contact(Request $request,MailerInterface $mailer): Response
     {
@@ -108,11 +146,25 @@ class HomeController extends AbstractController
         ]);
     }
    
+  /**
+   * The above function in PHP is a controller method that renders a Twig template for the "features"
+   * route.
+   * 
+   * @return Response The `features()` method is returning a Response object which renders the
+   * 'features.html.twig' template.
+   */
     #[Route('/features ', name: 'features')]
     public function features(): Response
     {
         return $this->render('home/features.html.twig');
     }
+   /**
+    * The above function in PHP defines a route for a privacy page that renders a Twig template for
+    * displaying privacy information.
+    * 
+    * @return Response The `privacy()` method is returning a Response object that renders the
+    * `datenschutz.html.twig` template file located in the `home` directory.
+    */
     #[Route('/privacy ', name: 'privacy')]
     public function privacy(): Response
     {

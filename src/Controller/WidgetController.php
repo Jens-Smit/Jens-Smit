@@ -9,9 +9,26 @@ use DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+/* The `WidgetController` class in PHP calculates and compares a user's total working hours for the
+current week with contracted hours, and also displays attendance-related statistics. */
 #[Route('/widget')]
 class WidgetController extends AbstractController
 {
+
+    /**
+     * This PHP function calculates the total working hours of a user for the current week and compares
+     * it with the contracted hours.
+     * 
+     * Args:
+     *   userRepository (UserRepository): The code snippet you provided is a PHP function that
+     * calculates the total working hours of a user for the current week and compares it with the
+     * contracted hours. It retrieves the user's data using the UserRepository service and then
+     * iterates over the user's Arbeitszeiten (working times) to calculate the total hours
+     * 
+     * Returns:
+     *   The code snippet provided is a PHP Symfony controller method for handling a route related to
+     * calculating working hours for a user within a specific week.
+     */
     #[Route('/', name: 'app_widget_arbeitszeit')]
     public function arbeitszeit(UserRepository $userRepository): Response
     {
@@ -55,6 +72,22 @@ class WidgetController extends AbstractController
             'vertragsStunden' => $vertragsStunden
         ]);
     }
+    /**
+     * The function `anwesenheit` calculates and displays various statistics related to a user's
+     * attendance and work hours.
+     * 
+     * Args:
+     *   userRepository (UserRepository): The code you provided is a PHP function that calculates
+     * attendance-related statistics for a user based on their work hours, absences, and contract
+     * details. Here's a breakdown of what the function does:
+     * 
+     * Returns:
+     *   The `anwesenheit` function is returning a Response object that renders a Twig template named
+     * 'widget/anwesenheit.html.twig'. The function passes an array of data to the template, including
+     * the user object, calculated percentages for hours worked, vacation time, school time, and sick
+     * leave. These percentages are calculated based on the user's work hours, contract data, and
+     * absence records.
+     */
     #[Route('/anwesenheit', name: 'app_widget_anwesenheit')]
     public function anwesenheit(UserRepository $userRepository): Response
     {
