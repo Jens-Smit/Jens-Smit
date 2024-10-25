@@ -26,7 +26,11 @@ class DienstplanType extends AbstractType
         $user = $this->tokenStorage->getToken()->getUser();
         //companys des benutzers ermitteln -admin einer Company
         $companies = $this->doctrine->getRepository(Company::class)->findBy(['onjekt_admin' => $user]);
-         
+        // prüfe ob der array $companies leer ist fasl ja erstelle einen array unt fügen den datensatz ein aus $this->tokenStorage->getToken()->getUser()->getCompany()
+        if(empty($companies)){
+            $companies = [$this->tokenStorage->getToken()->getUser()->getCompany()];
+           
+        }
         foreach ($companies as $company) {
             $objekts = $this->doctrine->getRepository(Objekt::class)->findBy(['company' => $company->getId()]);
             foreach ($objekts as $objekt) {

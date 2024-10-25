@@ -23,42 +23,48 @@ class AreaType extends AbstractType
 { 
     private $doctrine;
     private $tokenStorage;
-    public function __construct(ObjektRepository $objektRepository ,TokenStorageInterface $tokenStorage,ManagerRegistry $doctrine)
+    public function __construct( TokenStorageInterface $tokenStorage,ManagerRegistry $doctrine)
     {
-        $this->objektRepository = $objektRepository;
+        
         $this->tokenStorage = $tokenStorage;
         $this->doctrine = $doctrine;
      }
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm( FormBuilderInterface $builder, array $options): void
     {
         
         $objektRepository = $this->doctrine->getRepository(Objekt::class);
         $user = $this->tokenStorage->getToken()->getUser();
-        $objekt = $objektRepository->findMy($user);
+        
+        $objekts = $objektRepository->findBy(['company'=> $user->getCompany()]);
       
         $choices_objekte = [];
+        foreach ($objekts as $objekt){
         $choices_objekte[$objekt->getName()] = $objekt;
-        
+        }
      // dump($choices_objekte);
 
     $builder
        
-        ->add('name')
+        ->add('name', null,[
+            'label' => 'Bezeichnung' ,
+        ])
         ->add('map', FileType::class,array(
             'data_class' => null,
+            'label' => 'Karte' ,
 
         ))
         ->add('objekt', ChoiceType::class, [
             'choices' => $choices_objekte,
             'choice_label' => 'name',
+            'label' => 'Standort' ,
             'choice_value' => 'id',
         ])
         
         ->add('save',SubmitType::class,[
-            'label' => 'save' ,
+            'label' => 'speichern' ,
             'attr' => [
-            'class' => 'btn btn-success w-100',
-            'name' => 'save'
+            'class' => 'btn btn-primary w-100',
+            'name' => 'Speichern'
             ]
             ])
             

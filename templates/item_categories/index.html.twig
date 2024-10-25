@@ -1,37 +1,75 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}ItemCategories index{% endblock %}
-
+{% block title %}Kategorien{% endblock %}
+         
 {% block body %}
-    <h1>ItemCategories index</h1>
+<div id="dialog" class='dialog_preise'  style="position:absolute;   display:none;  z-index: 100;" title="">
+
+ </div>
+    <h1>Kategorien {{ item_categories[0].objekt.categories}}</h1>
 
     <table class="table" style="color: var(--text-color);">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Booktime</th>
-                <th>actions</th>
+                
+                <th>Bezeichnung</th>
+                <th>Aufenthalt</th>
+                {% if item_categories[0].objekt.categories == 'Hotel' %}
+                <th>Preise</th>
+                <th>Rabatte</th>
+                {% endif %}
+                
             </tr>
         </thead>
         <tbody>
+        
         {% for item_category in item_categories %}
             <tr>
-                <td>{{ item_category.id }}</td>
-                <td>{{ item_category.name }}</td>
-                <td>{{ item_category.booktime }}</td>
                 <td>
-                    <a href="{{ path('app_item_categories_show', {'id': item_category.id}) }}">show</a>
-                    <a href="{{ path('app_item_categories_edit', {'id': item_category.id}) }}">edit</a>
+                    <a href="{{ path('app_item_categories_edit', {'id': item_category.id}) }}">
+                        {{ item_category.name }}
+                    </a>
                 </td>
+                <td>{{ item_category.booktime }} Stunden</td>
+              {% if item_categories[0].objekt.categories == 'Hotel' %}
+                    <td>
+                        <a href="{{ path('app_item_categories_price_new', {'id': item_category.id}) }}" data-Categorie="{{ item_category.id }}">
+                            {% if item_category.itemCategoriesPrices.count %}
+                                {% for price in item_category.itemCategoriesPrices %}
+                                    {{ price.start|date('d.M y') }} - {{ price.end|date('d.M y') }} {{ price.price }}€<br>
+                                {% endfor %}
+                            {% else %}
+                                Preise anlegen
+                            {% endif %}
+                        </a>
+
+                    </td>
+                    <td>
+                        <a  href="{{ path('app_discount_index', {'categoryId': item_category.id}) }}" data-Categorie ={{item_category.id}}>
+                        Rabatte
+                        </a>
+                    </td>
+               {% endif %}
             </tr>
         {% else %}
             <tr>
-                <td colspan="4">no records found</td>
+                <td colspan="4"><a href="{{ path('app_item_categories_new',{'objectId': item_category.objekt.id}) }}">legen Sie eine Kategorien an.</a></td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_item_categories_new') }}">Create new</a>
+    <a class='btn btn-info w-100'href="{{ path('app_item_categories_new',{'objectId': item_categories[0].objekt.id}) }}">Kategorien alegen</a>
 {% endblock %}
+{% block javascripts %}
+{{ parent() }}
+ 
+       
+    <script>
+     $('#item_categories_objekt').parent.hiden;
+       
+    </script>
+       
+         
+        
+{% endblock %}  

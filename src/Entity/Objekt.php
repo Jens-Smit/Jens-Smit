@@ -91,6 +91,9 @@ class Objekt
     #[ORM\OneToMany(mappedBy: 'objekt', targetEntity: Arbeitsbereiche::class)]
     private Collection $arbeitsbereiche;
 
+    #[ORM\OneToMany(mappedBy: 'objekt', targetEntity: ItemCategories::class, orphanRemoval: true)]
+    private Collection $itemCategories;
+
   
     public function __construct()
     {
@@ -102,6 +105,7 @@ class Objekt
         $this->vertrags = new ArrayCollection();
         $this->dienstplans = new ArrayCollection();
         $this->arbeitsbereiche = new ArrayCollection();
+        $this->itemCategories = new ArrayCollection();
        
     }
 
@@ -552,6 +556,36 @@ class Objekt
             // set the owning side to null (unless already changed)
             if ($arbeitsbereiche->getObjekt() === $this) {
                 $arbeitsbereiche->setObjekt(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ItemCategories>
+     */
+    public function getItemCategories(): Collection
+    {
+        return $this->itemCategories;
+    }
+
+    public function addItemCategory(ItemCategories $itemCategory): self
+    {
+        if (!$this->itemCategories->contains($itemCategory)) {
+            $this->itemCategories->add($itemCategory);
+            $itemCategory->setObjekt($this);
+        }
+
+        return $this;
+    }
+
+    public function removeItemCategory(ItemCategories $itemCategory): self
+    {
+        if ($this->itemCategories->removeElement($itemCategory)) {
+            // set the owning side to null (unless already changed)
+            if ($itemCategory->getObjekt() === $this) {
+                $itemCategory->setObjekt(null);
             }
         }
 

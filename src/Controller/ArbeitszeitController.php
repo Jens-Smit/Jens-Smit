@@ -205,11 +205,20 @@ class ArbeitszeitController extends AbstractController
             $count ++;
 
         }
-        $users = $userRepository->findAll();
-        return $this->render('arbeitszeit/amendment.html.twig', [
-            'data' => $data ,
-            'users' => $users ,
-        ]);
+        $Company = $this->container->get('security.token_storage')->getToken()->getUser()->getCompany();
+        
+        $rool =$this->container->get('security.token_storage')->getToken()->getUser()->getRoles();
+        if(in_array('ROLE_HR',$rool)){
+            $users = $userRepository->findBy(['company' => $Company]);
+            return $this->render('arbeitszeit/amendment.html.twig', [
+                        'data' => $data ,
+                        'users' => $users ,
+            ]);    
+        
+        }else{
+            return new JsonResponse('noroles');
+        }
+       
     }
     #[Route('/SaveAmendment', name: 'app_arbeitszeit_SaveAmendment', methods: ['GET', 'POST'])]
     public function SaveAmendment(Request $request, ManagerRegistry $doctrine,ArbeitszeitRepository $arbeitszeitRepository): Response
@@ -236,6 +245,7 @@ class ArbeitszeitController extends AbstractController
         else {
             $datas = false; 
         } 
+        dump($datas);
         return new Response($datas);
     }
     #[Route('/edit', name: 'app_arbeitszeit_edit', methods: ['GET', 'POST'])]

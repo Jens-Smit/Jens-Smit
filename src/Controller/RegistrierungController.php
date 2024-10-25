@@ -6,7 +6,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,11 +27,10 @@ class RegistrierungController extends AbstractController
             'label' => 'Vorname'])
         ->add('nachname', TextType::class,[
             'label' => 'Nachname'])
-        ->add('password', RepeatedType::class,[
-            'type' => PasswordType::class,
+        ->add('password', PasswordType::class,[
             'required' => true,
-            'first_options' =>['label'=> 'Passwort'],
-            'second_options' =>['label'=> 'Passwort wiederholden']
+            'label'=> 'Passwort',
+            
         ])
         ->add('registrieren', SubmitType::class)
         ->getForm()
@@ -50,7 +49,7 @@ class RegistrierungController extends AbstractController
                     $user->setPassword(
                         $passEncoder->hashPassword($user, $eingabe['password'])
                     );
-                    $user->setRoles(["ROLE_USER","ROLE_ADMIN"]);
+                    $user->setRoles(["ROLE_USER","ROLE_ADMIN","ROLE_HR"]);
                     $em=$doctrine->getManager();
                     $em->persist($user);
                     $em->flush();

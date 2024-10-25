@@ -1,202 +1,337 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit User{% endblock %}
+{% block title %}Edit User
+{% endblock %}
 
 {% block body %}
-<!-- Modal -->
-<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel"></h5>
-                <button type="button" id="modalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()"></button>
-            </div>
-            <div class="modal-body" id="modal-body">
-                <!-- Hier wird der Inhalt von app_user_contrect geladen -->
-            </div>
-        </div>
-    </div>
-</div>
+	<!-- Modal -->
+	<div class="modal fade" id="modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel"></h5>
+					<button type="button" id="modalCloseBtn" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="closeModal()"></button>
+				</div>
+				<div
+					class="modal-body" id="modal-body"><!-- Hier wird der Inhalt von app_user_contrect geladen -->
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container aline-item-center d-flex justify-content-around flex-wrap">
+		<div class="card-header-user aline-item-center d-flex justify-content-center  flex-wrap ">
+        <div class="user-image"><i class="fas fa-user  object-icon  "></i></div>
+			<div class='card p-2 user-data-card m-1' style='    height: min-content;'>
+				<p>{{user.vorname}}
+					{{user.nachname}}</p>
+				<p>
+					{% if user.birthday is defined and user.birthday is not empty %}
+					<i class="fa fa-birthday-cake"></i>{{user.birthday.format('Y-m-d')}}</p>
+					{% else %}
+					<i class="fa fa-birthday-cake"></i>kein Geburtsdatum</p>
+					{% endif %}
+				<p>
+				{% set date_to_check = user.contractData %}
+				{% if date_to_check is defined and date_to_check is not empty %}
+					<i class="fa fa-handshake"></i>{{user.contractData[0].startDate.format('Y-m-d')}}</p>
+				{% else %}
+					<i class="fa fa-handshake"></i>kein Aktiver Vertrag</p>
+				{% endif %}
+					
+				<p>
+					<i class="fa fa-phone "></i>
+					{{user.telefon}}</p>
+			</div>
+			<div class='wrapper d-flex flex-wrap justify-content-around' style=" max-width: 300px;">
+				
+				
+				
+				
 
-    <h1>{{user.vorname}} {{user.nachname}} bearbeiten</h1>
-<div class="group w-100 d-flex flex-wrap justify-content-around ">
-    <ul class="nav nav-tabs">
-    <!-- Stammdaten-->
-    <li class="nav-item">
-        <a class="nav-link nav-link-user active" href="#" data-target="#Stammdaten">Stammdaten</a>
-    </li>
-    <!-- Vertragsdaten-->
-    <li class="nav-item">
-        <a class="nav-link nav-link-user " href="#" data-target="#Vertragsdaten">Vertragsdaten</a>
-    </li>
-     <!-- Dokumente-->
-    <li class="nav-item">
-        <a class="nav-link nav-link-user" href="#" data-target="#Dokumente">Dokumente</a>
-    </li>
-     <!-- Dienstplan-->
-    <li class="nav-item">
-        <a class="nav-link nav-link-user" href="#" data-target="#Dienstplan">Dienstplan</a>
-    </li>
-    <!-- Fehlzeiten-->
-    <li class="nav-item">
-        <a class="nav-link nav-link-user" href="#" data-target="#fehlzeiten_card">Fehlzeiten</a>
-    </li>
-     <!-- Arbeitszeiten-->
-    <li class="nav-item">
-        <a class="nav-link nav-link-user" href="#" data-target="#Arbeitszeiten">Arbeitszeiten</a>
-    </li>
-    <!-- rechte ändern-->
-    <li class="nav-item">
-        <a class="nav-link nav-link-user" href="#" data-target="#role">Rechte</a>
-    </li>
-    <!-- Passwort ändern-->
-    <li class="nav-item">
-        <a class ="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"href="{{ path('changePassword') }}">Password ändern</a></td>
-    </li>      
-    </ul>
-    
-        <!-- Vertragsdaten-->
-        <div class="card text-right w-100 d-none" id='Vertragsdaten'>
-         <div class='card-head bg-info text-right' style='text-align: right;font-size: 1.5rem;' ></div>
-            <div class="card-body">
-                <h5>Vertragsdaten</h5>
-               <a class='btn btn-sm btn-primary shadow-sm' id='new_contractData' href="#">
-                <i class="fa fa-plus" aria-hidden="true"></i></a>
-                    
-                <table class="table w-100">
-        
-                    <thead>
-                        <tr>  
-                            <th>Bezei</th>
-                            <th>Start</th>
-                           
-                            <th>Actions</th>
-                            
-                        </tr>
-                    </thead>
-                    <tbody>
-                    {% for contract in user.contractData %}
-                        
-                            
-                            
-                            {% if contract.status == 'aktiv' %}
-                            <tr >
-                            <td><a class='edit_contractData' data-contract='{{ contract.id }}' href="{{ contract.id }}">{{ contract.bezeichnung }}</a></td>
-                             <td>{{ contract.startDate|date('Y-m-d') }}</td>
-                            <td>  
-                            <a href="#" onclick="openModal_user_status({{  contract.id }})">Status</a>
-                            
-                            
-                            <br><a href="#" onclick="openModal({{ user.id }})">Drucken</a></td>
-                            </tr>
-                            {% else %}
-                            <tr class="bg-secondary">
-                            <td><a class='edit_contractData text-light' data-contract='{{ contract.id }}' href="{{ contract.id }}">{{ contract.bezeichnung }}</a></td>
-                             <td>{{ contract.startDate|date('Y-m-d') }}</td>
-                            <td> 
-                            <a href="#" onclick="openModal_user_status({{  contract.id }})">Status</a>
-                            <br><a href="#" class='text-light' onclick="openModal({{ user.id }})">Drucken</a></td> 
-                            </tr>
-                            {% endif %}
-                            
-                           
-                       
-                    
-                    
-                    {% endfor %}
-                    </tbody>
-                </table>
-            
-            </div>
-        </div>
-        <!-- Dokumente-->
-        <div class="card text-right w-100 d-none" id='Dokumente'>
-            <div class='card-head bg-info text-right' style='text-align: right;font-size: 1.5rem;'></div>
-            <div class="card-body">
-            <!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
-            {% include 'user/dokumente.html.twig' with {'id': user.id, 'dokumente': dokumente} %}
-            </div>
-        </div>
-        <!-- Dienstplan-->
-        <div class="card text-right w-100 d-none" id='Dienstplan'>
-            <div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
-            <div class="card-body">
-            <h5>Dienstplan</h5>
-            <!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
-            <a class ='btn btn-sm btn-primary shadow-sm' href="#" onclick="openModal1({{ user.id }})"><i class="fa fa-plus" aria-hidden="true"></i></a>
-            {% include 'user/dienstplan_show.html.twig' with {'id': user.id, 'dienstplans':user.dienstplans} %}
-        
-            </div>
-        </div>
-        <!-- fehlzeiten-->
-        <div class="card text-right w-100 d-none" id='fehlzeiten_card' >
-            <div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
-            <div class="card-body" id='fehlzeiten'>
-            <!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
-           
-            </div>
-        </div>
-        <!-- Role-->
-        <div class="card text-right w-100 d-none" id='role'>
-             <div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
-             <div class="card-body" id='role'>
-           {{ render(url('edit_role', {'id': user.id })) }}
-            </div>
-            
-        </div>
-       
-        <!-- Arbeitszeiten-->
-         <div class="card text-right w-100 d-none" id='Arbeitszeiten'>
-                     <div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
-             <div class="card-body" id='newArbeitszeiten'>
-            
-            <!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
-           {{ render(url('app_user_arbeitszeiten_edit', { 'id': user.id })) }}
-            </div>
-            <div class="card-body" id='arbeitszeiten'>
-            
-            <!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
-           {{ render(url('app_user_arbeitszeiten', { 'id': user.id })) }}
-            </div>
-        </div>
-   
-    <!-- Stammdaten-->
-         <div class="card text-right w-100 " id='Stammdaten'>
-                     <div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
-             <div class="card-body" id='Stammdaten_body'>
-                {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
-                
-                
-            </div>
-        </div>
-     </div>
-    
+			</div>
+		</div>
+		<div
+			class="container d-flex justify-content-around flex-wrap  control-panel" style="max-width: 650px;">
+			<!-- Stammdaten-->
+
+			<a class="nav-link nav-link-user" href="#" data-target="#Stammdaten">
+				<div class="card  m-1 text-center">
+					<div class="card-header glass-effect">Stammdaten
+					</div>
+					<div class="card-body border-top">
+						<i class="object-icon fa fa-user"></i>
+					</div>
+				</div>
+			</a>
+			<!-- Vertragsdaten-->
+
+			<a class="nav-link nav-link-user" href="#" data-target="#Vertragsdaten">
+				<div class="card  m-1 text-center">
+					<div class="card-header glass-effect">Vertragsdaten
+					</div>
+					<div class="card-body border-top">
+						<i class="object-icon fa fa-handshake"></i>
+					</div>
+				</div>
+			</a>
+			<!-- Dokumente-->
+
+			<a class="nav-link nav-link-user" href="#" data-target="#Dokumente">
+				<div class="card  m-1 text-center">
+					<div class="card-header glass-effect">Dokumente
+					</div>
+					<div class="card-body border-top">
+						<i class="object-icon fa fa-file"></i>
+					</div>
+				</div>
+			</a>
+
+			<!-- Dienstplan-->
+
+			<a class="nav-link nav-link-user" href="#" data-target="#Dienstplan">
+				<div class="card  m-1 text-center">
+					<div class="card-header glass-effect">Dienstplan
+					</div>
+					<div class="card-body border-top">
+						<i class="object-icon fa fa-calendar"></i>
+					</div>
+				</div>
+			</a>
+			<!-- Fehlzeiten-->
+			<a class="nav-link nav-link-user" href="#" data-target="#fehlzeiten_card">
+				<div class="card  m-1 text-center">
+					<div class="card-header glass-effect">Fehlzeiten
+					</div>
+					<div class="card-body border-top">
+						<i class="object-icon fa fa-user-times"></i>
+					</div>
+				</div>
+			</a>
+
+			<!-- Arbeitszeiten-->
+
+			<a class="nav-link nav-link-user" href="#" data-target="#Arbeitszeiten">
+				<div class="card  m-1 text-center">
+					<div class="card-header glass-effect">Arbeitszeiten
+					</div>
+					<div class="card-body border-top">
+						<i class="object-icon fa fa-clock"></i>
+					</div>
+				</div>
+			</a>
+			<!-- rechte ändern-->
+
+			<a class="nav-link nav-link-user" href="#role" data-target="#role">
+				<div class="card  m-1 text-center">
+					<div class="card-header glass-effect">Rechte
+					</div>
+					<div class="card-body border-top">
+						<i class="object-icon fa fa-shield"></i>
+					</div>
+				</div>
+			</a>
+			<!--passwort reset-->
+
+			<a class="nav-link nav-link-user" href="#" onclick="resetPW({{user.id}})">
+				<div class="card  m-1 text-center">
+					<div class="card-header glass-effect">Passwort zurücksetzen
+					</div>
+					<div class="card-body border-top">
+						<i class="object-icon fa fa-cog"></i>
+					</div>
+				</div>
+			</a>
+
+
+		</div>
+	</div>
+	<div
+		class="group w-100 d-flex flex-wrap justify-content-around">
+
+
+		<!-- Vertragsdaten-->
+		<section class="card text-right w-100 edit-card d-none" id='Vertragsdaten'>
+			<div class='card-head bg-info text-right' style='text-align: right;font-size: 1.5rem;'></div>
+			<div class="card-body">
+				<h5>Vertragsdaten</h5>
+				<a class='btn btn-sm btn-primary shadow-sm' id='new_contractData' href="#">
+					<i class="fa fa-plus" aria-hidden="true"></i>
+				</a>
+
+				<table class="table w-100">
+
+					<thead>
+						<tr>
+							<th>Bezeichnung</th>
+							<th>Start</th>
+
+							<th>Actions</th>
+
+						</tr>
+					</thead>
+					<tbody>
+						{% for contract in user.contractData %}
+							{% if contract.status == 'aktiv' %}
+								<tr>
+									<td>
+										<a class='edit_contractData' data-contract='{{ contract.id }}' href="{{ contract.id }}">{{ contract.bezeichnung }}</a>
+									</td>
+									<td>{{ contract.startDate|date('Y-m-d') }}</td>
+									<td>
+										<a href="#" onclick="openModal_user_status({{  contract.id }})">Status</a>
+
+
+										<br><a href="#" onclick="openModal({{ user.id }})">Drucken</a>
+									</td>
+								</tr>
+							{% else %}
+								<tr class="bg-secondary">
+									<td>
+										<a class='edit_contractData text-light' data-contract='{{ contract.id }}' href="{{ contract.id }}">{{ contract.bezeichnung }}</a>
+									</td>
+									<td>{{ contract.startDate|date('Y-m-d') }}</td>
+									<td>
+										<a href="#" onclick="openModal_user_status({{  contract.id }})">Status</a>
+										<br><a href="#" class='text-light' onclick="openModal({{ user.id }})">Drucken</a>
+									</td>
+								</tr>
+							{% endif %}
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		</section>
+		<!-- Dokumente-->
+		<section class="card text-right w-100 edit-card d-none" id='Dokumente'>
+			<div class='card-head bg-info text-right' style='text-align: right;font-size: 1.5rem;'></div>
+			<div
+				class="card-body">
+				<!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
+				{% include 'user/dokumente.html.twig' with {'id': user.id, 'dokumente': dokumente} %}
+			</div>
+		</section>
+		<!-- Dienstplan-->
+		<section class="card text-right w-100 edit-card d-none" id='Dienstplan'>
+			<div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
+			<div class="card-body">
+				<h5>Dienstplan</h5>
+				<!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
+				<a class='btn btn-sm btn-primary shadow-sm' href="#" onclick="openModal1({{ user.id }})">
+					<i class="fa fa-plus" aria-hidden="true"></i>
+				</a>
+				{% include 'user/dienstplan_show.html.twig' with {'id': user.id, 'dienstplans':user.dienstplans} %}
+
+			</div>
+		</section>
+		<!-- fehlzeiten-->
+		<section class="card text-right w-100 edit-card d-none" id='fehlzeiten_card'>
+			<div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
+			<div
+				class="card-body" id='fehlzeiten'><!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
+
+			</div>
+		</section>
+		<!-- Role-->
+		<section class="card text-right w-100 edit-card d-none" id='role'>
+			<div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
+			<div class="card-body" id='role'>
+				{{ render(url('edit_role', {'id': user.id })) }}
+			</div>
+
+		</section>
+
+		<!-- Arbeitszeiten-->
+		<section class="card text-right w-100 edit-card d-none" id='Arbeitszeiten'>
+			<div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
+			<div
+				class="card-body" id='newArbeitszeiten'>
+
+				<!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
+				{{ render(url('app_user_arbeitszeiten_edit', { 'id': user.id })) }}
+			</div>
+			<div
+				class="card-body" id='arbeitszeiten'>
+
+				<!-- hier soll die route #[Route('/{id}/document_show', name: 'app_user_document_list')] geladen werden -->
+				{{ render(url('app_user_arbeitszeiten', { 'id': user.id })) }}
+			</div>
+		</section>
+
+		<!-- Stammdaten-->
+		<section class="card text-right w-100 edit-card d-none" id='Stammdaten'>
+			<div class='card-head text-right bg-info' style='text-align: right;font-size: 1.5rem;'></div>
+			<div class="card-body" id='Stammdaten_body'>
+				{{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
+
+
+			</div>
+		</section>
+	</div>
 {% endblock %}
 {% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('js/modal.js') }}"></script>
-    <script>
-    function printDocument(url) {
-    window.open(url, '_blank', 'width=600,height=400');
-}
- function sendDeleteRequest(dienstplan) {
-    event.preventDefault();
-    var user = {{user.id}};
-    $.ajax({
-            type: "POST",
-            url: "{{path('app_dienstplan_remov')}}",
-            data: {   
-                    'user': user,
-                    'dienstplan': dienstplan,
-            },
-            dataType: "text",
-            success: function(data) {
-              location.reload(); 
-            }
-        }); 
-    
+	{{ parent() }}
+ <script src="{{ asset('js/modal.js') }}"></script>
+	 <script>
+        function printDocument(url) {
+            window.open(url, '_blank', 'width=600,height=400');
         }
+        function sendDeleteRequest(dienstplan) {
+            event.preventDefault();
+            var user = {{user.id}};
+            $.ajax({
+                    type: "POST",
+                    url: "{{path('app_dienstplan_remov')}}",
+                    data: {   
+                            'user': user,
+                            'dienstplan': dienstplan,
+                    },
+                    dataType: "text",
+                    success: function(data) {
+                    location.reload(); 
+                    }
+            });  
+        }
+		function loadWidget(url,callback) {
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: { 'id': {{user.id}} },
+				dataType: "text",
+				success: function(data) {
+					
+					if (callback) {
+						callback(data);
+					}
+				},
+				error: function(xhr, status, error) {
+					console.error('Fehler beim laden des Widgets:', status, error);
+				}
+			});
+		}
+		// Beispiel für die Verwendung der Callback-Funktion
+		
+        function scaleUp(element) {
+			if ($(element).hasClass('scaleUp')) {
+				$(element).removeClass('scaleUp');
+			} else {
+				$('.scaleUp').removeClass('scaleUp');
+				$(element).addClass('scaleUp');
+			}
+		}
+
         $(document).ready(function() {
+            let sign = '{{user.company.sign}}'
+            loadWidget("{{path('app_widget_arbeitszeit')}}", function(data) {
+			$('.wrapper').append(data);
+			});
+			loadWidget("{{path('app_widget_anwesenheit')}}", function(data) {
+			$('.wrapper').append(data);
+			});
+		
+			
+            PageNewUser(sign);
+            $('#user_password').prop('required', false);
+
             $('.delat_dokument').click(function(event) {
                 event.preventDefault();
              var data = $(this).attr('delat-dokument-data');
@@ -214,8 +349,6 @@
                     }
                 });
             });
-            
-            
             $('#new_contractData').click(function() {
                 $.ajax({
                     type: "POST",
@@ -252,7 +385,7 @@
             $('.edit_contractData').click(function() {
                 event.preventDefault();
                 var contract = $(this).attr('href');
-                console.log(contract);
+               
                 var url = '/contract/data/'+contract+'/edit/';
                 $.ajax({
                     type: "GET",
@@ -263,25 +396,15 @@
                        
                         $('form[name="contract_data"]').submit(function(event){
                             event.preventDefault();
-                            
                             var form_data = $(this).serialize();
-                           
                             $.ajax({
                                 type: "POST",
                                 url: "{{path('app_contract_data_editSave')}}",
                                 data: form_data,
-                                
                                 success: function(data) {
-                                    location.reload();
-                                      
-                                           
+                                    location.reload();         
                                 }
                             }); 
-
-
-
-                           
-
                         });       
                      }
                 }); 
@@ -291,16 +414,13 @@
                 event.preventDefault();
                 
                 // remove active class from all nav links
-                $('.nav-link-user').removeClass('active');
-                
-                // add active class to clicked nav link
+                $('.active').removeClass('active');
+                $('.edit-card').addClass('d-none');
                 $(this).addClass('active');
-                
-                // hide all cards
-                $('.card').addClass('d-none');
-                
-                // show target card
                 $($(this).data('target')).removeClass('d-none');
+				$('html, body').animate({
+					scrollTop: $($(this).data('target')).offset().top
+				}, 500);
             });
 
             // Füge das Schließen-Symbol zu jedem .card-head hinzu
@@ -308,7 +428,7 @@
                 var closeButton = $('<i class="fa fa-times" aria-hidden="true"></i>');
                 closeButton.css('cursor', 'pointer');
                 closeButton.click(function() {
-                    $(this).closest('.card').addClass('d-none');
+                   $(this).closest('.card').addClass('d-none');
                 });
                 $(this).append(closeButton);
             });
@@ -316,59 +436,58 @@
         });
         $.ajax({
             type: "POST",
-            url: "{{path('app_arbeitszeit_fehlzeiten_add')}}",
-            data: {   
-                'id': {{user.id}},
-            },
-            dataType: "text",
-            success: function(data) {
-                $("#fehlzeiten").html(data);
-                $('#fehlzeit_add_show_btn').click(function(){
-                    $('#fehlzeit_add_show').toggle(1000);
-                });
-                $('#fehlzeit_pv_show_btn').click(function(){
-                    $('#fehlzeit_pv_show').toggle(1000);
-                });
-                $('#fehlzeiten_form').submit(function(event){
-                    event.preventDefault();
-                    var form_data = $(this).serializeArray();
-                    var data = {};
-                    form_data.forEach(function(obj) {
-                        var objname = obj.name.replace('form[', '');
-                        objname = objname.replace(/\]/g, '');
-                        objname = objname.replace(/\[/g, '_');
-                        data[objname] = obj.value;
-                    });
-                    var von_month = data.von_month;
-                    var von_day = data.von_day;
-                    var von_year = data.von_year;
-                    var von_date = von_year + '-' + von_month.toString().padStart(2, '0') + '-' + von_day.toString().padStart(2, '0');
-                    var bis_month = data.bis_month;
-                    var bis_day = data.bis_day;
-                    var bis_year = data.bis_year;
-                    var bis_date = bis_year + '-' + bis_month.toString().padStart(2, '0') + '-' + bis_day.toString().padStart(2, '0');
-                    var fehlzeit = data.fehlzeit;
-                    var userId = {{user.id}};
-                     console.log("test");
-                    $.ajax({
-                        type: "POST",
-                        url: "{{path('app_arbeitszeit_fehlzeiten_save')}}",
-                        data: {   
-                            'user': userId,
-                            'fehlzeit': fehlzeit,
-                            'von': von_date,
-                            'bis': bis_date,
-                        },
-                        dataType: "text",
-                        success: function(data) {
-                          console.log(data); 
-                        
-                        }
-                    }); 
-                });
-                
-            }
-        });   
-        
-        </script>               
+			url: "{{path('app_arbeitszeit_fehlzeiten_add')}}",
+			data: {   
+			    'id': {{user.id}},
+			},
+			dataType: "text",
+			success: function(data) {
+			    $("#fehlzeiten").html(data);
+			    $('#fehlzeit_add_show_btn').click(function(){
+			        $('#fehlzeit_add_show').toggle(1000);
+			    });
+			    $('#fehlzeit_pv_show_btn').click(function(){
+			        $('#fehlzeit_pv_show').toggle(1000);
+			    });
+			    $('#fehlzeiten_form').submit(function(event){
+			        event.preventDefault();
+			        var form_data = $(this).serializeArray();
+			        var data = {};
+			        form_data.forEach(function(obj) {
+			            var objname = obj.name.replace('form[', '');
+			            objname = objname.replace(/\]/g, '');
+			            objname = objname.replace(/\[/g, '_');
+			            data[objname] = obj.value;
+			        });
+			        var von_month = data.von_month;
+			        var von_day = data.von_day;
+			        var von_year = data.von_year;
+			        var von_date = von_year + '-' + von_month.toString().padStart(2, '0') + '-' + von_day.toString().padStart(2, '0');
+			        var bis_month = data.bis_month;
+			        var bis_day = data.bis_day;
+			        var bis_year = data.bis_year;
+			        var bis_date = bis_year + '-' + bis_month.toString().padStart(2, '0') + '-' + bis_day.toString().padStart(2, '0');
+			        var fehlzeit = data.fehlzeit;
+			        var userId = {{user.id}};
+			         console.log("test");
+			        $.ajax({
+			            type: "POST",
+			            url: "{{path('app_arbeitszeit_fehlzeiten_save')}}",
+			            data: {   
+			                'user': userId,
+			                'fehlzeit': fehlzeit,
+			                'von': von_date,
+			                'bis': bis_date,
+			            },
+			            dataType: "text",
+			            success: function(data) {
+			              console.log(data); 
+			            
+			            }
+			        }); 
+			    });
+			}
+	    });   
+										        
+	</script>
 {% endblock %}

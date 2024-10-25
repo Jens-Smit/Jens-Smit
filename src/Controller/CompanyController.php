@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Company;
+use App\Entity\User;
 use App\Form\CompanyType;
 use App\Repository\CompanyRepository;
 use App\Repository\UserRepository;
@@ -41,19 +42,23 @@ class CompanyController extends AbstractController
     }
 
     #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CompanyRepository $companyRepository): Response
+    public function new(Request $request, UserRepository $userRepository, CompanyRepository $companyRepository): Response
     {
         $company = new Company();
         $form = $this->createForm(CompanyType::class, $company);
         $form->handleRequest($request);
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
-      
+        
         $company->setOnjektAdmin($user);
 
 
         if ($form->isSubmitted() && $form->isValid()) {
             $companyRepository->save($company, true);
 
+            $user->setCompany($company);
+            $userRepository->save($user, true);
+
+            
             return $this->redirectToRoute('app_objekt_index', [], Response::HTTP_SEE_OTHER);
         }
 

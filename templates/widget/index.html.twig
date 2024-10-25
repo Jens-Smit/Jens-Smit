@@ -1,0 +1,26 @@
+
+
+
+{% block body %}
+<div class="card cursor-pointer m-1 d-flex flex-row flex-wrap justify-content-around" onclick="scaleUp(this)">
+	<h6>Arbeitszeit</h6>
+	<div class="circle-stunden"></div>
+</div>
+<script>
+    let vertragsStunden = "{{vertragsStunden}}"
+    let stunden = "{{stunden}}"
+    let newPercentage = stunden/vertragsStunden*100;
+    function getCSSVariable(variableName) {
+        const root = document.documentElement;
+        const value = getComputedStyle(root).getPropertyValue(variableName).trim();
+        return value;
+    }
+    
+    const element = document.querySelector('.circle-stunden');
+    const blue = getCSSVariable("--blue");
+    const primaryColor = getCSSVariable("--primery-color");
+    element.style.background = 'conic-gradient('+blue+' 0%  '+newPercentage+'%, '+primaryColor+' '+newPercentage+'% 100%)';
+    let neuerInhalt = `"${Math.round(newPercentage)}%"`;
+    $('.circle-stunden').css('--circle-stunden-content', neuerInhalt);
+</script>
+{% endblock %}

@@ -1,27 +1,22 @@
 
 {% block body %}
-<h1>Dienstplan index</h1>
+<h1>Dienstpläne</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+              
                 <th>Bezeichnung</th>
-                <th>status</th>
-                <th>Ende</th>
+               
                 <th>actions</th>
             </tr>
         </thead>
         <tbody>
         {% for dienstplan in dienstplans %}
             <tr>
-                <td>{{ dienstplan.id }}</td>
+                
                 <td>{{ dienstplan.bezeichnung }}</td>
-                {% if dienstplan.ende is defined %}
-                  <td>aktiv</td>   {# do something #}
-                {% else %}
-                 <td>beendet</td> 
-                {% endif %}
+                
               
                 <td>
                     <a href="{{ path('app_dienstplan_show', {'id': dienstplan.id}) }}">show</a>
@@ -30,14 +25,14 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="5">keine Dienstpläne vorganden! <a class="toggle-edit " href="#">Dienstplan anlegen</a></td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
- <a class="toggle-edit btn-info btn" href="#">new</a>
-<div class="edit">
-    <h1>Create new Dienstplan</h1>
+ <a class="toggle-edit btn-info btn" href="#">Dienstplan anlegen</a>
+<div class="edit card p-3 mt-5">
+    <h1>Dienstplan erstellen</h1>
 
     {{ include('dienstplan/_form.html.twig') }}
 
@@ -48,6 +43,14 @@
    
     <script>
         $(document).ready(function() {
+            const dienstplan = document.getElementById('dienstplan');
+
+            // Wähle alle fieldset-Elemente innerhalb des Elements 'dienstplan'
+            const fieldsets = dienstplan.getElementsByTagName('fieldset');
+            //alle fieldsets sollen ausgeblendet werden
+            for (let i = 0; i < fieldsets.length; i++) {
+                fieldsets[i].style.display = 'none';
+            }
             $('.edit').toggle();
             $('.toggle-edit').click(function(e) {
                 e.preventDefault();

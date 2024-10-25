@@ -27,12 +27,11 @@
 {% else %}
     {% set varis = varValue %}
 {% endif %}
+{% set tempVar = '<span class="variable" style="background-color:red">' ~ variable.var ~ '</span>' %}
 
-    {% set contractText = contractText|replace({(variable.var): varis}) %}
-     {% set contractText = contractText|replace({'red': 'none'}) %}
-      {% set contractText = contractText|replace({'#': ''}) %}
-      {% set contractText = contractText|replace({'5px': '0px'}) %}
-      {% set contractText = contractText|replace({'3px': '0px'}) %}
+
+    {% set contractText = contractText|raw|replace({(tempVar): varis}) %}
+    
     
          {% endfor %}
 

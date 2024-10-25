@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "gsap": "^3.11.5"
+    "gsap": "^3.11.5",
+    "puppeteer": "^23.5.1"
   }
 }

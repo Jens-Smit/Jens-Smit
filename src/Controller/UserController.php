@@ -3,11 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Arbeitszeit;
+use App\Entity\Company;
 use App\Entity\Dienstplan;
 use App\Entity\Objekt;
 use TCPDF;
 use App\Entity\User;
-use App\Entity\UserContrectData;
+
 use App\Entity\UserDokumente;
 use App\Entity\Vertrag;
 use App\Entity\VertragVariable;
@@ -17,7 +18,7 @@ use App\Form\UserType;
 use App\Form\UserDokumenteType;
 use App\Repository\ArbeitszeitRepository;
 use App\Repository\CompanyRepository;
-use App\Repository\ContractDataRepository;
+
 use App\Repository\DienstplanRepository;
 use App\Repository\FehlzeitenRepository;
 use App\Repository\UserDokumenteRepository;
@@ -31,8 +32,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Asset\Package;
-use Symfony\Component\Asset\VersionStrategy\StaticVersionStrategy;
+
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -40,15 +40,13 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TimeType;
-use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Config\Framework\MailerConfig;
+
 
 #[Route('/user', methods: ['GET', 'POST'])]
 class UserController extends AbstractController
@@ -114,9 +112,11 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $eingabe = generateRandomString(8);
+           
+            $nutzername = $user->getCompany()->getSign().'-'.$user->getEmail();
+            $user->setEmail($nutzername);
             $user->setPassword(
-                $passEncoder->hashPassword($user, $eingabe)
+                $passEncoder->hashPassword($user, $user->getCompany()->getSign().'1234')
             );
 
             $userRepository->save($user, true);
@@ -166,7 +166,10 @@ class UserController extends AbstractController
 
         $form = $this->createFormBuilder()
         ->add('email', EmailType::class)
-        ->add('submit', SubmitType::class, ['label' => 'Passwort zurücksetzen'])
+        ->add('submit', SubmitType::class, [
+            'label' => 'Passwort zurücksetzen',
+            'attr'  =>[ 'class' => 'w-100 btn btn-success btn-lg']
+            ])
         ->getForm();
        $form -> handleRequest($request);
        
@@ -187,6 +190,7 @@ class UserController extends AbstractController
             $plainPassword = substr(md5(microtime()), 0, 8);
             $encodedPassword = $passEncoder->hashPassword($user, $plainPassword);
             $user->setPassword($encodedPassword);
+            $user->setValidPassword(new DateTime());
             $entityManager->persist($user);
             $entityManager->flush();
             $email = (new Email())
@@ -240,6 +244,7 @@ class UserController extends AbstractController
                 
                 // Speichere den Benutzer in der Datenbank
                 $user->setPassword($encodedPassword);
+                $user->setValidPassword(null);
                 $entityManager->persist($user);
                 $entityManager->flush();
                 
@@ -312,7 +317,7 @@ class UserController extends AbstractController
     }
    
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(CompanyRepository $companyRepository ,Request $request, User $user, UserRepository $userRepository, UserDokumenteRepository $userDokumenteRepository): Response
+    public function edit(CompanyRepository $companyRepository, UserPasswordHasherInterface $passEncoder ,Request $request, User $user, UserRepository $userRepository, UserDokumenteRepository $userDokumenteRepository): Response
     {
         $users = $this->container->get('security.token_storage')->getToken()->getUser();
         $company = $companyRepository->findOneBy(['onjekt_admin' => $users]);
@@ -327,8 +332,56 @@ class UserController extends AbstractController
                 $form->handleRequest($request);
                 $dokumente = $userDokumenteRepository->findBy(['user' => $user]);
                 if ($form->isSubmitted() && $form->isValid()) {
-                    $userRepository->save($user, true);
-                    return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+                    $data = $form->getData();
+                    $currentUser = $userRepository->findOneBy(['email'=>$data->getEmail() ]);
+                    
+                    
+                    
+                   
+                    if($data->getPassword()){
+                        $user->setPassword(
+                            $passEncoder->hashPassword($user, $data->getPassword())
+                        );
+                    }
+
+                    if($data->getVorname()){$user->setVorname($data->getVorname());}
+                    if($data->getNachname()){$user->setNachname($data->getNachname());}
+                    if($data->getAdresse()){$user->setAdresse($data->getAdresse());}
+                    if($data->getStrasse()){$user->setStrasse($data->getStrasse());}
+                    if($data->getPlz()){ $user->setPlz($data->getPlz());}
+                    if($data->getOrt()){$user->setOrt($data->getOrt());}
+                    if($data->getLand()){$user->setLand($data->getLand());}
+                    if($data->getTelefon()){$user->setTelefon($data->getTelefon());}
+                    if($data->getSteuernummer()){$user->setSteuernummer($data->getSteuernummer());}
+                    if($data->getRentenversicherungsnummer()){$user->setRentenversicherungsnummer($data->getRentenversicherungsnummer());}
+                    if($data->getIBAN()){$user->setIBAN($data->getIBAN());}
+                    if($data->getObjekt()){$user->setObjekt($data->getObjekt());}
+                    if($data->getKrankenkasse()){$user->setKrankenkasse($data->getKrankenkasse());}
+                    if($data->getCompany()){$user->setCompany($data->getCompany());}
+                    if($currentUser != $user && $currentUser != null){
+                        $this->addFlash(
+                            'danger',
+                            'Username bereits vergeben'
+                        );
+                        return $this->render('user/edit.html.twig', [
+                            'user' => $user,
+                            'form' => $form->createView(),
+                            'dokumente' =>  $dokumente,
+                        ]);
+                    }else{
+                        $userRepository->save($user, true);  
+                        $this->addFlash(
+                            'success',
+                            'Benutzer erfolgreich gespeichert'
+                        );
+                        return $this->render('user/edit.html.twig', [
+                            'user' => $user,
+                            'form' => $form->createView(),
+                            'dokumente' =>  $dokumente,
+                        ]); 
+                    }
+                    
+                    
                 }
                 return $this->render('user/edit.html.twig', [
                     'user' => $user,
@@ -355,6 +408,22 @@ class UserController extends AbstractController
             return $this->redirectToRoute('app_user_index');
         }
     }
+   
+    #[Route('/{id}/passwordReset', name: 'app_user_passwordReset', methods: ['GET', 'POST'])]
+    public function passwordReset(User $user,Request $request,ManagerRegistry $doctrine,UserRepository $userRepository, UserPasswordHasherInterface $passwordEncoder): Response
+    {
+    
+        // Erstelle ein Formular, um das neue Passwort einzugeben
+        $form = $this->createFormBuilder()  
+            ->add('new_password', PasswordType::class, ['label' => 'Neues Passwort'])
+            ->add('submit', SubmitType::class, ['label' => 'Passwort ändern'])
+            ->getForm();
+        return $this->render('user/change_user_password.html.twig', [
+            'form' => $form->createView(),
+            'user' => $user,
+        ]);
+    }
+  
     #[Route('/{id}/dienstplan', name: 'app_user_dienstplan', methods: ['GET', 'POST'])]
     public function dienstplan(Request $request,User $user, ManagerRegistry $doctrine): Response
     {    
@@ -656,6 +725,12 @@ class UserController extends AbstractController
                     'name' => 'editor',
                 ]
             ])
+            ->add('Password', PasswordType::class,
+             [
+                'label' => 'Passwort',
+                
+            ])
+            // TODO: set defult password 
             ->add('Save', SubmitType::class)
             ->add('contract', HiddenType::class, [
                 'data' => $contract->getId(),
@@ -679,9 +754,11 @@ class UserController extends AbstractController
     #[Route('/{id}/contrect_save', name: 'app_user_contrect_save', methods: ['GET', 'POST'])]
     public function contrect_save( User $user, Request $request, ManagerRegistry $doctrine, VertragRepository $vertragRepository)
     {
+        //TODO: set Document password defult 1234
         
-        $password = 'texmex';
         $form = $request->get('form');
+        $password = $form['Password'];
+        
         $text = $form['text'];
         $contract = $form['contract'];
         $vertrag = $vertragRepository->find($contract);
@@ -734,6 +811,20 @@ class UserController extends AbstractController
         return $this->redirectToRoute('app_user_edit', ['id' => $user->getId()]);
 
     }
+    #[Route('/{id}/passwordResetSave', name: 'app_user_passwordResetSave', methods: [ 'GET', 'POST'])]
+    public function passwordResetSave( Request $request, ManagerRegistry $doctrine,UserPasswordHasherInterface $passEncoder,User $user): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $data = $request->request->get('spw');
+        $userId = $user->getId();
+        $encodedPassword = $passEncoder->hashPassword($user, $data);
+        $user->setPassword($encodedPassword);
+        $now = new DateTime();
+        $user->setValidPassword($now);
+        $entityManager->persist($user);
+        $entityManager->flush();
+        return new JsonResponse($data." - ".$userId);
+     }
     // Hilfsfunktion zum Lesen der Eigenschaft eines Objekts
     private function getPropertyValue($object, $propertyName) {
         $propertyGetter = 'get' . ucfirst($propertyName);

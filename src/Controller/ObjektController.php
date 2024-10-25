@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Area;
 use App\Entity\Dienstplan;
+use App\Entity\ItemCategories;
 use App\Entity\Objekt;
 use App\Entity\OpeningTime;
 use App\Entity\RentItems;
@@ -30,10 +31,12 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -57,12 +60,18 @@ class ObjektController extends AbstractController
 
         // Unternehmen für Benutzer abrufen - Admin eines Unternehmens
         $companies = $companyRepository->findBy(['onjekt_admin' => $user]);
-
+        $count = count($companies);
+        if($count < 1){ //wenn kein admin einer Company nutze die Company aus User
+            $companies  = $this->container->get('security.token_storage')->getToken()->getUser()->getCompany();
+            if($companies != Null){
+                $companies = ["0"=> $companies];
+            }
+        }
         if (empty($companies)) {
             // Wenn der Benutzer kein Admin eines Unternehmens ist, verwende das eigene Unternehmen
             $objekt  = $this->container->get('security.token_storage')->getToken()->getUser()->getObjekt();
             $objekts = [0 => $objekt];
-            
+           
             if (empty($objekts[0])){
                
                 return $this->redirectToRoute('app_company_new');
@@ -238,6 +247,7 @@ class ObjektController extends AbstractController
     {
         $area = new Area();
         $form = $this->createForm(AreaType::class, $area);
+      
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
            
@@ -246,6 +256,7 @@ class ObjektController extends AbstractController
  
              return new JsonResponse();
          }
+         
         return $this->renderForm('objekt/newFormArea.html.twig', [
             
             'form' => $form,
@@ -275,26 +286,40 @@ class ObjektController extends AbstractController
         return new JsonResponse();
     }
     #[Route('/ajax_item_form', name: 'ajax_item_form', methods: ['GET', 'POST'])]
-    public function ajax_item_form(Request $request,TokenStorageInterface $tokenStorage,ManagerRegistry $doctrine, FormFactoryInterface $formFactory): Response
+    public function ajax_item_form(Request $request,ItemCategoriesRepository $itemCategoriesRepository,ManagerRegistry $doctrine, FormFactoryInterface $formFactory): Response
     {   $item = new RentItems();
         $objektId = $request->get("objketId");
-     // $objektId = 4;
+    
         $objekt = $doctrine->getRepository(Objekt::class)->find($objektId);
-       ;
-            
+        $choices_Category = [];
+
+        $Categories = $doctrine->getRepository(ItemCategories::class)->findBy(['objekt' => $objekt]);   
+        foreach ($Categories as $Category) {
+            $choices_Category[$Category->getName()] = $Category;
+         } 
         $choices_areas = [];
-            $areas = $doctrine->getRepository(Area::class)->findBy(['objekt' => $objekt]);
-            foreach ($areas as $area) {
-                $choices_areas[$area->getName()] = $area;
-            }
+        $areas = $doctrine->getRepository(Area::class)->findBy(['objekt' => $objekt]);
+        foreach ($areas as $area) {
+           $choices_areas[$area->getName()] = $area;
+        }
         $form = $formFactory->createBuilder(FormType::class, $item)
             ->add('id', NumberType::class, [
                 'required' => false,
             ])
-            ->add('name')
-            ->add('description')
-            ->add('pax')
-            ->add('Category')
+            ->add('name', TextType::class,[
+                'label' => 'Bezeichnung'
+            ])
+            ->add('description', TextareaType::class,[
+                'label' => 'Beschreibung'
+            ])
+            ->add('pax', NumberType::class,[
+                'label' => 'anzahl Personen'
+            ])
+            ->add('Category',EntityType::class,[
+                'class'=> ItemCategories::class,
+                'choices' => $choices_Category,
+                'label' => 'Kategorie',
+            ])
             ->add('objekt', EntityType::class, [
                 'class' => Objekt::class,
                 'data' =>  $objekt,
@@ -310,21 +335,23 @@ class ObjektController extends AbstractController
                     'choices' => $choices_areas,
                     'expanded' => true,
                     'multiple' => false,
-                    'label' => 'Area',
+                    'label' => 'Bereich',
                     'attr' => [
                         'class' => 'area-select',
                         
                     ],
                 ])
-            ->add('status')
-                ->add('save', SubmitType::class, [
-                    'label' => 'save',
+            ->add('status', CheckboxType::class,[
+                'label' => 'Aktiv',
+                'required' => false,
+            ])
+            ->add('save', SubmitType::class, [
+                    'label' => 'Speichern',
                     'attr' => [
-                        'class' => 'btn btn-info w-100',
+                        'class' => 'btn btn-primary w-100',
                         'name' => 'save',
                     ],
-            ])
-            ->add('save', SubmitType::class);
+            ]);
         $form = $form->getForm();
 
         return $this->render('objekt/newForm.html.twig', [
@@ -340,6 +367,12 @@ class ObjektController extends AbstractController
         
         $item = $rentItemsRepository->find($item_id);
         $objekt = $item->getObjekt();
+        $choices_Category = [];
+
+        $Categories = $doctrine->getRepository(ItemCategories::class)->findBy(['objekt' => $objekt]);   
+        foreach ($Categories as $Category) {
+            $choices_Category[$Category->getName()] = $Category;
+         }
         $choices_areas = [];
         $areas = $doctrine->getRepository(Area::class)->findBy(['objekt' => $objekt]);
         foreach ($areas as $area) {
@@ -349,10 +382,20 @@ class ObjektController extends AbstractController
             ->add('id', NumberType::class, [
                 'required' => false,
             ])
-            ->add('name')
-            ->add('description')
-            ->add('pax')
-            ->add('Category')
+            ->add('name', TextType::class,[
+                'label' => 'Bezeichnung',
+            ])
+            ->add('description', TextareaType::class,[
+                'label' => 'Beschreibung',
+            ])
+            ->add('pax', NumberType::class, [
+                'label' => 'Personenzahl',
+            ])
+            ->add('Category', EntityType::class,[
+                'class' => ItemCategories::class,
+                'label'=> 'Kategorie',
+                'choices' => $choices_Category,
+            ])
             ->add('objekt', EntityType::class, [
                 'class' => Objekt::class,
                 'data' =>  $objekt,
@@ -374,15 +417,16 @@ class ObjektController extends AbstractController
                         
                     ],
                 ])
-            ->add('status')
-                ->add('save', SubmitType::class, [
-                    'label' => 'save',
-                    'attr' => [
-                        'class' => 'btn btn-info w-100',
-                        'name' => 'save',
-                    ],
+            ->add('status', CheckboxType::class,[
+                'label' => 'Aktiv',
             ])
-            ->add('save', SubmitType::class);
+            ->add('save', SubmitType::class, [
+                'label' => 'Speichern',
+                'attr' => [
+                    'class' => 'btn btn-primary w-100',
+                    'name' => 'save',
+                ],
+            ]);
           $form = $form->getForm();
 
 
@@ -415,6 +459,12 @@ class ObjektController extends AbstractController
             $item->setCategory($Category);
             $area = $areaRepository->find($data['area']) ;
             $item->setArea($area);
+            if(isset($data['status'])){
+                $item->setStatus($data['status']);
+            }else{
+                $item->setStatus(null); 
+            }
+            
             $rentItemsRepository->save($item, true);   
           /*  */     // Get the ID of the saved item
              
@@ -439,6 +489,11 @@ class ObjektController extends AbstractController
             $item->setObjekt($objekt);
             $item->setCategory($Category);
             $item->setArea($area);
+            if(isset($data['status'])){
+                $item->setStatus($data['status']);
+            }else{
+                $item->setStatus(null); 
+            }
             $bezeichnung = $Category->getName();
             $rentItemsRepository->save($item, true);   
             $this->addFlash(
@@ -569,7 +624,7 @@ class ObjektController extends AbstractController
                                 $this->getParameter('bilder_ordner'),
                                 $bildname
                         );
-                        $objekt->setBild($bildname);
+                        $Objekt->setBild($bildname);
                     }
 
                     $objektRepository->save($Objekt, true);

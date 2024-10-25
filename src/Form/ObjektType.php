@@ -41,42 +41,63 @@ class ObjektType extends AbstractType
         
     
         $builder
-            ->add('name')
-            ->add('adresse')
-            ->add('ort')
+            ->add('name',null,[
+                'label' => 'Bezeichnung *',
+            ])
+            ->add('adresse',null,[
+                'label' => 'Straße & Hausnummer *',
+            ])
+            ->add('ort',null,[
+                'label' => 'Ort *',
+            ])
            
-            ->add('plz')
-            ->add('main_mail')
+            ->add('plz',null,[
+                'label' => 'Postleitzahl *',
+            ])
+            ->add('main_mail',null,[
+                'label' => 'Emailadresse *',
+            ])
             
-            ->add('telefon')
+            ->add('telefon',null,[
+                'label' => 'Telefonnummer *',
+            ])
             ->add('website', null, [
                 'required' => false,
             ]);
-            if( $objekt->getBild()){
-
             
-            
+            if($objekt and $objekt->getBild()){
+                $builder->add('bild', FileType::class,array(
+                    'data_class' => null,
+                     'required' => false,
+                     'label' => 'Objektbild',
+                   'data' => $objekt->getBild(), // Setze den Wert des Feldes auf den Namen des vorhandenen Bildes
+                ));
             }
             else{
                 $builder->add('bild', FileType::class,array(
                     'data_class' => null,
                      'required' => false,
-                     'data' => $objekt->getBild(), // Setze den Wert des Feldes auf den Namen des vorhandenen Bildes
+                     'label' => 'Objektbild',
+                     
     
                     
                 ));
             }
             $builder->add('fax', null, [
                 'required' => false,
+                'label' => 'Faxnummer',
             ])
             ->add('bestellung_mail', null, [
                 'required' => false,
+                'label' => 'Mail Warenwirtschaft',
             ])
             ->add('fibi_mail', null, [
                 'required' => false,
+                'label' => 'Mail Finanzbuchhaltung',
             ])
             ->add('ust_id', null, [
                 'required' => false,
+                'label' => 'Ust ID',
             ])
             ->add('Handelsregister', null, [
                 'required' => false,
@@ -88,10 +109,11 @@ class ObjektType extends AbstractType
                 'choices' => $choices,
                 'expanded' => true,
                 'multiple' => false,
-                'label' => 'company',
+                'label' => 'Unternehmen  *',
             ])
             ->add('categories', EntityType::class, [
                 'class' => ObjektCategories::class,
+                'label' => 'Kategorie auswählen  *',
             ])
         ;
     }

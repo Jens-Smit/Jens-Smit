@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}neuer Preis festlegen{% endblock %}
+
+{% block body %}
+    <h1 id='price_headline' data-ItemCategory='{{item_categories_price.ItemCategory}}'class='text-center'>Preise für {{item_categories_price.ItemCategory}} festlegen</h1>
+   
+    <div id='preise_festlegen'>
+    <i class="fa fa-fast-backward" aria-hidden="true" id='back' onclick=beforYear()></i>
+    <i class="fa fa-step-backward" aria-hidden="true" id='back' onclick=beforMonth()></i>
+    <i class="fa fa-step-forward" aria-hidden="true"id='for' onclick=nextMonth()></i>
+      <i class="fa fa-fast-forward" aria-hidden="true"id='for' onclick=nextYear()></i>       
+    </div>
+    {{ include('item_categories_price/_form.html.twig') }}
+
+    
+   <script src="{{ asset('js/price.js' ) }}"></script>
+{% endblock %}

@@ -1,13 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New User{% endblock %}
+{% block title %}Mitarbeiter anlegen{% endblock %}
 
 {% block body %}
-    <h1>Create new User</h1>
+    <h1>Mitarbeiter anlegen</h1>
 
     {{ include('user/_form.html.twig') }}
 <br>
     <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"href="{{ path('app_user_index') }}">back to list</a>
-  
+ 
+  <script>
+ {{ parent()}}
+ 
+
+PageNewUser();
+document.getElementById('user_company_0').checked = true;
+ </script>
 {% endblock %}
 

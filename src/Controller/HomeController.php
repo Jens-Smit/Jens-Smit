@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
-use Gregwar\CaptchaBundle\Type\CaptchaType;
+
 #[Route('/')]
 class HomeController extends AbstractController
 {
@@ -34,10 +34,7 @@ class HomeController extends AbstractController
         ->add('Nachricht', TextareaType::class, [
             'attr' => ['class' => 'w-100']
         ])
-        ->add('captcha', CaptchaType::class, [
-            'label' => 'Bist du ein Computer?',
-            
-        ])
+        
         ->add('submit', SubmitType::class, [
             'label' => 'Anfrage senden',
             'attr' => ['class' => 'btn-info w-100 btn']
@@ -82,10 +79,7 @@ class HomeController extends AbstractController
         ->add('Nachricht', TextareaType::class, [
             'attr' => ['class' => 'w-100']
         ])
-        ->add('captcha', CaptchaType::class, [
-            'label' => 'Bist du ein Computer?   ',
-            
-        ])
+        
         ->add('submit', SubmitType::class, [
             'label' => 'Anfrage senden',
             'attr' => ['class' => 'btn-info w-100 btn']

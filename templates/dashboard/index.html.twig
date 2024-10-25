@@ -19,118 +19,84 @@
     </div>
 </div>
 <div class="example-wrapper">
-  <!-- Adresse für targetLat und targetLng  -->
-   <div class="text-center mb-5  border border-info ">
+    
+    <div class="text-center mb-5  border border-info ">
      
         <div class="card-body" style='text-align: center; 'id='UserCheck'>
         
         
       </div>
     </div>
-   <!--  <div class="text-center mb-5  border border-info ">
-        <div class="card-body" style='text-align: center; 'id='Useramendment'>
-        
-        
-      </div>
-    </div>
-   -->
+    
+   
 </div>
 {% endblock %}
 {% block javascripts %}
     {{ parent() }}
- <script src="{{ asset('js/modal.js') }}"></script>    
-
-
-  <script>
+ <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAS5-fdtC9sQ93dsTiP0v7JG3rVNFX8I0k&callback=initMap" async defer></script>
+ <script>
   function initMap() {
-    var geocoder = new google.maps.Geocoder(); 
-    var address = "{{ app.user.objekt.adresse }}, {{ app.user.objekt.plz }}, {{ app.user.objekt.ort }}";
-    geocoder.geocode({ address: address }, function(results, status) {
-      if (status === 'OK') {
-        console.log('first OK');
-        // Die geocodierten Ergebnisse können mehrere Resultate haben, wir verwenden hier das erste Resultat
-        var location = results[0].geometry.location;
-        var targetLat = location.lat();
-        var targetLng = location.lng();
-        console.log(address);
-        navigator.geolocation.getCurrentPosition(position => {
-            const userLat = position.coords.latitude;
-            const userLng = position.coords.longitude;
+            // Hier kannst du die Adresse eingeben, die du geocodieren möchtest
+             let objektAdresse = "{{ app.user.objekt.adresse|default('') }}";
+             let objektplz = "{{ app.user.objekt.plz|default('') }}";
+             let objektOrt = "{{ app.user.objekt.ort|default('') }}";
+            const address = objektAdresse+", "+ objektplz+" "+objektOrt;
 
-            // Berechnung der Entfernung zwischen den beiden Koordinaten
-            const distance = getDistanceFromLatLonInKm(userLat, userLng, targetLat, targetLng);
-              
-              console.log(distance);
-            // Überprüfen, ob die Entfernung kleiner als 1 km ist (Benutzer ist am Standort)
-            if (distance < 10) {
-              $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
-            
-              var date = new Date();
-              var data = { time: date, distance: true };
-              document.cookie = JSON.stringify(data);
-              loadUserCheck();
-            
-            } else {
-              $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
-              console.log('test');
-              var cookieData =  document.cookie;
-              console.log(cookieData);
-              let index = cookieData.indexOf("{");
-              cookieData = cookieData.substring(index);
-              console.log(cookieData);
-              cookieData = JSON.parse(cookieData);
-             
-              var cookieTime = new Date(cookieData.time);
-              var currentTime = new Date();
-              var timeDiff = currentTime - cookieTime; // time difference in milliseconds
-          
-              if (timeDiff < 5 * 60 * 1000) {          //5 minuten ist der cookie aktiv
-              console.log("save duch Cookie"); 
-                loadUserCheck();
-              } else {
-                $('#CheckIn').html('Du bist nicht am Standort deine Entfernmung beträgt '+distance+' Km ');
-              }
-              
-            }
-        });
-        console.log('ende navigator.geolocation');
-      } else {
-        console.error('Geocode was not successful for the following reason:', status);
-      }
-    });
+            // Geocoder Objekt erstellen
+            const geocoder = new google.maps.Geocoder();
+
+            // Geocoding Anfrage
+            geocoder.geocode({ 'address': address }, function(results, status) {
+                if (status === 'OK') {
+                    const targetLat = results[0].geometry.location.lat();
+                    const targetLng = results[0].geometry.location.lng();
+                    $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
+                        
+                    // Abruf der aktuellen Position des Benutzers
+                    navigator.geolocation.getCurrentPosition(position => {
+                        const userLat = position.coords.latitude;
+                        const userLng = position.coords.longitude;
+
+                        // Berechnung der Entfernung zwischen den beiden Koordinaten
+                        const distance = getDistanceFromLatLonInKm(userLat, userLng, targetLat, targetLng);
+
+                        // Überprüfen, ob die Entfernung kleiner als 0.2 km ist (Benutzer ist am Standort)
+                        if (distance < 0.2) {
+                        var date = new Date();
+                        var data = { time: date, distance: true };
+                        document.cookie = JSON.stringify(data);
+                        
+
+                        loadUserCheck();
+                        } else {
+                        $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
+                       
+
+                        var cookieData =  document.cookie;
+                        
+                        let index = cookieData.indexOf("{");
+                        cookieData = cookieData.substring(index)
+                        cookieData = JSON.parse(cookieData);
+                        ;
+                        var cookieTime = new Date(cookieData.time);
+                        var currentTime = new Date();
+                        var timeDiff = currentTime - cookieTime; // time difference in milliseconds
+                        
+                        if (timeDiff < 3 * 60 * 1000) {          //3 minuten ist der cookie aktiv
+                        console.log("save duch Cookie"); 
+                            loadUserCheck();
+                        } else {
+                            $('#CheckIn').html('Du bist nicht am Standort deine Entfernmung beträgt '+distance+' Km ');
+                        }
+                        
+                        }
+                    });
+                } else {
+                    console.error('Geocode war nicht erfolgreich: ' + status);
+                }
+            });
   }
-   function loadUserCheck(){
-    $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
-    console.log('loadUserCheck')
-    $.ajax({
-              url: "{{path('app_arbeitszeit')}}",
-              type: 'GET',
-              dataType: 'html',
-              success: function(response){
-                  
-                  $('#UserCheck').html(response);
-              },
-              error: function(xhr, status, error){
-                  console.log(error);
-              }
-          });
-  }
-  function userCheckOut(){
-         $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
-     $.ajax({
-              url: "{{path('app_arbeitszeit_checkOut')}}",
-              type: 'GET',
-              dataType: 'json',
-              success: function(response){
-                
-                  loadUserCheck();
-              },
-              error: function(xhr, status, error){
-                  console.log(error);
-              }
-          });
-  }
-   function userCheckIn(){
+  function userCheckIn(){
          $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
     
             console.log('userCheckIn');
@@ -147,8 +113,134 @@
               }
           });
 
-  } 
+  }  
+  function userCheckOut(){
+         $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
+     $.ajax({
+              url: "{{path('app_arbeitszeit_checkOut')}}",
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
+                
+                  loadUserCheck();
+              },
+              error: function(xhr, status, error){
+                  console.log(error);
+              }
+          });
+  }
+  function openModal_Arbeitzzeit_aendern_beantragen(date,userid) {
+   
+
+     date = convertTimestamp(date);
+     var currentDate = new Date(date);
+
+     var options = "";
+     for (var i = 0; i < 4; i++) {
+         var pastDate = new Date(currentDate);
+         pastDate.setDate(pastDate.getDate() - i);
+         var pastDateString = pastDate.toISOString().split('T')[0];
+         options += "<option value='" + pastDateString + "'>" + pastDateString + "</option>";
+     }
+     var data = "<div class='card text-center'> <div class='card-body'><select class=' text-center w-100 mb-2' name='day'>" + options + "</select><br><input class='text-center w-50 md-2' type='time' name='kommen'><input class='text-center w-50 mb-2'type='time' name='gehen'><br> <button class='btn btn-info mb-2 w-100' type='submit' onclick='save_times(" + userid + ")'> Änderung beantragen</button></p> </div></div>";
+     $("#modal-body").html(data);
+     $("#modal").modal("show");
+
+  }
+  function save_times(userid){
+      var kommen =  $('input[name="kommen"]').val();
+      var gehen =$('input[name="gehen"]').val();
+      var day =$('select[name="day"]').val(); 
+      console.log('save_times'); 
+      var data = {
+          kommen: kommen,
+          gehen: gehen,
+          day: day,
+          userId: userid
+      };
+      $.ajax({
+          url: '{{path('app_arbeitszeit_amendment')}}',
+          method: 'POST',
+          data: data,
+          success: function(response) {
+            console.log(response);
+            closeModal();
+          }
+      });
+
+  }
+  function loadUserCheck(){
+    $('#UserCheck').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
+    $.ajax({
+              url: "{{path('app_arbeitszeit')}}",
+              type: 'GET',
+              dataType: 'html',
+              success: function(response){
+                  
+                  $('#UserCheck').html(response);
+              },
+              error: function(xhr, status, error){
+                  console.log(error);
+              }
+          });
+  }
+  function loadUseramendment(){
+   
+    $.ajax({
+              url: "{{path('app_arbeitszeit_opanamendment')}}",
+              type: 'GET',
+              dataType: 'html',
+              success: function(response){
+               
+                if (response != '"noroles"') {
+                // Das Parent-Element auswählen
+                const parentElement = document.querySelector('.example-wrapper');
+
+                // Ein neues div-Element erstellen
+                const newChild = document.createElement('div');
+
+                // Klasse und ID hinzufügen
+                newChild.className = 'child';
+                newChild.id = 'Useramendment';
+
+                // Das neue Element als Child hinzufügen
+                parentElement.appendChild(newChild);
+                 $('#Useramendment').html('<div class="spinner-border text-primary" role="status">  <span class="sr-only">Loading...</span></div>');
+   console.log('tre')
+                //
+
+                    $('#Useramendment').html(response);
+                  $('#save_amendment').submit(function(event) {
+                    event.preventDefault();
+                    var form = $(this);
+                    $.ajax({
+                        type: 'POST',
+                        url: '{{path('app_arbeitszeit_SaveAmendment')}}',
+                        data: form.serialize(),
+                        success: function(response) {
+                            if(response = true){
+                            form.parent().parent().hide();    
+                            }else{
+                            form.parent().html('ERROR');   
+                            }
+                        },
+                        error: function() {
+                        }
+                    });
+                  });
+                
+                }
+                
+                  
+                 
+                  
+              },
+              error: function(xhr, status, error){
+                  console.log(error);
+              }
+      });
       
+  }
   // Funktion zur Berechnung der Entfernung zwischen zwei Koordinaten (in Kilometern)
   function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
     const R = 6371; // Radius der Erde in km
@@ -167,8 +259,15 @@
   function deg2rad(deg) {
     return deg * (Math.PI / 180)
   }
+  $(document).ready(function(){
+    loadUseramendment();
+  });
+
+ 
+
+ 
+
+  
 
  </script>
- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAS5-fdtC9sQ93dsTiP0v7JG3rVNFX8I0k&callback=initMap" ></script>
- 
 {% endblock %}

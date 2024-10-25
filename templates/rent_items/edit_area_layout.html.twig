@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit RentItems{% endblock %}
+{% block title %}Raumplaner{% endblock %}
 {% block javascripts %}
 {{ parent() }}
   <script src="{{asset('js/jquery-3.6.3.min.js')}}"></script>    
@@ -11,182 +11,185 @@
         $(document).ready(function() {
             $('.container').removeClass( "container" );
             $('.container').addClass('container-fluid')
-        $(".page").hide();
-        $(".page").first().show();
-         $( "#dialog" ).dialog({
-                  autoOpen: false,
-                  closeText: "",
-                   position:{ my: "center", at: "top", of: window },
-                   autoResize: true,
-                  show: {
-                    autoOpen: true,
-                    effect: "blind",
-                    duration: 1000,
-                   
-                  },
-                  hide: {
+            $(".page").hide();
+            $(".page").first().show();
+            $( "#dialog" ).dialog({
                     autoOpen: false,
-                    effect: "explode",
-                    duration: 1000
-                  },
-                  
-       });
-        $("#new_item").click(function(event) {
+                    closeText: "",
+                    position:{ my: "center", at: "top", of: window },
+                    autoResize: true,
+                    show: {
+                        autoOpen: true,
+                        effect: "blind",
+                        duration: 1000,
+                    
+                    },
+                    hide: {
+                        autoOpen: false,
+                        effect: "explode",
+                        duration: 1000
+                    },
+                    
+            });
+            $("#new_item").click(function(event) {
+                        // Verhindern, dass der Link ausgeführt wird
+                        event.preventDefault();
+                        var objekt =  $("#new_item").attr('data-objket');
+                        $("#dialog").dialog("open");
+                        $.ajax({
+                            type:  'POST',
+                            url: '{{path('ajax_item_form')}}',
+                            data: {
+                                    objketId: objekt,
+                                },
+                            success: function(response) {
+                                $("#ui-id-1").html("Itam anlegen");
+                                $("#dialog").html(response);
+                            }
+                        });         
+            });
+            $(".area_btn").on('dblclick',function(event) {
+                        // Verhindern, dass der Link ausgeführt wird
+                        event.preventDefault();
+                        $("#dialog").dialog("open");
+                    
+                        $.ajax({
+                            type:  'POST',
+                            url: '{{path('ajax_area_form_edit')}}',
+                            data: {
+                                    id: $(this).attr('href'),
+                                },
+                            
+                            success: function(response) {
+                                console.log('das hat geklapt')
+                                $("#ui-id-1").html("Raum bearbeiten");
+                                $("#dialog").html(response);
+                            }
+                        });         
+            });
+            $("#new_area").click(function(event) {
                     // Verhindern, dass der Link ausgeführt wird
                     event.preventDefault();
-                    var objekt =  $("#new_item").attr('data-objket');
-                    
-                    $("#dialog").dialog("open");
-                    
-                    $.ajax({
-                        type:  'POST',
-                        url: '{{path('ajax_item_form')}}',
-                        data: {
-                                objketId: objekt,
-                            },
-                        
-                        success: function(response) {
-                            $("#ui-id-1").html("Itam anlegen");
-                            $("#dialog").html(response);
-                        }
-                    });
-
-                    
-
-
-
-                    
-        });
-         $(".area_btn").on('dblclick',function(event) {
-                    // Verhindern, dass der Link ausgeführt wird
-                    event.preventDefault();
-                    $("#dialog").dialog("open");
-                   
-                    $.ajax({
-                        type:  'POST',
-                        url: '{{path('ajax_area_form_edit')}}',
-                        data: {
-                                id: $(this).attr('href'),
-                            },
-                        
-                        success: function(response) {
-                            $("#ui-id-1").html("Area bearbeiten");
-                            $("#dialog").html(response);
-                        }
-                    });         
-        });
-        $("#new_area").click(function(event) {
-                    // Verhindern, dass der Link ausgeführt wird
-                    event.preventDefault();
                     $("#dialog").dialog("open");
                     $.ajax({
-                     type: "POST",
-                    url: "{{path('ajax_area_form')}}",
+                    type: "POST",
+                    url: '{{path('ajax_area_form')}}',
                     data: {
                         'objket': {{objket.id}},
                     },
                     success: function(response) {
-                            $("#ui-id-1").html("Area anlegen");
+                            $("#ui-id-1").html("Raum erstellen");
                            $("#dialog").html(response);
                             
                         }
                     });         
-        });
-        $(".area_btn").click(function(event) {
-                    // Verhindern, dass der Link ausgeführt wird
-                    event.preventDefault();
-
-                    // Alle Div-Elemente ausblenden
-                    $(".page").hide();
-                    var showelement = "#"+$(this).attr("href");
-                    console.log(showelement);
-                    // Div mit der ID, die dem "href"-Attribut des Links entspricht, einblenden
-                    $("#"+$(this).attr("href")).show();
-        });
-        $(".tabel").on('dblclick',function(event) {
-             $("#dialog").dialog("open");
-            var item = $(this).attr('id');
-            $.ajax({
-                type: "POST",
-                url: "{{path('ajax_item_edit')}}",
-                data: {
-                    'item': item,
-                },
-                dataType: "text",
-                success: function(data) {
-                   $("#dialog").html(data);  
-                   $("#ui-id-1").html("Item bearbeiten");
-                },  
-                error : function(xhr, textStatus, errorThrown) {  
-                    alert('Ajax request failed delate.');
-                }
             });
-        });
-        
-        $(".page").resizable({
-            stop: function(event, ui) {
-                var page = $(this);
-                var id = page.attr('id');
-                var width = page.css('width');
-                var height = page.css('height');
-                $.ajax({
-                type: 'POST',
-                url: '{{ path('update_size_page', {'id': 1}) }}',
-                data: {
-                    id: id,
-                    width: width,
-                    height: height,
-                },
-                success: function() {
-                     console.log(id);
-                    console.log(height);
-                    console.log(width);
-                }
-                });
-            }
-        });
-        $(".tabel").resizable({
-            start: function(event, ui){
-                
-            },
+            $(".area_btn").click(function(event) {
+                        // Verhindern, dass der Link ausgeführt wird
+                        event.preventDefault();
 
-            stop: function(event, ui) {
-                
-                        $.ajax({
-                            type: 'POST',
-                            url: '{{ path('update_size_item', {'item': 1}) }}',
-                            data: {
-                                id: $(this).attr('id'),
-                                width: $(this).css('width'),
-                                height: $(this).css('height'),
-                            },
-                            success: function() {
-                                console.log('Size Item updated');
-                                
-                            }
-                        });
-            }
-            
-        });
-        $('.tabel').draggable({
-               
-                stop: function(event, ui) {
+                        // Alle Div-Elemente ausblenden
+                        $(".page").hide();
+                        var showelement = "#"+$(this).attr("href");
+                        console.log(showelement);
+                        // Div mit der ID, die dem "href"-Attribut des Links entspricht, einblenden
+                        $("#"+$(this).attr("href")).show();
+            });
+            $(".tabel").on('dblclick',function(event) {
+                $("#dialog").dialog("open");
+                var item = $(this).attr('id');
+                $.ajax({
+                    type: "POST",
+                    url: "{{path('ajax_item_edit')}}",
+                    data: {
+                        'item': item,
+                    },
+                    dataType: "text",
+                    success: function(data) {
+                    $("#dialog").html(data);  
+                    $("#ui-id-1").html("Item bearbeiten");
+                    },  
+                    error : function(xhr, textStatus, errorThrown) {  
+                        alert('Ajax request failed delate.');
+                    }
+                });
+            });
+            /*
+            $(".page").resizable({
+                stop: function() {
+                    let page = $(this);
+                    let id = page.attr('id');
+                    let width = page.css('width');
+                    let height = page.css('height');
                     $.ajax({
-                        type: 'POST',
-                        url: '{{ path('update_position', {'id': 2}) }}',
-                        data: {
-                            id: $(this).attr('id'),
-                            top: $(this).css('top'),
-                            left: $(this).css('left'),
-                        },
-                        success: function() {
-                            console.log('Position updated');
-                        
-                        }
+                    type: 'POST',
+                    url: '{{ path('update_size_page', {'id': 1}) }}',
+                    data: {
+                        id: id,
+                        width: width,
+                        height: height,
+                    },
+                    success: function() {
+                        console.log(id);
+                        console.log(height);
+                        console.log(width);
+                    }
                     });
                 }
+            });
+            */
+            $(".tabel").resizable({
+                stop: function() {
+                            let itemId= $(this).attr('id');
+                            let pageWidth = $(this).closest(".page").css('width');
+                            let pageHeight = $(this).closest(".page").css('height');
+                            let width = $(this).css('width');
+                            let height = $(this).css('height');
+                            let relatvWidth = parseInt(width)/parseInt(pageWidth);
+                            let relatvHeight = parseInt(height)/parseInt(pageHeight);
+                            $.ajax({
+                                type: 'POST',
+                                url: '{{ path('update_size_item', {'item': 'itemId'}) }}',
+                                data: {
+                                    id: itemId,
+                                    width: relatvWidth*100+'%',
+                                    height: relatvHeight*100+'%',
+                                },
+                                success: function() {
+                                    console.log('Size Item updated');
+                                    
+                                }
+                            });
+                }
+                
+            });
+            $('.tabel').draggable({
+                
+                    stop: function() {
+                         let itemId= $(this).attr('id');
+                         let pageWidth = $(this).closest(".page").css('width');
+                         let pageHeight = $(this).closest(".page").css('height');
+                         let top = $(this).css('top');
+                         let left = $(this).css('left');
+                         let relatvLeft = parseInt(left)/parseInt(pageWidth);
+                         let relatvTop = parseInt(top)/parseInt(pageHeight);
+                         
+                        $.ajax({
+                            type: 'POST',
+                            url: '{{ path('update_position', {'id': 'itemId'}) }}',
+                            data: {
+                                id: itemId,
+                                top: relatvTop*100+'%',
+                                left: relatvLeft*100+'%',
+                            },
+                            success: function() {
+                                console.log('Position updated');
+                            
+                            }
+                        });
+                    }
+            });
         });
-    });
     
     </script> 
 
@@ -197,12 +200,15 @@
 {% block body %}
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
     <style>
+    {{ parent() }}
         .pt-5 {
             padding-top: 0rem!important;
         }
         .tabel{
             background-color:silver;
             opacity: 0.75;
+            position:absolute;
+            cursor:pointer;
            
         }    
         #tab_area{
@@ -239,10 +245,11 @@
         {% for Area in Areas %}
             <div class="page" id="area_{{Area.id}}" 
                 {% if Area.size is not empty %} 
-                    style="background-size: cover; background-image: url('{{asset('images/' ~ Area.map)}}'); height: {{ Area.size['height'] }}; width: {{ Area.size['width'] }};"
+                    style="background-size: cover; position: relative; width: 80vw;"
                 {% else %} 
-                    style="background-size: cover; background-image: url('{{asset('images/' ~ Area.map)}}'); height: 200px; width: 200px;"
+                    style="background-size: contain; position: relative; height: 200px; width: 200px;"
                 {% endif %}>
+                 <img src="{{asset('images/' ~ Area.map)}}" style="   width: 100%; ">
                 
                                      
                     {% for rentItem in Area.RentItems %}

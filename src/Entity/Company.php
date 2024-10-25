@@ -27,6 +27,9 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
     private Collection $users;
 
+    #[ORM\Column(length: 5, nullable: true)]
+    private ?string $sign = null;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
@@ -122,6 +125,18 @@ class Company
                 $objekt->setCompany(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getSign(): ?string
+    {
+        return $this->sign;
+    }
+
+    public function setSign(?string $sign): self
+    {
+        $this->sign = $sign;
 
         return $this;
     }

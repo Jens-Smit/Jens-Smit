@@ -15,7 +15,10 @@ class ObjektCategoriesController extends AbstractController
 {
     #[Route('/', name: 'app_objekt_categories_index', methods: ['GET'])]
     public function index(ObjektCategoriesRepository $objektCategoriesRepository): Response
-    {
+    {// Aktuellen Benutzer abrufen
+        //$user = $this->container->get('security.token_storage')->getToken()->getUser();
+       // $object = $user->getObjekt();
+        dump('test');
         return $this->render('objekt_categories/index.html.twig', [
             'objekt_categories' => $objektCategoriesRepository->findAll(),
         ]);

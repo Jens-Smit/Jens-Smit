@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -16,7 +17,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
+   
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
     #[ORM\ManyToOne(inversedBy: 'users')]
@@ -88,6 +89,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Arbeitszeit::class)]
     private Collection $arbeitszeits;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $validPassword = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $birthday = null;
+
    
 
   
@@ -106,7 +113,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->id;
     }
-
+    
     public function getEmail(): ?string
     {
         return $this->email;
@@ -527,6 +534,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $arbeitszeit->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getValidPassword(): ?\DateTimeInterface
+    {
+        return $this->validPassword;
+    }
+
+    public function setValidPassword(?\DateTimeInterface $validPassword): self
+    {
+        $this->validPassword = $validPassword;
+
+        return $this;
+    }
+
+    public function getBirthday(): ?\DateTimeInterface
+    {
+        return $this->birthday;
+    }
+
+    public function setBirthday(?\DateTimeInterface $birthday): self
+    {
+        $this->birthday = $birthday;
 
         return $this;
     }

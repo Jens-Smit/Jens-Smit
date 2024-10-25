@@ -1,0 +1,52 @@
+
+
+
+{% block body %}
+
+<div class="card cursor-pointer m-1 d-flex flex-row flex-wrap justify-content-around" onclick="scaleUp(this)">
+	<h6>Anwesenheiten</h6>
+	<div class="circle-Anwesenheiten"></div>
+	<div class="legende">
+		<p style="background:var(--green);">Arbeitszeit</p>
+		<p style="background:var(--pink);">Krank</p>
+		<p style="background:var(--yellow);">Urlaub</p>
+		<p style="background:var(--blue);">Weiterbildung</p>
+	</div>
+</div>
+              
+<script>
+   
+    let stunden_anw  = "{{stunden}}"
+    let urlaub = "{{urlaub}}"
+    let schule = "{{schule}}"
+    let krank = "{{krank}}"
+   
+   
+  
+
+    function getCSSVariable(variableName) {
+        const root = document.documentElement;
+        const value = getComputedStyle(root).getPropertyValue(variableName).trim();
+        return value;
+    }
+    
+    const element_circle_Anwesenheiten = document.querySelector('.circle-Anwesenheiten');
+    const blue_anw = getCSSVariable("--blue");
+    const green = getCSSVariable("--green");
+    const yellow = getCSSVariable("--yellow");
+    const pink = getCSSVariable("--pink");
+     const red = getCSSVariable("--red");
+
+    /*background: conic-gradient(
+    var(--blue) 0% 10%,
+    var(--green) 10% 75%,
+    
+    var(--yellow) 75% 80%,
+    var(--red) 80% 100%
+      
+  );
+  */
+    element_circle_Anwesenheiten.style.background = 'conic-gradient('+green+' 0%  '+stunden_anw+'%, '+yellow+' '+stunden_anw+'% '+urlaub+'%, '+blue_anw+' '+urlaub+'% '+schule+'%, '+pink+' '+schule+'% '+krank+'%, '+red+' '+krank+'% 100%)';
+    
+</script>
+{% endblock %}

@@ -3,9 +3,26 @@
 {% block title %}New ItemCategories{% endblock %}
 
 {% block body %}
-    <h1>Create new ItemCategories</h1>
+{% if item_category.objekt.categories == 'Hotel'%}
+<h1>neue Zimmerkategorie </h1>
+{% else %}
+<h1>neue Tischkategorie </h1>
+{% endif %}
+
+    
 
     {{ include('item_categories/_form.html.twig') }}
 
-    <a class="btn w-100 btn-info" href="{{ path('app_item_categories_index') }}">back to list</a>
+     <a class="btn w-100 btn-info" href="{{ path('app_item_categories_index', {'objectId': objectId}) }}">zurück</a>
+
+{% block javascripts %}
+    {{ parent() }}
+ <script>
+ $('#item_categories_objekt').parent().hide();
+ $('#item_categories_rentItems').parent().hide();
+ $('#item_categories_itemCategoriesPrices').parent().hide();
+ 
+ 
+ </script>
+{% endblock %}
 {% endblock %}

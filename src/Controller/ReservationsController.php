@@ -69,6 +69,11 @@ class ReservationsController extends AbstractController
         }
         
         if (!empty($companies)) {
+            //check if $companies is a array
+            if (!is_array($companies)) {
+                //erstelle aus $companies einen array
+                $companies = [$companies];
+            }
             // Alle Objekte für die Unternehmen mit einer einzigen Abfrage mittels IN-Operator abrufen
             $companyIds = array_map(function($company) { return $company->getId(); }, $companies);
             $objekts = $objektRepository->findBy(['company' => $companyIds]);
@@ -400,6 +405,8 @@ class ReservationsController extends AbstractController
                 'label' => 'Anzahl Personen'
             ])
             ->add('next', SubmitType::class, [
+                'label' => 'Verfügbarkeit prüfen',
+                
                 'attr' => [
                     'data-objekt' => $data,
                 ],
@@ -609,7 +616,12 @@ class ReservationsController extends AbstractController
                 'label' => 'Uhrzeit',
             
             ])
-            ->add('los', SubmitType::class)
+            ->add('los', SubmitType::class,[
+                'label' => 'reservieren',
+                'attr' => [
+                    'class' => 'w-100',
+                ]
+            ])
             ->getForm();
 
             return $this->renderForm('reservations/availabilityGroup.html.twig', [

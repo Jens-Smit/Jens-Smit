@@ -45,6 +45,9 @@ class ContractData
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $status = null;
+
+    #[ORM\Column]
+    private ?int $arbeitstage = null;
     
     
 
@@ -174,6 +177,18 @@ class ContractData
     public function setStatus(?string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getArbeitstage(): ?int
+    {
+        return $this->arbeitstage;
+    }
+
+    public function setArbeitstage(int $arbeitstage): self
+    {
+        $this->arbeitstage = $arbeitstage;
 
         return $this;
     }

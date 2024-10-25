@@ -18,16 +18,26 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 #[Route('/vertrag')]
 class VertragController extends AbstractController
 {
-    #[Route('/', name: 'app_vertrag', methods: ['GET'])]
-    public function index(ManagerRegistry $doctrine): Response
-    {
+    #[Route('/', name: 'app_vertrag', methods: ['GET', 'POST'])]
+    public function index(ManagerRegistry $doctrine, Request $request,): Response
+    { 
+        $objektId = $request->request->get('objektId');
+       
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
         $objekts = $doctrine->getRepository(Objekt::class)->findBy(['company' => $user->getCompany()]);
+
         $vertraege = [];
         foreach ($objekts as $objekt) {
-            $vertraege = array_merge($vertraege, $objekt->getVertrags()->toArray());
+            if($objekt->getId() == $objektId){
+                $vertraege = array_merge($vertraege, $objekt->getVertrags()->toArray());
+            }
+            
         }
+        
+       /*
+        $objekt = $doctrine->getRepository(Objekt::class)->find($date);
+       $vertraege =  $objekt->getVertrags()->toArray(); */
         return $this->render('vertrag/index.html.twig', [
             'vertraege' => $vertraege,
         ]);
@@ -99,12 +109,13 @@ class VertragController extends AbstractController
 
         $form = $this->createFormBuilder($vertrag)
             ->add('titel', TextType::class)
-            ->add('discription', TextType::class)
+            ->add('discription', TextareaType::class)
             ->add('objekt', ChoiceType::class, [
                 'choices' => $choices_objekt,
                 'expanded' => true,
                 'multiple' => false,
                 'label' => 'Objekt',
+
             ])
             ->add('text', CKEditorType::class, [
                 'attr' => [

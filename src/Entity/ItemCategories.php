@@ -19,14 +19,22 @@ class ItemCategories
     private ?string $name = null;
 
     #[ORM\Column]
-    private ?int $booktime = null;
+    private ?float  $booktime = null;
 
     #[ORM\OneToMany(mappedBy: 'Category', targetEntity: RentItems::class, orphanRemoval: true)]
     private Collection $rentItems;
 
+    #[ORM\ManyToOne(inversedBy: 'itemCategories')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Objekt $objekt = null;
+
+    #[ORM\OneToMany(mappedBy: 'ItemCategory', targetEntity: ItemCategoriesPrice::class)]
+    private Collection $itemCategoriesPrices;
+
     public function __construct()
     {
         $this->rentItems = new ArrayCollection();
+        $this->itemCategoriesPrices = new ArrayCollection();
     }
     public function __toString()
     {
@@ -49,12 +57,12 @@ class ItemCategories
         return $this;
     }
 
-    public function getBooktime(): ?int
+    public function getBooktime(): ?float 
     {
         return $this->booktime;
     }
 
-    public function setBooktime(int $booktime): self
+    public function setBooktime(float $booktime): self
     {
         $this->booktime = $booktime;
 
@@ -85,6 +93,48 @@ class ItemCategories
             // set the owning side to null (unless already changed)
             if ($rentItem->getCategory() === $this) {
                 $rentItem->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getObjekt(): ?Objekt
+    {
+        return $this->objekt;
+    }
+
+    public function setObjekt(?Objekt $objekt): self
+    {
+        $this->objekt = $objekt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, ItemCategoriesPrice>
+     */
+    public function getItemCategoriesPrices(): Collection
+    {
+        return $this->itemCategoriesPrices;
+    }
+
+    public function addItemCategoriesPrice(ItemCategoriesPrice $itemCategoriesPrice): self
+    {
+        if (!$this->itemCategoriesPrices->contains($itemCategoriesPrice)) {
+            $this->itemCategoriesPrices->add($itemCategoriesPrice);
+            $itemCategoriesPrice->setItemCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeItemCategoriesPrice(ItemCategoriesPrice $itemCategoriesPrice): self
+    {
+        if ($this->itemCategoriesPrices->removeElement($itemCategoriesPrice)) {
+            // set the owning side to null (unless already changed)
+            if ($itemCategoriesPrice->getItemCategory() === $this) {
+                $itemCategoriesPrice->setItemCategory(null);
             }
         }
 

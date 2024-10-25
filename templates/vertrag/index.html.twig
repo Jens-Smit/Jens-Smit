@@ -8,7 +8,7 @@
             <thead>
                 <tr>
                     <th>Titel</th>
-                    <th>Objekt</th>
+                   
                     <th>Beschreibung</th>
                 </tr>
             </thead>
@@ -16,10 +16,10 @@
                 {% for vertrag in vertraege %}
                     <tr>
                         <td>{{ vertrag.titel }}</td>
-                        <td>{{ vertrag.objekt.name }}</td>
+                        
                         <td>{{ vertrag.discription }}</td>
-                        <td><a href="{{ path('app_vertrag_show', {'id': vertrag.id}) }}">show</a>
-                    <a href="{{ path('app_vertrag_edit', {'id': vertrag.id}) }}">edit</a>
+                        <td><a href="{{ path('app_vertrag_show', {'id': vertrag.id}) }}"><i class="fa fa-eye"></i></a>
+                    <a href="{{ path('app_vertrag_edit', {'id': vertrag.id}) }}"><i class="fa fa-edit"></i></a>
                     </td>
                     </tr>
                 {% else %}
@@ -31,3 +31,5 @@
         </table>
 </div>    
 {% endblock %}
+
+

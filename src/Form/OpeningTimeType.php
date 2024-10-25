@@ -29,14 +29,14 @@ class OpeningTimeType extends AbstractType
                     'Mittwoch' => 3,
                     'Donnerstag' => 4,
                     'Freitag' => 5,
-                    'Sammstag' => 6,
+                    'Samstag' => 6,
                 ],
                 'attr' =>[
                 'style' =>'padding:5px; width:100%;'
                 ],
             ])
             ->add('start', TimeType::class, [
-                'label' => '',
+                'label' => 'öffnen',
                 'widget' => 'single_text',
                 'constraints' => [
                     new Callback(function ($value, ExecutionContextInterface $context) {
@@ -54,12 +54,13 @@ class OpeningTimeType extends AbstractType
                 ]
             ])
             ->add('end', TimeType::class,[
-                'label' => 'close',
+                'label' => 'schließen',
                 'widget' => 'single_text',
             ])
             ->add('effective_date', DateType::class,[
                 'label' => 'day',
                 'widget' => 'single_text',
+                'data' => new \DateTime(),
                 
             ])
             ->add('objekt')

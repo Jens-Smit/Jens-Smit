@@ -26,7 +26,7 @@ class ObjektCategories
 
     public function __construct()
     {
-        $this->objkets = new ArrayCollection();
+        
         $this->objekts = new ArrayCollection();
         $this->objektSubCategories = new ArrayCollection();
     }

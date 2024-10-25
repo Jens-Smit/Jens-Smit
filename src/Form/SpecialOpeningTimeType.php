@@ -19,21 +19,21 @@ class SpecialOpeningTimeType extends AbstractType
     {
         $builder
             ->add('day', DateType::class,[
-                'label' => false,
+                'label' => 'Tag',
                 'widget' => 'single_text',
             ])
             ->add('start', TimeType::class,[
-                'label' => false,
+                'label' => 'öffnen',
                 'widget' => 'single_text',
                 'required' => false,
             ])
             ->add('end', TimeType::class,[
-                'label' => false,
+                'label' => 'schließen',
                 'widget' => 'single_text',
                 'required' => false,
             ])
             ->add('close', CheckboxType::class,[
-                'label' => 'close',
+                'label' => 'an diesem Tag ist geschlossen',
                  'required' => false,
             ])
         ;

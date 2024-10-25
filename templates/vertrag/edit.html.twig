@@ -14,15 +14,18 @@ span{
     <h1>Vertrag bearbeiten</h1>
 
     {{ form_start(form) }}
-        {{ form_row(form.titel) }}
-        {{ form_row(form.discription) }}
-        {{ form_row(form.objekt) }}
-        {{ form_row(form.text) }}
+        {{ form_widget(form.titel) }}
+        {{ form_widget(form.discription) }}
+        {{ form_widget(form.objekt) }}
+        
+            <button type="button" class="btn btn-primary w-100 " data-toggle="modal" data-target="#varModal">
+                Variablen einfügen
+            </button>
+        
+        {{ form_widget(form.text) }}
         <div class="form-group">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#varModal">
-      Variablen einfügen
-    </button>
-        <button type="submit" class="btn btn-primary">Speichern</button>
+    
+        <button type="submit" class="btn btn-lg w-100 btn-success">Speichern</button>
         </div>
     {{ form_end(form) }}
      <!-- Modal -->
@@ -39,11 +42,11 @@ span{
             <p>Klicken Sie auf eine Variable, um sie in den Vertragstext einzufügen:</p>
             
             {% for variable in variablen %}
-                 <a href="#" class="variable" onclick="addVariable('{{variable.var}}')">{{variable.name}}</a>
+                 <a href="#" class="variable btn btn-sm infoSecunder" onclick="addVariable('{{variable.var}}')">{{variable.name}}</a>
              {% endfor %}
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Schließen</button>
+            
         </div>
         </div>
         </div>
@@ -56,25 +59,93 @@ span{
 {% block javascripts %}
 {{  parent() }}
 <script>
-$(document).ready(function(){
+function setCaretPosition(element, position) {
+  if (element && (element.setSelectionRange || element.createTextRange)) {  // Check for method existence
+    // Supported element type
+    if (element.nodeType === 1 && (element.type === 'text' || element.type === 'password' || element.type === 'search' || element.type === 'tel' || element.type === 'url')) {
+      if (element.setSelectionRange) {
+        element.focus();  // Ensure element is focused
+        element.setSelectionRange(position, position);
+      } else {
+        var range = element.createTextRange();  // For older IE compatibility
+        range.collapse(true);
+        range.moveEnd('character', position);
+        range.moveStart('character', position);
+        range.select();
+      }
+    } else {
+      console.error('setSelectionRange not supported for this element type');
+    }
+  } else {
+    console.error('Element not found or does not support setSelectionRange');
+  }
+}
+$(document).ready(function() {
+    
+    
+setTimeout(function() {
+    let variables =  $('#cke_1_contents iframe').contents().find('body span');
+    if (!variables.hasClass('variable')) {
+        variables.toggleClass('variable');
+    } const neuesKind = $('<style>').text('.variable{background:yellow !important;user-select:none;padding: 3px;border-radius: 5px;border: 1px solid black}');
+     $('#cke_1_contents iframe').contents().find('body').prepend(neuesKind);
+    //console.log($('#cke_1_contents iframe').contents().find('body span'));
+    variables.each(function(){
+       
+       $(this).on('click', function(event) {
+        const nextElement = $(this).parent();
+        setCaretPosition(nextElement, 3); // Move caret to position 5    
+            
+            
+       
 
+
+       
+        
+        console.log(nextElement);
+            // Fokus auf das nächste Element verschieben
+             
+           
+        });
+    });
+    
+     
+}, 100);
+     
 });
+
+
+
+
         function addVariable(variable){
                        
                         
                         
-                        var string =  '#<span style="background:red;    padding: 3px;    border-radius: 5px;" >'+variable+'</span>#</p>'
+                        let string =  ' <span style="background:red;" >'+variable+'</span>&nbsp;'
                         
                        // CKEDITOR.instances.form_text.insertText(string);
-                        var editor = CKEDITOR.instances.form_text;
-                        var content = editor.getData();
+                        let editor = CKEDITOR.instances.form_text;
+                        let content = editor.getData();
                         let lastIndex = content.lastIndexOf("</p>");
                         if (lastIndex !== -1) {
                          content = content.substring(0, lastIndex);
                         }
                         content = content+string;
                         editor.setData(content);
+
                         
+                        //formatieren der variable im text
+                        
+                        $('#cke_1_contents iframe').on('load', function() {
+                            let variables =  $(this).contents().find('body span');
+                            if (!variables.hasClass('variable')) {
+                                variables.toggleClass('variable');
+                            } const neuesKind = $('<style>').text('.variable{background:yellow !important;padding: 3px;border-radius: 5px;border: 1px solid black}');
+                           
+                            $(this).contents().find('body').prepend(neuesKind);
+                            console.log(variables);
+                        });
+
                         $('#varModal').modal('hide');
         }
   

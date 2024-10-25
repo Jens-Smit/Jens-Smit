@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Objekt{% endblock %}
+{% block title %}Öffnungszeiten{% endblock %}
 
 {% block body %}
 
 
     <div class="container">
-        <div class='d-flex'><h1>Öffnungszeiten</h1> <a href=''data-toggle="collapse" data-target="#new_times" ><i class="fa fa-plus" ></i></a></div>
+        <div class='d-flex'><h1>Öffnungszeiten</h1> <a href=''data-toggle="collapse" data-target="#new_times" ><i class="fa fa-plus btn btn-secondary" ></i></a></div>
        <div class="card text-center">
          
          <div class="card-body collapse" id='new_times'>
@@ -18,7 +18,7 @@
                {{ form_label(form.end) }} {{ form_widget(form.end) }}
                <div style='display:none' >{{ form_widget(form.effective_date) }}</div>
                 <div style='display:none;'> {{ form_widget(form.objekt) }}</div>
-                <button class="w-100  d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Save') }}</button>
+                <button class="w-100  d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Speichern') }}</button>
            
             {{ form_end(form) }}
          </div>
@@ -30,9 +30,9 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th>day</th>
-                    <th>von</th>
-                    <th>bis</th> 
+                    <th>Wochentag</th>
+                    <th>öffnen</th>
+                    <th>schließen</th> 
                 </tr>
             </thead>
             <tbody>
@@ -71,17 +71,17 @@
     </div>
  <div class="container">
 
- <div class='d-flex'><h1>Sonderöffnungszeiten</h1> <a href=''data-toggle="collapse" data-target="#new_Stimes" ><i class="fa fa-plus" ></i></a></div>
+ <div class='d-flex'><h1>Sonderöffnungszeiten</h1> <a href=''data-toggle="collapse" data-target="#new_Stimes" ><i class="fa fa-plus btn btn-secondary" ></i></a></div>
        <div class="card text-center">
          
          <div class="card-body collapse" id='new_Stimes'>
            <h4 class="card-title">Sonderöffnungszeiten anlegen</h4>
             {{ form_start(Sform) }}
-                {{ form_widget(Sform.day) }}
-                {{ form_widget(Sform.start) }}
-                {{ form_widget(Sform.end) }}
-                {{ form_widget(Sform.close) }}
-                <button class="w-100  d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Save') }}</button>
+                {{ form_label(Sform.day) }} {{ form_widget(Sform.day) }}
+                {{ form_label(Sform.start) }} {{ form_widget(Sform.start) }}
+               {{ form_label(Sform.end) }}  {{ form_widget(Sform.end) }}
+                {{ form_label(Sform.close) }} {{ form_widget(Sform.close) }}
+                <button class="w-100  d-sm-inline-block btn btn-sm btn-primary shadow-sm">{{ button_label|default('Speichern') }}</button>
             {{ form_end(form) }}
          </div>
        </div>
@@ -93,10 +93,9 @@
         <thead>
             <tr>
                
-                <th>day</th>
-                <th>von</th>
-                <th>bis</th>
-                <th>Geschlossen</th>
+                <th>Tag</th>
+                <th>offen</th>
+                
                 <th>Aktion</th>
                 
             </tr>
@@ -106,16 +105,14 @@
             <tr>
                  <td>{{ SpecialOpeningTime.day |date('d.m.Y')}}</td>
                 {% if SpecialOpeningTime.close ==1 %}
-                <td>-</td>
-                <td>-</td>
+                
                 <td>close</td>
                 {% else %}
-                <td>{{ SpecialOpeningTime.start |date('H:i')  }}</td>
-                <td>{{ SpecialOpeningTime.end |date('H:i') }}</td>
-                <td>open</td>
+                <td>{{ SpecialOpeningTime.start |date('H:i')  }} - {{ SpecialOpeningTime.end |date('H:i') }}</td>
+                
                 {% endif %}
                 <td> 
-                 <a href="{{ path('app_objekt_opening_delat', {'id': SpecialOpeningTime.id}) }}">löschen</a>
+                 <a href="{{ path('app_objekt_opening_delat', {'id': SpecialOpeningTime.id}) }}"><i class="fa fa-trash" aria-hidden="true"></i></a>
                 </td>
                 
             </tr>

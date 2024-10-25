@@ -11,7 +11,7 @@
               if ($(this).parent().hasClass('btn-aktiv')) {
                 console.log('aktiv');
                 $(this).parent().removeClass('btn-aktiv') ;
-                $(this).parent().addClass('btn-info') ;
+                $(this).parent().addClass('btn-secondary') ;
                  var str = $(this).parent().children('.form-check-label').html();
                 var match = str.match(/Pax:\s*(\d+)/);
                 var pax = parseInt(match[1]);
@@ -22,7 +22,7 @@
               } else {
                 $(this).parent().addClass('btn-aktiv') ;
               
-                $(this).parent().removeClass('btn-info') ;
+                $(this).parent().removeClass('btn-secondary') ;
                 var str = $(this).parent().children('.form-check-label').html();
                 var match = str.match(/Pax:\s*(\d+)/);
                 var pax = parseInt(match[1]);
@@ -30,7 +30,7 @@
                  $('#selectPax').html(temp+pax);
                  if(parseInt($('#sollPax').html()) <= (temp+pax)){
                   $('.w-100').addClass('btn-aktiv')
-                  $('.w-100').removeClass('btn-info')
+                  $('.w-100').removeClass('btn-secondary')
                  }
                //  console.log('PaxTemp:', parseInt(temp));
                 
@@ -43,15 +43,15 @@
           
             $('input[type="radio"]').change(function(){
             
-              $('.btn-aktiv').addClass('btn-info') ;
+              $('.btn-aktiv').addClass('btn-secondary') ;
               $('.btn-aktiv').removeClass('btn-aktiv') ;
               $(this).parent().addClass('btn-aktiv');
-              $('.btn-aktiv').removeClass('btn-info') ;
+              $('.btn-aktiv').removeClass('btn-secondary') ;
             
             });
           }
         
-          $('.form-check').addClass(' btn btn-info m-1'); 
+          $('.form-check').addClass(' btn btn-secondary m-1'); 
           $('.form-check').css('font-size', '0.9rem') 
            $('.form-check-input').addClass('d-none'); 
            if ($('#form_telefon').length) {

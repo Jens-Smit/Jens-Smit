@@ -1,34 +1,78 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User index{% endblock %}
+{% block title %}Mitarbeiter-Übersicht{% endblock %}
 
 {% block body %}
-    <h1>User-Übersicht</h1>
+    <h1>Übersicht der Mitarbeiter</h1>
+    
 
     <table class="table">
         <thead>
-            <tr><th>Vorname</th>
-                <th>Nachname</th>
-                <th>Objekt</th>
+            <tr><th>Name</th>
+            <th class='selector'>Aktiv</th>
+            <th>Rechte</th>
+                <th>Unternehmen</th>
                 
             </tr>
         </thead>
         <tbody>
-        {% for user in users %}
+        {% for user in users |sort((a,b)=> a.objekt <=> b.objekt) %}
             <tr>
                 
-                <td><a href="{{ path('app_user_edit', {'id': user.id}) }}">{{ user.vorname }}</a></td>
-                <td><a href="{{ path('app_user_edit', {'id': user.id}) }}">{{ user.nachname }}</a></td>
+                <td><a href="{{ path('app_user_edit', {'id': user.id}) }}"><i class="fa fa-user primery-link"></i>{{ user.vorname }} {{ user.nachname }}</a></td>
+               <td> {% set contractDatas = user.contractData %}
+				{% if contractDatas is defined and contractDatas is not empty %}
+                    {% set isAktivContract = 0 %}
+                    {% for contractData in contractDatas %}
+                    {% if  contractData.status == 'aktiv' %}
+                         {% set isAktivContract = 1 %}
+                    {% endif %}
+                    {% endfor %}
+                    {% if  isAktivContract == 1 %}
+                        <i class="fa fa-check-circle icon-success"></i>
+                        {% else %}
+                        <i class="fa fa-times-circle icon-danger"></i>
+                    {% endif %}
+                         
+                {% else %}
+                        <i class="fa fa-times-circle icon-danger"></i>
+				{% endif %}
+                </td>
+                <td>{{ user.roles|map(role => role|replace({'ROLE_': ''}))|join(', ') }}</td>
+
                 <td>{{ user.objekt   }}</td>
                 
             </tr>
         {% else %}
             <tr>
-                <td colspan="17">no records found</td>
+                <td colspan="17"><a class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" href="{{ path('app_user_new') }}">Mitarbeiter anlegen</a></td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm" href="{{ path('app_user_new') }}">Create new</a>
+    <a class=" d-sm-inline-block btn btn-sm btn-primary shadow-sm" href="{{ path('app_user_new') }}">Mitarbeiter anlegen</a>
+    <script>
+        {{ parent() }}
+        function selectorAktivContract(){
+            
+                $('tbody tr').each(function() {
+                    const icon = $(this).find('.fa');
+                    if (icon.hasClass('icon-danger')) {
+                        $(this).toggle();
+                    } else {
+                        $(this).show();
+                    }
+                });
+            
+        }
+        $(document).ready(function() {
+             selectorAktivContract();
+            $('.selector').click(function() {
+                const $this = $(this);
+                $this.text($this.text() === 'Aktiv' ? 'Alle' : 'Aktiv');
+            selectorAktivContract();
+            });
+        }); 
+    </script>
 {% endblock %}

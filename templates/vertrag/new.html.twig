@@ -1,20 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Neuen Vertrag erstellen{% endblock %}
+{% block title %}Dokumentenvorlage{% endblock %}
 
 {% block body %}
-    <h1>Neuen Vertrag erstellen</h1>
+    <h1>Dokumentenvorlage erstellen</h1>
 
     {{ form_start(form) }}
     {{ form_row(form.titel) }}
     {{ form_row(form.discription) }}
     {{ form_row(form.objekt) }}
-    {{ form_row(form.text) }}
-    <div class="form-group">
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#varModal">
+    <button type="button" class="btn btn-primary w-100" data-toggle="modal" data-target="#varModal">
       Variablen einfügen
     </button>
-        <button type="submit" class="btn btn-primary">Vertrag erstellen</button>
+    {{ form_widget(form.text) }}
+    <div class="form-group">
+    
+        <button type="submit" class="btn btn-success  w-100">Vertrag speichern</button>
     </div>
     {{ form_end(form) }}
 
@@ -49,21 +50,59 @@
 {% block javascripts %}
 {{  parent() }}
 <script>
-  
+     $(document).ready(function() {
+    
+    
+        setTimeout(function() {
+            let variables =  $('#cke_1_contents iframe').contents().find('body span');
+            if (!variables.hasClass('variable')) {
+                variables.toggleClass('variable');
+            } const neuesKind = $('<style>').text('.variable{background:yellow !important;user-select:none;padding: 3px;border-radius: 5px;border: 1px solid black}');
+            $('#cke_1_contents iframe').contents().find('body').prepend(neuesKind);
+            //console.log($('#cke_1_contents iframe').contents().find('body span'));
+            variables.each(function(){
+            
+            $(this).on('click', function(event) {
+                const nextElement = $(this).parent();
+                  
+                console.log(nextElement);
+                    // Fokus auf das nächste Element verschieben
+                    
+                
+                });
+            });
+            
+            
+        }, 100);
+     
+    });
         function addVariable(variable){
                        
+                        let string =  ' <span style="background:red;" >'+variable+'</span>&nbsp;'
                         
-                        
-                        CKEDITOR.instances.form_text.insertText(variable);
+                       // CKEDITOR.instances.form_text.insertText(variable);
                         
                         var editor = CKEDITOR.instances.form_text;
                         var content = editor.getData();
-                        console.log(content);
-                        content = content.replace('<p>', '<span class="variable"style="background-color:yellow">');
-                        content = content.replace('</p>', '</span>');
-                        console.log(content);
+
+                         let lastIndex = content.lastIndexOf("</p>");
+                        if (lastIndex !== -1) {
+                         content = content.substring(0, lastIndex);
+                        }
+                        content = content+string;
+
                         editor.setData(content);
-                    // $('#varModal').modal('hide');
+                        $('#cke_1_contents iframe').on('load', function() {
+                            let variables =  $(this).contents().find('body span');
+                            if (!variables.hasClass('variable')) {
+                                variables.toggleClass('variable');
+                            } const neuesKind = $('<style>').text('.variable{background:yellow !important;padding: 3px;border-radius: 5px;border: 1px solid black}');
+                           
+                            $(this).contents().find('body').prepend(neuesKind);
+                            console.log(variables);
+                        });
+
+                        $('#varModal').modal('hide');
         }
   
 </script>

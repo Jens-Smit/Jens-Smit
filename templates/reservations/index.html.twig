@@ -10,6 +10,10 @@
 
 {% block stylesheets %} 
 <style>
+{{ parent() }}
+.pt-5 {
+        padding-top: 0rem!important;
+    }
       #reservierungen { 
     border-collapse: collapse;    
     width: 100px;
@@ -46,8 +50,9 @@
     justify-content: space-between;
     } 
     .tabel{
-      position: relative;
+      position: absolute;
       background:none;
+      cursor:pointer;
     }
     .ui-widget{
           display: flex;
@@ -68,6 +73,7 @@
    <script src="{{asset('js/jquery.ui.touch-punch.js')}}"></script>  
  
   <script language = "javascript">  
+  {{ parent() }}
   function resetBackgroundColor(tab) {
   setTimeout(function() {
     $(tab).css('background-color', ''); // Setze die Hintergrundfarbe zurück
@@ -271,6 +277,7 @@
                       dataType: "text",
                       success: function(data) {
                         $("#dialog").html(data);
+                        $("#ui-id-1").html("<h4>neue Reservierung</h4>")
                       },  
                       error : function(xhr, textStatus, errorThrown) {  
                           alert('Ajax request failed ++++.');
@@ -309,11 +316,7 @@
       });  
         
   </script>  
-  <style>
-    .pt-5 {
-        padding-top: 0rem!important;
-    }
-  </style>
+
 <div class="bg-danger Items" style= "width: 30%;margin: auto; display:none; border-radius: 0px 0px 25px 25px; position: absolute; left: 35%;    height: 25px; text-align: center;"id="delat"> <i class="fas fa-trash-alt"></i></div>
 <div id="dialog"   style="position:relative;    z-index: 100;" title="">
 <div id="dialog_content"></div>
@@ -321,7 +324,23 @@
  </div>
 
 <div style="display:none;"id="var"></div>
-  <div id = "reservierungen" class ='Items'>
+  
+<div style='display: flex;    flex-direction: row-reverse;    justify-content: space-between;'>
+    <div class='card bg-success draggable border-primary mb-3' id='Res_WalkIn' name= 'Res_WalkIn' > 
+      <div class='row'> 
+              <div class='col'><b>Walkin</b></div>
+            </div>
+            <div class='row'> 
+              <div class='col'></div>
+            </div>
+      </div>
+    <div>
+    {% for Area in Areas %}
+        <a class='btn btn-info area_btn' href="area_{{Area.id}}">{{Area.name}}</a>
+    {% endfor %}
+    </div>
+</div>
+      <div id = "reservierungen" class ='Items'>
     <a href='#' id='new_resavation' class="btn btn-info">Booking</a>
    
     <h8>Reservation</h8>
@@ -338,30 +357,16 @@
         </div>
       {% endif %}
     {% endfor %} 
-  </div >   
-<div style='display: flex;    flex-direction: row-reverse;    justify-content: space-between;'>
-    <div class='card bg-success draggable border-primary mb-3' id='Res_WalkIn' name= 'Res_WalkIn' style=' max-width: 5rem;z-index:3;  font-size:10px;'> 
-    <div class='row'> 
-            <div class='col'><b>Walkin</b></div>
-          </div>
-          <div class='row'> 
-            <div class='col'></div>
-          </div>
-    </div>
-      <div>
-    {% for Area in Areas %}
-        <a class='btn btn-info area_btn' href="area_{{Area.id}}">{{Area.name}}</a>
-    {% endfor %}
-    </div>
-</div>
-         
+  </div >      
     {% for Area in Areas %}
         <div class="page" id="area_{{Area.id}}" 
+        
             {% if Area.size is not empty %} 
-                style="background-size: cover; background-image: url('{{asset('images/' ~ Area.map)}}'); height: {{ Area.size['height'] }}; width: {{ Area.size['width'] }};"
+                style="background-size: cover;   width: 80vw;  margin-left: -5%;   position: relative;"
             {% else %} 
                 style="background-size: cover; background-image: url('{{asset('images/' ~ Area.map)}}'); height: 200px; width: 200px;"
             {% endif %}>
+            <img src="{{asset('images/' ~ Area.map)}}" style="   width: 100%; ">
             {% for rentItem in Area.RentItems %}
                 <div id="Tab{{ rentItem.id }}" class="tabel Items" 
                     {% if rentItem.position is not empty %} 

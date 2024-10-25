@@ -15,16 +15,20 @@
     <script src="{{asset('js/jquery-3.5.1.slim.min.js')}}"></script>
    <script src="{{asset('js/jquery-3.6.3.min.js')}}"></script>
     <script src="{{asset('js/bootstrap.min.js')}}" ></script> 
+    <script src="{{asset('js/modal.js')}}" ></script> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twig.js/0.8.9/twig.min.js"></script>
     <!-- js für Textareas-->
-    <script src="https://cdn.ckeditor.com/ckeditor5/30.0.0/classic/ckeditor.js"></script>
+   
         {% endblock %}
   <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
   <link rel="stylesheet" href="{{asset('css/all.min.css')}}">
    <link rel="stylesheet" href="{{asset('css/css.css')}}">
    
 
-
+{% if app.user.company is empty and app.request.attributes.get('_route') != 'app_company_new' %}
+   
+  <meta http-equiv='refresh' content="0;url='../company/new'"/>
+{% endif %}
 </head>
 <body>
   <nav class="navbar navbar-expand-lg navbar-light shadow">
@@ -62,14 +66,26 @@
           {% endfor %}
           
           {% if app.user.objekt != null %}
-            <li class="nav-item ">
-              <a class="nav-link btn btn-light d-lg-flex flex-column justify-content-center"   
-              href="{{ path('app_reservations', {'id': app.user.objekt.id}) }}">
-              <i class="fa fa-cutlery" style='margin-left: 15px;text-align: center;'></i>  
-              {{app.user.objekt.name}}</a>
-            </li>
+            {% if app.user.objekt.categories == 'Restaurant' %}
+              
+              <li class="nav-item ">
+                <a class="nav-link btn btn-light d-lg-flex flex-column justify-content-center"   
+                href="{{ path('app_reservations', {'id': app.user.objekt.id}) }}">
+                <i class="fa fa-cutlery" style='margin-left: 15px;text-align: center;'></i>  
+                {{app.user.objekt.name}}</a>
+              </li>
+            {% else %}
+              <li class="nav-item ">
+                  <a class="nav-link btn btn-light d-lg-flex flex-column justify-content-center"   
+                  href="{{ path('app_reservations', {'id': app.user.objekt.id}) }}">
+                  <i class="fa fa-bed" style='margin-left: 15px;text-align: center;'></i>  
+                  {{app.user.objekt.name}}</a>
+                </li>
+            {% endif %}
           {% elseif app.user.Company != null %}
-            {% for objekt in  app.user.Company.Objekts %}  
+            {% for objekt in  app.user.Company.Objekts %} 
+            {% if objekt.categories == 'Restaurant' %}
+            
               <li class="nav-item ">
                 <a class="nav-link btn btn-light d-lg-flex text-info flex-column justify-content-center"   
                 href="{{ path('app_reservations', {'id': objekt.id}) }}">
@@ -77,6 +93,15 @@
                 {{objekt.name}}
                 </a>
               </li>
+            {% else %}
+              <li class="nav-item ">
+                <a class="nav-link btn btn-light d-lg-flex text-info flex-column justify-content-center"   
+                href="{{ path('app_reservations', {'id': objekt.id}) }}">
+                <i class="fa fa-bed" style='margin-left: 15px;text-align: center;'></i>  
+                {{objekt.name}}
+                </a>
+              </li>
+            {% endif %}
             {% endfor %} 
           {% else %}
           {% endif %}
@@ -97,10 +122,15 @@
     {{ app.user.vorname }} </a>
      <div class="dropdown-menu" style="position: absolute;    right: 0px;    padding: 15px" aria-labelledby="userDropdown">
      
-       
+       {% if app.user.company is empty  %}
+   
+  
+  {% else %}
+  <a class="dropdown-item" href="{{ path('app_user_show', {'id': app.user.id}) }}"><i class="fa fa-cog"></i>&ensp;Settings</a>  
+           
+     {% endif %}
       
       
-           <a class="dropdown-item" href="{{ path('app_user_show', {'id': app.user.id}) }}"><i class="fa fa-cog"></i>&ensp;Settings</a>  
            
         <a class="dropdown-item" href="{{path('app_logout')}}"><i class="fa fa-sign-out"></i>&ensp;Logout</a>
         <hr>
@@ -126,10 +156,8 @@
   
   <!-- Page -->
   <div class="container mt-3">
-  
-  
-    
-     
+   
+
 
 
       <!-- Content -->
@@ -159,8 +187,8 @@
 <script>
 $(document).ready(function() {
 
-
- const darkModeSwitch = document.getElementById('dark-mode-switch');
+//darkmode
+  const darkModeSwitch = document.getElementById('dark-mode-switch');
   const darkModeEnabled = localStorage.getItem('darkModeEnabled');
 
   if (darkModeEnabled === 'true') {
@@ -177,8 +205,10 @@ $(document).ready(function() {
       localStorage.setItem('darkModeEnabled', 'false');
     }
   });
+//hinzufühen von eigenschaften  
     $('#sidebar').addClass('sidebar-collapsed');
     $(".link_text").hide();
+    /*
     $('#sidebar_toggle').click(function() {
     if($('#sidebar').hasClass('sidebar-collapsed')) {
       $('#sidebar').removeClass('sidebar-collapsed');
@@ -190,6 +220,7 @@ $(document).ready(function() {
 	  $("#silebar_icon").removeClass('fa-chevron-left').addClass('fa fa-chevron-right');
     }
   });
+  */
 });
 
 </script>

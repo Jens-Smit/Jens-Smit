@@ -35,6 +35,9 @@ class ContractDataType extends AbstractType
             ->add('stunden',NumberType::class,[
                 'label'=> 'wöchentliche Arbeitsstunden',
             ])
+            ->add('arbeitstage',NumberType::class,[
+                'label'=> 'wöchentliche Arbeitstage',
+            ])
             ->add('endDate',DateType::class,[
                 'label'=> 'Austrittsdatum',
                 'required' => false,
