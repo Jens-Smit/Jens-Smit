@@ -29,7 +29,7 @@ Um das Projekt lokal zu installieren, folgen Sie diesen Schritten:
     php bin/console doctrine:database:create
     php bin/console doctrine:schema:update --force
     ```
-6. notwendi Datensätze anlegen
+6. Notwendige Datensätze anlegen
     ```bash
     mysql -u deinBenutzername -p deineDatenbank
     INSERT INTO users (username, password) VALUES ('neuerBenutzer', 'geheimesPasswort');
