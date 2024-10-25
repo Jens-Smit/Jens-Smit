@@ -23,7 +23,11 @@ Um das Projekt lokal zu installieren, folgen Sie diesen Schritten:
     composer install
     ```
 4. Datenbank verbindung und Emial anpassen in der .env
-    
+     ```bash
+   # DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db"
+   #DATABASE_URL="mysql://user:PW@127.0.0.1:3306/db?serverVersion=8&charset=utf8mb4"
+   # DATABASE_URL="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=14&charset=utf8"
+    ```
 5. Erstellen Sie die Datenbank:
     ```bash
     php bin/console doctrine:database:create
